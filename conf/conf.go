@@ -7,11 +7,10 @@ import (
 	"os"
 )
 
-type _database struct {
-	Desc    string `yaml:"desc"`
-	Type    string `yaml:"type"`
-	Url     string `yaml:"url"`
-	ShowSQL bool   `yaml:"showSQL"`
+type _storage struct {
+	Desc  string `yaml:"desc"`
+	Path  string `yaml:"path"`
+	Debug bool   `yaml:"debug"`
 }
 
 type _http struct {
@@ -22,19 +21,18 @@ type _http struct {
 }
 
 type _config struct {
-	Database _database `yaml:"database"`
-	Http     _http     `yaml:"http"`
+	Storage _storage `yaml:"storage"`
+	Http    _http    `yaml:"http"`
 }
 
 var Config = _config{
-	_database{
+	_storage{
 		"数据库配置",
-		"mysql",
-		"root:root@tcp(127.0.0.1:3306)/dtu?charset=utf8",
+		".",
 		false,
 	},
 	_http{
-		"HTTP服务配置，API接口",
+		"HTTP服务配置",
 		":8080",
 		false,
 		false,
