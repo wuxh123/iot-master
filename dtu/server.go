@@ -8,6 +8,18 @@ import (
 	"sync"
 )
 
+type RegisterConf struct {
+Enable    bool
+MinLength int
+MaxLength int
+Regex     string
+}
+
+type HeartBeatConf struct {
+Enable  bool
+Content []byte
+}
+
 type Server struct {
 	Net  string
 	Addr string
@@ -17,17 +29,8 @@ type Server struct {
 
 	increment int
 
-	RegisterPack struct {
-		Enable    bool
-		MinLength int
-		MaxLength int
-		Regex     string
-	}
-
-	HeartBeatPack struct {
-		Enable  bool
-		Content []byte
-	}
+	RegisterConf  RegisterConf
+	HeartBeatConf HeartBeatConf
 }
 
 func NewServer(net string, addr string) *Server {
@@ -75,25 +78,26 @@ func (s *Server) accept() {
 
 func (s *Server) receive(conn net.Conn) {
 
-	if !s.RegisterPack.Enable {
+	if !s.RegisterConf.Enable {
 		//匿名链接
 		client := NewClient(s.Net, s.Addr)
 		s.increment++
 		s.clients.Store(s.increment, client)
 
 		client.conn = conn
+		client.HeartBeatConf = s.HeartBeatConf
 		client.receive()
 		return
 	}
 
 	//接收注册包
-	sn := make([]byte, s.RegisterPack.MaxLength)
+	sn := make([]byte, s.RegisterConf.MaxLength)
 	n, e := conn.Read(sn)
 	if e != nil {
 		log.Println("read error", e)
 		return
 	}
-	if n < s.RegisterPack.MinLength {
+	if n < s.RegisterConf.MinLength {
 		log.Println("register package is too short", n, string(sn[:n]))
 		_ = conn.Close()
 		return
@@ -101,8 +105,8 @@ func (s *Server) receive(conn net.Conn) {
 	serial := string(sn[:n])
 
 	// 正则表达式判断合法性
-	if s.RegisterPack.Regex != "" {
-		reg := regexp.MustCompile(`^` + s.RegisterPack.Regex + `$`)
+	if s.RegisterConf.Regex != "" {
+		reg := regexp.MustCompile(`^` + s.RegisterConf.Regex + `$`)
 		match := reg.MatchString(serial)
 		if !match {
 			log.Println("register package format error", serial)
@@ -118,8 +122,9 @@ func (s *Server) receive(conn net.Conn) {
 		client = v.(*Client)
 	} else {
 		client = NewClient(s.Net, s.Addr)
+		client.Serial = serial
+		client.HeartBeatConf = s.HeartBeatConf
 		s.clients.Store(serial, client)
-		//client.Id = mh.Id
 	}
 	client.conn = conn
 	client.receive()

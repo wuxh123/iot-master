@@ -6,10 +6,13 @@ import (
 )
 
 type Client struct {
-	Net  string
-	Addr string
+	Net    string
+	Addr   string
+	Serial string
 
 	conn net.Conn
+
+	HeartBeatConf HeartBeatConf
 }
 
 func NewClient(net string, addr string) *Client {
@@ -29,15 +32,15 @@ func (c *Client) Open() error {
 	return nil
 }
 
-func (s *Client) Close() error {
-	if s.conn == nil {
+func (c *Client) Close() error {
+	if c.conn == nil {
 		return errors.New("client closed")
 	}
-	err := s.conn.Close()
-	s.conn = nil
+	err := c.conn.Close()
+	c.conn = nil
 	return err
 }
 
-func (s *Client) receive() {
+func (c *Client) receive() {
 
 }
