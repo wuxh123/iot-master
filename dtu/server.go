@@ -9,20 +9,21 @@ import (
 )
 
 type RegisterConf struct {
-Enable    bool
-MinLength int
-MaxLength int
-Regex     string
+	Enable    bool
+	MinLength int
+	MaxLength int
+	Regex     string
 }
 
 type HeartBeatConf struct {
-Enable  bool
-Content []byte
+	Enable  bool
+	Content []byte
 }
 
 type Server struct {
 	Net  string
 	Addr string
+	Err  string
 
 	listener net.Listener
 	clients  sync.Map

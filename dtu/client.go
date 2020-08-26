@@ -6,8 +6,10 @@ import (
 )
 
 type Client struct {
-	Net    string
-	Addr   string
+	Net  string
+	Addr string
+	Err  string
+
 	Serial string
 
 	conn net.Conn
