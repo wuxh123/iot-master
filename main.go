@@ -4,8 +4,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/conf"
-	"github.com/zgwit/dtu-admin/database"
 	"github.com/zgwit/dtu-admin/flag"
+	"github.com/zgwit/dtu-admin/storage"
 	"log"
 )
 
@@ -17,17 +17,10 @@ func main() {
 	//加载配置
 	conf.Load()
 
-	err := database.OpenMySQL()
+	err := storage.Open()
 	if err != nil {
 		log.Println("数据库错误：", err)
 		return
-	}
-	if flag.SyncTables {
-		err = database.SyncMySQL()
-		if err != nil {
-			log.Println("数据库表结构同步错误：", err)
-			return
-		}
 	}
 
 	if !conf.Config.Http.Debug {
