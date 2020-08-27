@@ -23,15 +23,8 @@ type Connection struct {
 
 	channel *Channel
 
-	Statistic struct {
-		Rx      int
-		RxSpeed int
-		rx      int
-
-		Tx         int
-		TxSpeed    int
-		txSpeedNow int
-	}
+	Rx int
+	Tx int
 }
 
 func (c *Connection) checkRegister(buf []byte) error {
@@ -57,17 +50,8 @@ func (c *Connection) checkRegister(buf []byte) error {
 }
 
 func (c *Connection) onData(buf []byte) {
-	length := len(buf)
-	c.Statistic.Rx += length
-	now := time.Now()
-	if now.Sub(c.lastTime) < time.Second {
-		c.Statistic.rx += length
-	} else {
-		c.Statistic.RxSpeed = c.Statistic.rx
-		c.Statistic.rx = length
-	}
-	//TODO 没有新数据，速度没有变成0
-	c.lastTime = now
+	c.Rx += len(buf)
+	c.lastTime = time.Now()
 
 	//检查注册包
 	if c.channel.Register.Enable && c.Serial != "" {
@@ -95,6 +79,7 @@ func (c *Connection) onData(buf []byte) {
 }
 
 func (c *Connection) Send(buf []byte) (int, error) {
+	c.Tx += len(buf)
 	c.lastTime = time.Now()
 
 	if conn, ok := c.conn.(net.Conn); ok {
