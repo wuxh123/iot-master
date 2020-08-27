@@ -16,6 +16,9 @@ type Connection struct {
 	Error      string
 	Serial     string
 	RemoteAddr net.Addr
+	
+	Rx int
+	Tx int
 
 	conn interface{}
 
@@ -23,8 +26,6 @@ type Connection struct {
 
 	channel *Channel
 
-	Rx int
-	Tx int
 }
 
 func (c *Connection) checkRegister(buf []byte) error {
