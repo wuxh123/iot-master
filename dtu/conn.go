@@ -16,7 +16,7 @@ type Connection struct {
 	Error      string
 	Serial     string
 	RemoteAddr net.Addr
-	
+
 	Rx int
 	Tx int
 
