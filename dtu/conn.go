@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"regexp"
+	"time"
 )
 
 type Connection struct {
@@ -14,6 +16,8 @@ type Connection struct {
 	RemoteAddr net.Addr
 
 	conn interface{}
+
+	lastTime time.Time
 
 	channel *Channel
 }
@@ -41,10 +45,13 @@ func (c *Connection) checkRegister(buf []byte) error {
 }
 
 func (c *Connection) onData(buf []byte) {
+	c.lastTime = time.Now()
+
 	//检查注册包
 	if c.channel.Register.Enable && c.Serial != "" {
 		err := c.checkRegister(buf)
 		if err != nil {
+			log.Println(err)
 			_ = c.Close()
 			return
 		}
@@ -56,6 +63,7 @@ func (c *Connection) onData(buf []byte) {
 
 	//检查心跳包
 	if c.channel.HeartBeat.Enable && bytes.Compare(c.channel.HeartBeat.Content, buf) == 0 {
+		//TODO 判断上次收发时间，是否已经过去心跳间隔
 		return
 	}
 
@@ -65,6 +73,7 @@ func (c *Connection) onData(buf []byte) {
 }
 
 func (c *Connection) Send(buf []byte) (int, error) {
+	c.lastTime = time.Now()
 
 	if conn, ok := c.conn.(net.Conn); ok {
 		return conn.Write(buf)

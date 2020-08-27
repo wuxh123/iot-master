@@ -2,7 +2,6 @@ package storage
 
 import "time"
 
-
 type RegisterConf struct {
 	Enable bool
 	Length int
@@ -23,11 +22,20 @@ type Channel struct {
 	Name     string
 	Tags     []string
 
-	Register  RegisterConf
-	HeartBeat HeartBeatConf
+	Register struct {
+		Enable bool
+		Length int
+		Regex  string
+	}
 
-	Created  time.Time
-	Creator  int
+	HeartBeat struct {
+		Enable   bool
+		Interval time.Duration
+		Content  []byte
+	}
+
+	Created time.Time
+	Creator int
 }
 
 type User struct {
