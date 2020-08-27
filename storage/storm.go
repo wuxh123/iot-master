@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	Links *storm.DB
+	channelDB *storm.DB
 )
 
 func Open() error {
@@ -21,11 +21,14 @@ func Open() error {
 		return err
 	}
 
-	Links, err = storm.Open(filepath.Join(path, "links.db"))
+	channelDB, err = storm.Open(filepath.Join(path, "channels.db"))
 	if err != nil {
 		return err
 	}
 
-
 	return nil
+}
+
+func ChannelDB() *storm.DB {
+	return channelDB
 }

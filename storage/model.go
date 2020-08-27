@@ -2,7 +2,7 @@ package storage
 
 import "time"
 
-type Link struct {
+type Channel struct {
 	ID       int
 	Serial   string `storm:"index"`
 	Net      string

@@ -5,42 +5,32 @@ import (
 	"sync"
 )
 
-type Link interface {
-	Open() error
-	Close() error
-}
 
-var links *sync.Map
+var channels *sync.Map
 
 func init() {
-	links = new(sync.Map)
+	channels = new(sync.Map)
 }
 
-func Links() *sync.Map {
-	return links
+func Channels() *sync.Map {
+	return channels
 }
 
-func Recovery() error  {
-	var links []storage.Link
-	err := storage.Links.All(&links)
+func Recovery() error {
+	var cs []storage.Channel
+	err := storage.ChannelDB().All(&cs)
 	if err != nil {
 		return err
 	}
 
-	for _, v := range links {
-		if v.IsServer {
-			lnk := NewServer(v.Net, v.Addr)
-			err := lnk.Open()
-			if err != nil {
-				lnk.Err = err.Error()
-			}
-		} else {
-			lnk := NewClient(v.Net, v.Addr)
-			err := lnk.Open()
-			if err != nil {
-				lnk.Err = err.Error()
-			}
+	for _, c := range cs {
+		channel := NewChannel(c.ID, c.Net, c.Addr, c.IsServer)
+		err := channel.Open()
+		if err != nil {
+			channel.Error = err.Error()
 		}
+
+		channels.Store(c.ID, channel)
 	}
 
 	return nil
