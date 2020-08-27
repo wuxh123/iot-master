@@ -7,13 +7,19 @@ import (
 
 
 var channels *sync.Map
+var connections *sync.Map
 
 func init() {
 	channels = new(sync.Map)
+	connections = new(sync.Map)
 }
 
 func Channels() *sync.Map {
 	return channels
+}
+
+func Connections() *sync.Map  {
+	return connections
 }
 
 func Recovery() error {
@@ -24,14 +30,28 @@ func Recovery() error {
 	}
 
 	for _, c := range cs {
-		channel := NewChannel(c.ID, c.Net, c.Addr, c.IsServer)
-		err := channel.Open()
-		if err != nil {
-			channel.Error = err.Error()
-		}
-
-		channels.Store(c.ID, channel)
+		_, _ = startChannel(&c)
 	}
 
 	return nil
 }
+
+func startChannel(c *storage.Channel) (*Channel, error) {
+	channel := NewChannel(c)
+	err := channel.Open()
+	if err != nil && channel != nil {
+		channel.Error = err.Error()
+	}
+	channels.Store(c.ID, channel)
+	return channel, err
+}
+
+func CreateChannel(c *storage.Channel) (*Channel, error)  {
+	err := storage.ChannelDB().Save(c)
+	if err != nil {
+		return nil, err
+	}
+	return startChannel(c)
+}
+
+

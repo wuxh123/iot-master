@@ -3,51 +3,31 @@ package dtu
 import (
 	"errors"
 	"fmt"
+	"github.com/zgwit/dtu-admin/storage"
 	"log"
 	"net"
 	"sync"
 )
 
-type RegisterConf struct {
-	Enable bool
-	Length int
-	Regex  string
-}
-
-type HeartBeatConf struct {
-	Enable  bool
-	Content []byte
-}
 
 type Channel struct {
-	ID    int
+	storage.Channel
+
 	Error string
 
-	Net  string
-	Addr string
-
-	IsServer bool
-	IsClosed bool
-
-	Register  RegisterConf
-	HeartBeat HeartBeatConf
-
-	connections []Connect
+	//connections []Connection
 
 	listener      net.Listener
 	packetConn    net.PacketConn
 	packetIndexes sync.Map
 
-	serialIndexes sync.Map
+	//serialIndexes sync.Map
 }
 
-func NewChannel(id int, net, addr string, isServer bool) *Channel {
+func NewChannel(channel *storage.Channel) *Channel {
 	return &Channel{
-		ID:          id,
-		Net:         net,
-		Addr:        addr,
-		IsServer:    isServer,
-		connections: make([]Connect, 0),
+		Channel: *channel,
+		//connections: make([]Connection, 0),
 	}
 }
 
@@ -129,7 +109,7 @@ func (c *Channel) accept() {
 func (c *Channel) receive(conn net.Conn) {
 	client := newConnection(conn)
 	client.channel = c
-	c.connections = append(c.connections, client)
+	//c.connections = append(c.connections, client)
 
 	buf := make([]byte, 1024)
 	for client.conn != nil {
@@ -157,10 +137,10 @@ func (c *Channel) receivePacket() {
 		key := addr.String()
 
 		//找到连接，将消息发送过去
-		var client *packetConnection
+		var client *Connection
 		v, ok := c.packetIndexes.Load(key)
 		if ok {
-			client = v.(*packetConnection)
+			client = v.(*Connection)
 		} else {
 			client = newPacketConnection(c.packetConn, addr)
 			client.channel = c

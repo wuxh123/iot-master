@@ -2,6 +2,18 @@ package storage
 
 import "time"
 
+
+type RegisterConf struct {
+	Enable bool
+	Length int
+	Regex  string
+}
+
+type HeartBeatConf struct {
+	Enable  bool
+	Content []byte
+}
+
 type Channel struct {
 	ID       int
 	Serial   string `storm:"index"`
@@ -10,6 +22,10 @@ type Channel struct {
 	IsServer bool
 	Name     string
 	Tags     []string
+
+	Register  RegisterConf
+	HeartBeat HeartBeatConf
+
 	Created  time.Time
 	Creator  int
 }
