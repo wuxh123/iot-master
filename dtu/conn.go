@@ -22,6 +22,16 @@ type Connection struct {
 	lastTime time.Time
 
 	channel *Channel
+
+	Statistic struct {
+		Rx      int
+		RxSpeed int
+		rx      int
+
+		Tx         int
+		TxSpeed    int
+		txSpeedNow int
+	}
 }
 
 func (c *Connection) checkRegister(buf []byte) error {
@@ -47,7 +57,17 @@ func (c *Connection) checkRegister(buf []byte) error {
 }
 
 func (c *Connection) onData(buf []byte) {
-	c.lastTime = time.Now()
+	length := len(buf)
+	c.Statistic.Rx += length
+	now := time.Now()
+	if now.Sub(c.lastTime) < time.Second {
+		c.Statistic.rx += length
+	} else {
+		c.Statistic.RxSpeed = c.Statistic.rx
+		c.Statistic.rx = length
+	}
+	//TODO 没有新数据，速度没有变成0
+	c.lastTime = now
 
 	//检查注册包
 	if c.channel.Register.Enable && c.Serial != "" {

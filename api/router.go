@@ -43,6 +43,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.POST("/channel/:id/connections")
 	app.DELETE("/channel/:id/connection/:id2") //关闭连接
 	app.GET("/channel/:id/connection/:id2/statistic")
+	app.GET("/channel/:id/connection/:id2/pipe") //转Websocket透传
 
 
 }
