@@ -15,12 +15,15 @@ type HeartBeatConf struct {
 
 type Channel struct {
 	ID       int
+	Name string
+	Tags []string
+
 	Serial   string `storm:"index"`
+
 	Net      string
 	Addr     string
 	IsServer bool
-	Name     string
-	Tags     []string
+	Timeout  time.Duration //会话超时
 
 	Register struct {
 		Enable bool

@@ -15,13 +15,9 @@ type Channel struct {
 
 	Error string
 
-	//connections []Connection
-
 	listener      net.Listener
 	packetConn    net.PacketConn
 	packetIndexes sync.Map
-
-	//serialIndexes sync.Map
 }
 
 func NewChannel(channel *storage.Channel) *Channel {
