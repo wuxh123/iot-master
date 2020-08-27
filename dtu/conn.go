@@ -11,6 +11,8 @@ import (
 )
 
 type Connection struct {
+	ID int
+
 	Error      string
 	Serial     string
 	RemoteAddr net.Addr
@@ -84,7 +86,6 @@ func (c *Connection) Send(buf []byte) (int, error) {
 	return 0, errors.New("错误的链接类型")
 }
 
-
 func (c *Connection) Close() error {
 	return c.conn.(net.Conn).Close()
 }
@@ -96,10 +97,9 @@ func newConnection(conn net.Conn) *Connection {
 	}
 }
 
-
 func newPacketConnection(conn net.PacketConn, addr net.Addr) *Connection {
 	return &Connection{
-			RemoteAddr: addr,
-		conn: conn,
+		RemoteAddr: addr,
+		conn:       conn,
 	}
 }

@@ -18,12 +18,15 @@ type Channel struct {
 	listener      net.Listener
 	packetConn    net.PacketConn
 	packetIndexes sync.Map
+
+	connections sync.Map
+	//自增ID
+	increment int
 }
 
 func NewChannel(channel *storage.Channel) *Channel {
 	return &Channel{
 		Channel: *channel,
-		//connections: make([]Connection, 0),
 	}
 }
 
@@ -105,7 +108,7 @@ func (c *Channel) accept() {
 func (c *Channel) receive(conn net.Conn) {
 	client := newConnection(conn)
 	client.channel = c
-	//c.connections = append(c.connections, client)
+	c.storeConnection(client)
 
 	buf := make([]byte, 1024)
 	for client.conn != nil {
@@ -119,6 +122,14 @@ func (c *Channel) receive(conn net.Conn) {
 
 	//TODO 删除connect，或状态置空
 
+}
+
+func (c *Channel) storeConnection(conn *Connection)  {
+	c.increment++
+	conn.ID = c.increment
+
+	//根据ID保存
+	c.connections.Store(c.ID, conn)
 }
 
 func (c *Channel) receivePacket() {
@@ -140,6 +151,11 @@ func (c *Channel) receivePacket() {
 		} else {
 			client = newPacketConnection(c.packetConn, addr)
 			client.channel = c
+
+			//根据ID保存
+			c.storeConnection(client)
+
+			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, client)
 		}
 

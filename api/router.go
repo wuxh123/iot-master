@@ -24,12 +24,26 @@ type paramId2 struct {
 
 func RegisterRoutes(app *gin.RouterGroup) {
 
-	app.GET("/channels", channelList)
-	app.POST("/channels", channelList)
-	app.POST("/channel", channelCreate)
-	app.DELETE("/channel/:id", channelDelete)
-	app.PUT("/channel/:id", channelEdit)
-	app.GET("/channel/:id", channelGet)
+
+	app.POST("/login", authLogin)
+	app.DELETE("/logout", authLogout)
+	app.POST("/password", authPassword)
+
+	//TODO 转移至子目录，并使用中间件，检查session及权限
+	app.GET("/channels")
+	app.POST("/channels")
+	app.POST("/channel")
+	app.DELETE("/channel/:id")
+	app.PUT("/channel/:id")
+	app.GET("/channel/:id")
+	app.GET("/channel/:id/start")
+	app.GET("/channel/:id/stop")
+
+	app.GET("/channel/:id/connections")
+	app.POST("/channel/:id/connections")
+	app.DELETE("/channel/:id/connection/:id2") //关闭连接
+	app.GET("/channel/:id/connection/:id2/statistic")
+
 
 }
 
