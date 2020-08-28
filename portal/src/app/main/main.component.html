@@ -1,0 +1,80 @@
+<nz-layout class="app-layout">
+  <nz-sider class="menu-sidebar"
+            nzCollapsible
+            nzWidth="160px"
+            nzBreakpoint="md"
+            [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null">
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-menu-item routerLink="dash" nzMatchRouter nz-tooltip nzTooltipPlacement="right" [nzTooltipTitle]="isCollapsed ? '仪表盘' : ''">
+        <i nz-icon nzType="dashboard"></i>
+        <span>仪表盘</span>
+      </li>
+      <li nz-submenu nzTitle="复制记录" nzIcon="copy" nzOpen>
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="copy">剪切板</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="upload">上传</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="download">下载</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu nzTitle="内容检查" nzIcon="audit">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="keyword">关键字</a>
+          </li>
+<!--          <li nz-menu-item nzMatchRouter>-->
+<!--            <a routerLink="audit">审核记录</a>-->
+<!--          </li>-->
+        </ul>
+      </li>
+      <li nz-submenu nzTitle="邮件订阅" nzIcon="mail">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="subscribe">订阅</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="email">邮件记录</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu nzTitle="系统配置" nzIcon="setting">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="setting">基本配置</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="password">修改密码</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-menu-item routerLink="/login" nz-tooltip nzTooltipPlacement="right" [nzTooltipTitle]="isCollapsed ? '退 出' : ''">
+        <i nz-icon nzType="logout"></i>
+        <span>退 出</span>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+            <i class="trigger"
+               nz-icon
+               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+            ></i>
+        </span>
+        ETX复制内容审核系统
+      </div>
+    </nz-header>
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
