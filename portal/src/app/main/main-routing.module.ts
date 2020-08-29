@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {DashComponent} from "./dash/dash.component";
 import {MainComponent} from "./main.component";
+import {PasswordComponent} from "./password/password.component";
 
 const routes: Routes = [
   {
@@ -10,6 +11,7 @@ const routes: Routes = [
     children: [
       {path: '', redirectTo: 'dash'},
       {path: 'dash', component: DashComponent},
+      {path: 'password', component: PasswordComponent},
     ]
   },
 ];
