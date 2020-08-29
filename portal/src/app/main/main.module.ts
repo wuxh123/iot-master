@@ -19,26 +19,13 @@ import {
   NzTableModule,
   NzToolTipModule
 } from 'ng-zorro-antd';
-import {CopyComponent} from './copy/copy.component';
 import {DashComponent} from './dash/dash.component';
-import {UploadComponent} from './upload/upload.component';
-import {DownloadComponent} from './download/download.component';
-import {KeywordComponent} from './keyword/keyword.component';
-import {AuditComponent} from './audit/audit.component';
-import {SubscribeComponent} from './subscribe/subscribe.component';
-import {EmailComponent} from './email/email.component';
-import {SettingComponent} from './setting/setting.component';
-import {PasswordComponent} from './password/password.component';
 import {MomentModule} from 'ngx-moment';
 import {UiModule} from '../ui/ui.module';
-import {DetailComponent} from './detail/detail.component';
 
 
 @NgModule({
-  declarations: [MainComponent, DashComponent, CopyComponent, DetailComponent,
-    UploadComponent, DownloadComponent, KeywordComponent,
-    AuditComponent, SubscribeComponent, EmailComponent,
-    SettingComponent, PasswordComponent],
+  declarations: [MainComponent, DashComponent,],
   imports: [
     CommonModule,
     FormsModule,
@@ -61,6 +48,7 @@ import {DetailComponent} from './detail/detail.component';
     NzCheckboxModule,
     NzSwitchModule,
     NzPopconfirmModule,
+    IconsProviderModule,
   ],
   bootstrap: [MainComponent]
 })
