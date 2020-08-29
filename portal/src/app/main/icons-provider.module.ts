@@ -10,7 +10,7 @@ import {
   LogoutOutline,
   MailOutline
 } from '@ant-design/icons-angular/icons';
-import {CommonModule} from "@angular/common";
+import {CommonModule} from '@angular/common';
 
 const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline, SettingOutline, LogoutOutline, MailOutline];
 
@@ -18,7 +18,7 @@ const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline
   imports: [CommonModule, NzIconModule.forChild(icons)],
   exports: [NzIconModule],
   providers: [
-    //{ provide: NZ_ICONS, useValue: icons }
+    { provide: NZ_ICONS, useValue: icons }
   ]
 })
 export class IconsProviderModule {
