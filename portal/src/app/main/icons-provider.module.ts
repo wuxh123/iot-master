@@ -8,11 +8,13 @@ import {
   DashboardOutline,
   SettingOutline,
   LogoutOutline,
-  MailOutline
+  MailOutline,
+  ApiOutline,
+  HddOutline,
 } from '@ant-design/icons-angular/icons';
 import {CommonModule} from '@angular/common';
 
-const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline, SettingOutline, LogoutOutline, MailOutline];
+const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline, SettingOutline, LogoutOutline, ApiOutline, HddOutline];
 
 @NgModule({
   imports: [CommonModule, NzIconModule.forChild(icons)],

@@ -22,10 +22,38 @@ export class MainComponent implements OnInit {
       ]
     },
     {
-      title: '设置',
+      title: '数据通道',
+      icon: 'api',
+      children: [
+        {
+          title: '通道管理',
+          router: 'channel'
+        },
+        {
+          title: '连接管理',
+          router: 'connection'
+        }
+      ]
+    },
+    {
+      title: '数据采集',
+      icon: 'hdd',
+      children: [
+        {
+          title: 'Modbus',
+          router: 'modbus'
+        }
+      ]
+    },
+    {
+      title: '系统设置',
       icon: 'setting',
       open: false,
       children: [
+        {
+          title: '用户管理',
+          router: 'user'
+        },
         {
           title: '修改密码',
           router: 'password'
