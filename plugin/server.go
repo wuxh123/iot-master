@@ -6,12 +6,14 @@ import (
 )
 
 type Server struct {
+	Net      string
+	Addr     string
 	listener net.Listener
 }
 
-func (s *Server) ListenTCP() error {
+func (s *Server) Listen() error {
 	var err error
-	s.listener, err = net.Listen("tcp", ":1843")
+	s.listener, err = net.Listen(s.Net, s.Addr)
 	if err != nil {
 		return err
 	}
@@ -49,9 +51,7 @@ func (s *Server) receive(conn net.Conn) {
 	buf := make([]byte, 1024)
 	for {
 		n, e := conn.Read(buf)
-		//解析消息，并处理
+		//TODO 解析消息，并处理
 
 	}
 }
-
-
