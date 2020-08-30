@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option go_package = ".;plugin";
+
+package plugin;
+
+
+service Plugin {
+  rpc Register(RegisterReq) returns (RegisterResp) {}
+  rpc Request(stream RequestPack) returns (stream ResponsePack) {};
+}
+
+message RegisterReq{
+  string package = 1;
+
+}
+
+message RegisterResp{
+  bool ok = 1;
+}
+
+message RequestPack {
+  int64 id = 1;
+  string uri = 2;
+
+}
+
+message ResponsePack {
+  int64 id = 1;
+  bool ok = 2;
+  string message = 3;
+
+}
+
