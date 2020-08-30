@@ -7,7 +7,7 @@ package plugin;
 
 service Plugin {
   rpc Register(RegisterReq) returns (RegisterResp) {}
-  rpc Request(stream RequestPack) returns (stream ResponsePack) {};
+  rpc Start(stream ResponsePack) returns (stream RequestPack) {};
 }
 
 message RegisterReq{
@@ -22,7 +22,7 @@ message RegisterResp{
 message RequestPack {
   int64 id = 1;
   string uri = 2;
-
+  string body = 3;
 }
 
 message ResponsePack {
