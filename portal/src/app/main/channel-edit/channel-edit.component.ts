@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-channel-edit',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./channel-edit.component.scss']
 })
 export class ChannelEditComponent implements OnInit {
+
+  @Input() channel = {};
 
   constructor() { }
 

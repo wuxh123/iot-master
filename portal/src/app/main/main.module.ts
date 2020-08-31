@@ -26,10 +26,11 @@ import {ChannelComponent} from './channel/channel.component';
 import {LinkComponent} from './link/link.component';
 import {UserComponent} from './user/user.component';
 import {PasswordComponent} from './password/password.component';
+import {ChannelEditComponent} from './channel-edit/channel-edit.component';
 
 
 @NgModule({
-  declarations: [MainComponent, DashComponent, ChannelComponent, LinkComponent, UserComponent, PasswordComponent],
+  declarations: [MainComponent, DashComponent, ChannelComponent, ChannelEditComponent, LinkComponent, UserComponent, PasswordComponent],
   imports: [
     CommonModule,
     FormsModule,
