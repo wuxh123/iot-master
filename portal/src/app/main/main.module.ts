@@ -11,7 +11,7 @@ import {MainRoutingModule} from './main-routing.module';
 import {MainComponent} from './main.component';
 import {
   NzButtonModule,
-  NzCheckboxModule,
+  NzCheckboxModule, NzDividerModule,
   NzFormModule,
   NzIconModule,
   NzInputModule,
@@ -22,10 +22,14 @@ import {
 import {DashComponent} from './dash/dash.component';
 import {MomentModule} from 'ngx-moment';
 import {UiModule} from '../ui/ui.module';
+import {ChannelComponent} from './channel/channel.component';
+import {LinkComponent} from './link/link.component';
+import {UserComponent} from './user/user.component';
+import {PasswordComponent} from './password/password.component';
 
 
 @NgModule({
-  declarations: [MainComponent, DashComponent,],
+  declarations: [MainComponent, DashComponent, ChannelComponent, LinkComponent, UserComponent, PasswordComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -49,6 +53,7 @@ import {UiModule} from '../ui/ui.module';
     NzSwitchModule,
     NzPopconfirmModule,
     IconsProviderModule,
+    NzDividerModule,
   ],
   bootstrap: [MainComponent]
 })

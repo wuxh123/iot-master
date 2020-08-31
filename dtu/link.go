@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-type Connection struct {
-	ID int
+type Link struct {
+	ID int64
 
 	Error      string
 	Serial     string
@@ -28,16 +28,16 @@ type Connection struct {
 
 }
 
-func (c *Connection) checkRegister(buf []byte) error {
+func (l *Link) checkRegister(buf []byte) error {
 	n := len(buf)
-	if n < c.channel.Register.Length {
+	if n < l.channel.Register.Length {
 		return fmt.Errorf("register package is too short %d %s", n, string(buf[:n]))
 	}
 	serial := string(buf[:n])
 
 	// 正则表达式判断合法性
-	if c.channel.Register.Regex != "" {
-		reg := regexp.MustCompile(`^` + c.channel.Register.Regex + `$`)
+	if l.channel.Register.Regex != "" {
+		reg := regexp.MustCompile(`^` + l.channel.Register.Regex + `$`)
 		match := reg.MatchString(serial)
 		if !match {
 			return fmt.Errorf("register package format error %s", serial)
@@ -45,21 +45,21 @@ func (c *Connection) checkRegister(buf []byte) error {
 	}
 
 	//按序号保存索引，供外部使用
-	connections.Store(serial, c)
+	connections.Store(serial, l)
 
 	return nil
 }
 
-func (c *Connection) onData(buf []byte) {
-	c.Rx += len(buf)
-	c.lastTime = time.Now()
+func (l *Link) onData(buf []byte) {
+	l.Rx += len(buf)
+	l.lastTime = time.Now()
 
 	//检查注册包
-	if c.channel.Register.Enable && c.Serial != "" {
-		err := c.checkRegister(buf)
+	if l.channel.Register.Enable && l.Serial != "" {
+		err := l.checkRegister(buf)
 		if err != nil {
 			log.Println(err)
-			_ = c.Close()
+			_ = l.Close()
 			return
 		}
 
@@ -69,42 +69,42 @@ func (c *Connection) onData(buf []byte) {
 	}
 
 	//检查心跳包
-	if c.channel.HeartBeat.Enable && bytes.Compare(c.channel.HeartBeat.Content, buf) == 0 {
+	if l.channel.HeartBeat.Enable && bytes.Compare(l.channel.HeartBeat.Content, buf) == 0 {
 		//TODO 判断上次收发时间，是否已经过去心跳间隔
 		return
 	}
 
 	//TODO 内容转发，暂时直接回复
-	_, _ = c.Send(buf)
+	_, _ = l.Send(buf)
 
 }
 
-func (c *Connection) Send(buf []byte) (int, error) {
-	c.Tx += len(buf)
-	c.lastTime = time.Now()
+func (l *Link) Send(buf []byte) (int, error) {
+	l.Tx += len(buf)
+	l.lastTime = time.Now()
 
-	if conn, ok := c.conn.(net.Conn); ok {
+	if conn, ok := l.conn.(net.Conn); ok {
 		return conn.Write(buf)
 	}
-	if conn, ok := c.conn.(net.PacketConn); ok {
-		return conn.WriteTo(buf, c.RemoteAddr)
+	if conn, ok := l.conn.(net.PacketConn); ok {
+		return conn.WriteTo(buf, l.RemoteAddr)
 	}
 	return 0, errors.New("错误的链接类型")
 }
 
-func (c *Connection) Close() error {
-	return c.conn.(net.Conn).Close()
+func (l *Link) Close() error {
+	return l.conn.(net.Conn).Close()
 }
 
-func newConnection(conn net.Conn) *Connection {
-	return &Connection{
+func newConnection(conn net.Conn) *Link {
+	return &Link{
 		RemoteAddr: conn.RemoteAddr(),
 		conn:       conn,
 	}
 }
 
-func newPacketConnection(conn net.PacketConn, addr net.Addr) *Connection {
-	return &Connection{
+func newPacketConnection(conn net.PacketConn, addr net.Addr) *Link {
+	return &Link{
 		RemoteAddr: addr,
 		conn:       conn,
 	}

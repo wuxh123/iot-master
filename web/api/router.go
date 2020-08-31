@@ -5,7 +5,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/types"
 	"net/http"
 )
 
@@ -27,13 +27,13 @@ type paramId2 struct {
 
 func RegisterRoutes(app *gin.RouterGroup) {
 	//注册 User类型
-	gob.Register(&storage.User{})
+	gob.Register(&types.User{})
 	//启用session
 	app.Use(sessions.Sessions("dtu-admin", memstore.NewStore([]byte("dtu-admin-secret"))))
 
 	app.POST("/login", authLogin)
 
-	//检查登录
+	//检查登录状态
 	app.Use(func(c *gin.Context) {
 		session := sessions.Default(c)
 		if user := session.Get("user"); user != nil {
@@ -48,14 +48,14 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.POST("/password", authPassword)
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
-	app.GET("/channels")
-	app.POST("/channels")
-	app.POST("/channel")
-	app.DELETE("/channel/:id")
-	app.PUT("/channel/:id")
-	app.GET("/channel/:id")
-	app.GET("/channel/:id/start")
-	app.GET("/channel/:id/stop")
+	app.GET("/channels", channels)
+	//app.POST("/channels")
+	app.POST("/channel", channelCreate)
+	app.DELETE("/channel/:id", channelDelete)
+	app.PUT("/channel/:id", channelModify)
+	app.GET("/channel/:id", channelGet)
+	app.GET("/channel/:id/start", channelStart)
+	app.GET("/channel/:id/stop", channelStop)
 
 	app.GET("/channel/:id/connections")
 	app.POST("/channel/:id/connections")
@@ -65,19 +65,27 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 }
 
-func responseOk(ctx *gin.Context, data interface{}) {
+func replyOk(ctx *gin.Context, data interface{}) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"ok":   true,
 		"data": data,
 	})
 }
 
-func responseError(ctx *gin.Context, err string) {
+func replyFail(ctx *gin.Context, err string) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"ok":    false,
 		"error": err,
 	})
 }
+
+func replyError(ctx *gin.Context, err error) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"ok":    false,
+		"error": err.Error(),
+	})
+}
+
 
 func nop(c *gin.Context) {
 	c.String(http.StatusForbidden, "Unsupported")

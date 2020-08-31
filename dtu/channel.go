@@ -3,7 +3,7 @@ package dtu
 import (
 	"errors"
 	"fmt"
-	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/types"
 	"log"
 	"net"
 	"sync"
@@ -11,7 +11,7 @@ import (
 
 
 type Channel struct {
-	storage.Channel
+	types.Channel
 
 	Error string
 
@@ -19,12 +19,13 @@ type Channel struct {
 	packetConn    net.PacketConn
 	packetIndexes sync.Map
 
-	connections sync.Map
+	links sync.Map
+
 	//自增ID
-	increment int
+	increment int64
 }
 
-func NewChannel(channel *storage.Channel) *Channel {
+func NewChannel(channel *types.Channel) *Channel {
 	return &Channel{
 		Channel: *channel,
 	}
@@ -74,11 +75,11 @@ func (c *Channel) Listen() error {
 	return nil
 }
 
-func (c *Channel) Close() {
+func (c *Channel) Close() error {
 	if c.listener != nil {
 		err := c.listener.Close()
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 		c.listener = nil
 
@@ -87,10 +88,11 @@ func (c *Channel) Close() {
 	if c.packetConn != nil {
 		err := c.packetConn.Close()
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 		c.packetConn = nil
 	}
+	return nil
 }
 
 func (c *Channel) accept() {
@@ -124,12 +126,12 @@ func (c *Channel) receive(conn net.Conn) {
 
 }
 
-func (c *Channel) storeConnection(conn *Connection)  {
+func (c *Channel) storeConnection(conn *Link)  {
 	c.increment++
 	conn.ID = c.increment
 
 	//根据ID保存
-	c.connections.Store(c.ID, conn)
+	c.links.Store(c.ID, conn)
 }
 
 func (c *Channel) receivePacket() {
@@ -144,10 +146,10 @@ func (c *Channel) receivePacket() {
 		key := addr.String()
 
 		//找到连接，将消息发送过去
-		var client *Connection
+		var client *Link
 		v, ok := c.packetIndexes.Load(key)
 		if ok {
-			client = v.(*Connection)
+			client = v.(*Link)
 		} else {
 			client = newPacketConnection(c.packetConn, addr)
 			client.channel = c

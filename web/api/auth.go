@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/types"
 	"time"
 )
 
@@ -19,12 +20,12 @@ func authLogin(ctx *gin.Context) {
 	var obj loginObj
 	err := ctx.ShouldBindJSON(&obj)
 	if err != nil {
-		responseError(ctx, "参数解析错误"+err.Error())
+		replyFail(ctx, "参数解析错误"+err.Error())
 		return
 	}
 
 	userDB := storage.DB("user")
-	var user storage.User
+	var user types.User
 	err = userDB.One("username", obj.Username, &user)
 	if err != nil {
 		//初始化root 账户
@@ -34,20 +35,20 @@ func authLogin(ctx *gin.Context) {
 			user.Created = time.Now()
 			userDB.Save(&user)
 		} else {
-			responseError(ctx, "无此用户")
+			replyFail(ctx, "无此用户")
 			return
 		}
 	}
 
 	if obj.Password != user.Password {
-		responseError(ctx, "密码错误")
+		replyFail(ctx, "密码错误")
 		return
 	}
 
 	session.Set("user", user)
 	_ = session.Save()
 
-	responseOk(ctx, user)
+	replyOk(ctx, user)
 }
 
 func authLogout(ctx *gin.Context) {

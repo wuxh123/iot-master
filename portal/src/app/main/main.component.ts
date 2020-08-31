@@ -31,17 +31,7 @@ export class MainComponent implements OnInit {
         },
         {
           title: '连接管理',
-          router: 'connection'
-        }
-      ]
-    },
-    {
-      title: '数据采集',
-      icon: 'hdd',
-      children: [
-        {
-          title: 'Modbus',
-          router: 'modbus'
+          router: 'link'
         }
       ]
     },

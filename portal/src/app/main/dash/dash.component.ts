@@ -13,10 +13,6 @@ export class DashComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.as.get('channels').subscribe(res => {
-      console.log(res);
-    });
-
   }
 
 }
