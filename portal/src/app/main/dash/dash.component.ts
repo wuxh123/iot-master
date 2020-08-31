@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {CaService} from '../../ca.service';
+import {Component, OnInit} from '@angular/core';
+import {ApiService} from '../../api.service';
 
 @Component({
   selector: 'app-dash',
@@ -8,10 +8,14 @@ import {CaService} from '../../ca.service';
 })
 export class DashComponent implements OnInit {
 
-  constructor(private ca: CaService) {
+  constructor(private as: ApiService) {
   }
 
   ngOnInit(): void {
+
+    this.as.get('channels').subscribe(res => {
+      console.log(res);
+    });
 
   }
 

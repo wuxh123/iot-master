@@ -20,6 +20,7 @@ import {
   NzInputModule,
   NzMessageModule
 } from 'ng-zorro-antd';
+import {IconsProviderModule} from './icons-provider.module';
 
 registerLocaleData(zh);
 
@@ -42,6 +43,7 @@ registerLocaleData(zh);
     NzCheckboxModule,
     NzIconModule,
     NzMessageModule,
+    IconsProviderModule,
   ],
   providers: [{provide: NZ_I18N, useValue: zh_CN}],
   bootstrap: [AppComponent]

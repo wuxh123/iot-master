@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CaService} from '../ca.service';
+import {ApiService} from '../api.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -11,7 +11,7 @@ import {Router} from '@angular/router';
 export class LoginComponent implements OnInit {
   validateForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private ca: CaService, private router: Router) {}
+  constructor(private fb: FormBuilder, private ca: ApiService, private router: Router) {}
 
   submitForm(): void {
     console.log('submit form');
