@@ -4,7 +4,6 @@ import (
 	"github.com/zgwit/dtu-admin/conf"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/flag"
-	"github.com/zgwit/dtu-admin/storage"
 	"github.com/zgwit/dtu-admin/web"
 	"log"
 )
@@ -31,19 +30,12 @@ func main() {
 	//加载配置
 	conf.Load()
 
-	err := storage.Open()
-	if err != nil {
-		log.Println("数据库错误：", err)
-		return
-	}
-
-	//初始化
-	err = dtu.Recovery()
+	//恢复之前的链接
+	err := dtu.Recovery()
 	if err != nil {
 		log.Println("恢复链接：", err)
 		return
 	}
 
 	web.Serve()
-
 }

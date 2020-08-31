@@ -1,7 +1,6 @@
 package web
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
@@ -21,9 +20,6 @@ func Serve()  {
 
 	//GIN初始化
 	app := gin.Default()
-
-	//跨域咨问题
-	app.Use(cors.Default())
 
 	//前端静态文件
 	app.Use(static.Serve("/", static.LocalFile("./www/", false)))

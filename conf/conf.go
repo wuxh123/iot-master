@@ -17,7 +17,6 @@ type _web struct {
 	Desc  string `yaml:"desc"`
 	Addr  string `yaml:"addr"`
 	Debug bool   `yaml:"debug"`
-	Cors  bool   `yaml:"cors"`
 }
 
 type _config struct {
@@ -32,9 +31,8 @@ var Config = _config{
 		false,
 	},
 	_web{
-		"HTTP服务配置",
+		"Web服务配置",
 		":8080",
-		false,
 		false,
 	},
 }

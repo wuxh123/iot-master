@@ -14,11 +14,11 @@ type HeartBeatConf struct {
 }
 
 type Channel struct {
-	ID       int
+	ID   int `storm:"increment"`
 	Name string
 	Tags []string
 
-	Serial   string `storm:"index"`
+	Serial string `storm:"index"`
 
 	Net      string
 	Addr     string
@@ -42,7 +42,7 @@ type Channel struct {
 }
 
 type User struct {
-	ID       int
+	ID       int    `storm:"increment"`
 	Username string `storm:"index"`
 	Password string
 	Created  time.Time

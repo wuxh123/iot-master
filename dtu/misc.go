@@ -24,7 +24,7 @@ func Connections() *sync.Map  {
 
 func Recovery() error {
 	var cs []storage.Channel
-	err := storage.ChannelDB().All(&cs)
+	err := storage.DB("channel").All(&cs)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func startChannel(c *storage.Channel) (*Channel, error) {
 }
 
 func CreateChannel(c *storage.Channel) (*Channel, error)  {
-	err := storage.ChannelDB().Save(c)
+	err := storage.DB("channel").Save(c)
 	if err != nil {
 		return nil, err
 	}

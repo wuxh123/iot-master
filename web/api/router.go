@@ -1,9 +1,11 @@
 package api
 
 import (
+	"encoding/gob"
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	"log"
+	"github.com/zgwit/dtu-admin/storage"
 	"net/http"
 )
 
@@ -24,13 +26,22 @@ type paramId2 struct {
 }
 
 func RegisterRoutes(app *gin.RouterGroup) {
+	//注册 User类型
+	gob.Register(&storage.User{})
+	//启用session
+	app.Use(sessions.Sessions("dtu-admin", memstore.NewStore([]byte("dtu-admin-secret"))))
 
 	app.POST("/login", authLogin)
 
-	app.Use(func(ctx *gin.Context) {
-		//TODO 检查用户是否登录
-
-		log.Println("api", ctx.FullPath())
+	//检查登录
+	app.Use(func(c *gin.Context) {
+		session := sessions.Default(c)
+		if user := session.Get("user"); user != nil {
+			c.Next()
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+		}
 	})
 
 	app.DELETE("/logout", authLogout)
@@ -51,7 +62,6 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.DELETE("/channel/:id/connection/:id2") //关闭连接
 	app.GET("/channel/:id/connection/:id2/statistic")
 	app.GET("/channel/:id/connection/:id2/pipe") //转Websocket透传
-
 
 }
 
