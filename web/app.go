@@ -15,7 +15,7 @@ import (
 )
 
 func Serve()  {
-	if !conf.Config.Http.Debug {
+	if !conf.Config.Web.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -45,7 +45,7 @@ func Serve()  {
 	})
 
 	//监听HTTP
-	if err := app.Run(conf.Config.Http.Addr); err != nil {
+	if err := app.Run(conf.Config.Web.Addr); err != nil {
 		log.Fatal("HTTP 服务启动错误", err)
 	}
 }

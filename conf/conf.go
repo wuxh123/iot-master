@@ -13,7 +13,7 @@ type _storage struct {
 	Debug bool   `yaml:"debug"`
 }
 
-type _http struct {
+type _web struct {
 	Desc  string `yaml:"desc"`
 	Addr  string `yaml:"addr"`
 	Debug bool   `yaml:"debug"`
@@ -22,7 +22,7 @@ type _http struct {
 
 type _config struct {
 	Storage _storage `yaml:"storage"`
-	Http    _http    `yaml:"http"`
+	Web     _web     `yaml:"web"`
 }
 
 var Config = _config{
@@ -31,7 +31,7 @@ var Config = _config{
 		"data",
 		false,
 	},
-	_http{
+	_web{
 		"HTTP服务配置",
 		":8080",
 		false,
