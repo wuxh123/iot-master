@@ -27,10 +27,18 @@ import {LinkComponent} from './link/link.component';
 import {UserComponent} from './user/user.component';
 import {PasswordComponent} from './password/password.component';
 import {ChannelEditComponent} from './channel-edit/channel-edit.component';
+import {ChannelDetailComponent} from './channel-detail/channel-detail.component';
+import {LinkDetailComponent} from './link-detail/link-detail.component';
+import {UserEditComponent} from './user-edit/user-edit.component';
+import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 
 
 @NgModule({
-  declarations: [MainComponent, DashComponent, ChannelComponent, ChannelEditComponent, LinkComponent, UserComponent, PasswordComponent],
+  declarations: [MainComponent, DashComponent,
+    ChannelComponent, ChannelDetailComponent, ChannelEditComponent,
+    LinkComponent, LinkDetailComponent, LinkMonitorComponent,
+    UserComponent, UserEditComponent,
+    PasswordComponent],
   imports: [
     CommonModule,
     FormsModule,
