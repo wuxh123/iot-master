@@ -11,7 +11,7 @@ import {MainRoutingModule} from './main-routing.module';
 import {MainComponent} from './main.component';
 import {
   NzButtonModule,
-  NzCheckboxModule, NzDividerModule,
+  NzCheckboxModule, NzDividerModule, NzDrawerModule,
   NzFormModule,
   NzIconModule,
   NzInputModule,
@@ -55,6 +55,7 @@ import {ChannelEditComponent} from './channel-edit/channel-edit.component';
     NzPopconfirmModule,
     IconsProviderModule,
     NzDividerModule,
+    NzDrawerModule,
   ],
   bootstrap: [MainComponent]
 })

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ChannelEditComponent} from '../channel-edit/channel-edit.component';
-import {NzModalService} from 'ng-zorro-antd';
+import {NzDrawerService, NzModalService} from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-channel',
@@ -12,7 +12,7 @@ export class ChannelComponent implements OnInit {
 
   channels: [];
 
-  constructor(private as: ApiService, private modal: NzModalService, private viewContainerRef: ViewContainerRef) {
+  constructor(private as: ApiService, private modal: NzModalService, private viewContainerRef: ViewContainerRef, private drawerService: NzDrawerService) {
   }
 
   ngOnInit(): void {
@@ -28,12 +28,12 @@ export class ChannelComponent implements OnInit {
   }
 
   create(): void {
-    this.modal.create({
+    this.drawerService.create({
       nzTitle: '创建',
+      nzMaskClosable: false,
+      nzWidth: 720,
       nzContent: ChannelEditComponent,
-      nzViewContainerRef: this.viewContainerRef,
-      nzGetContainer: () => document.body,
-      nzComponentParams: {
+      nzContentParams: {
         channel: {}
       }
     });
