@@ -42,7 +42,7 @@ func (c *Channel) Open() error {
 func (c *Channel) Dial() error {
 	conn, err := net.Dial(c.Net, c.Addr)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 
 	go c.receive(conn)

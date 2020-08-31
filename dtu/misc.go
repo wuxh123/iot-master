@@ -11,16 +11,10 @@ import (
 var channels sync.Map
 var connections sync.Map
 
-//
-//func init() {
-//	channels = new(sync.Map)
-//	connections = new(sync.Map)
-//}
-
-func Channels() []*types.Channel {
-	cs := make([]*types.Channel, 0)
+func Channels() []*Channel {
+	cs := make([]*Channel, 0)
 	channels.Range(func(key, value interface{}) bool {
-		cs = append(cs, value.(*types.Channel))
+		cs = append(cs, value.(*Channel))
 		return true
 	})
 	return cs

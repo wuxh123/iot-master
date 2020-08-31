@@ -1,1 +1,55 @@
-<p>channel-edit works!</p>
+<form nz-form nzLayout="horizontal" [formGroup]="validateForm" (ngSubmit)="submit()">
+  <nz-form-item>
+    <nz-form-label>名称</nz-form-label>
+    <nz-form-control nzErrorTip="请输入名称">
+      <input nz-input formControlName="name" placeholder="名称" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>序列号</nz-form-label>
+    <nz-form-control nzErrorTip="请输入序列号">
+      <input nz-input formControlName="serial" placeholder="序列号" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>网络类型</nz-form-label>
+    <nz-form-control nzErrorTip="请输入类型">
+      <input nz-input formControlName="net" placeholder="下拉" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>地址</nz-form-label>
+    <nz-form-control nzErrorTip="请输入地址">
+      <input nz-input formControlName="addr" placeholder=":1843" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>服务端</nz-form-label>
+    <nz-form-control nzErrorTip="请勾选">
+      <label nz-checkbox formControlName="is_server">
+        <span>启用</span>
+      </label>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>心跳</nz-form-label>
+    <nz-form-control nzErrorTip="请勾选">
+      <label nz-checkbox formControlName="heart_beat.enable">
+        <span>启用</span>
+      </label>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>注册包</nz-form-label>
+    <nz-form-control nzErrorTip="请勾选">
+      <label nz-checkbox formControlName="register.enable">
+        <span>启用</span>
+      </label>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control>
+      <button nz-button nzType="primary">保存</button>
+    </nz-form-control>
+  </nz-form-item>
+</form>
