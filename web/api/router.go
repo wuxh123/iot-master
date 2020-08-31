@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -24,8 +25,14 @@ type paramId2 struct {
 
 func RegisterRoutes(app *gin.RouterGroup) {
 
-
 	app.POST("/login", authLogin)
+
+	app.Use(func(ctx *gin.Context) {
+		//TODO 检查用户是否登录
+
+		log.Println("api", ctx.FullPath())
+	})
+
 	app.DELETE("/logout", authLogout)
 	app.POST("/password", authPassword)
 

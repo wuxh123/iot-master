@@ -1,0 +1,16 @@
+basePath: /open
+host: 127.0.0.1
+info:
+  contact:
+    email: jason@zgwit.com
+    name: API Support
+    url: http://www.zgwit.com/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: DTU manager API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

@@ -1,15 +1,28 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/conf"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/flag"
 	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/web"
 	"log"
 )
 
+// @title DTU manager API
+// @version 1.0
+// @description This is a sample server Petstore server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.zgwit.com/support
+// @contact.email jason@zgwit.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host 127.0.0.1
+// @BasePath /open
 func main() {
 	//解析参数
 	if !flag.Parse() {
@@ -31,18 +44,6 @@ func main() {
 		return
 	}
 
-	if !conf.Config.Http.Debug {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	web.Serve()
 
-	//GIN初始化
-	app := gin.Default()
-
-	//跨域咨问题
-	app.Use(cors.Default())
-
-	//监听HTTP
-	if err := app.Run(conf.Config.Http.Addr); err != nil {
-		log.Fatal("HTTP 服务启动错误", err)
-	}
 }

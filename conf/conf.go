@@ -28,7 +28,7 @@ type _config struct {
 var Config = _config{
 	_storage{
 		"数据库配置",
-		".",
+		"data",
 		false,
 	},
 	_http{
