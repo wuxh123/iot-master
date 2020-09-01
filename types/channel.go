@@ -32,6 +32,8 @@ type Channel struct {
 	Register  RegisterConf  `json:"register"`
 	HeartBeat HeartBeatConf `json:"heart_beat"`
 
+	Plugin int `json:"plugin"` //插件ID TODO，将子连接所有内容转发至该插件
+
 	Created time.Time `json:"created"`
 	Creator int       `json:"creator"`
 }
