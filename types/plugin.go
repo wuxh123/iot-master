@@ -3,9 +3,9 @@ package types
 import "time"
 
 type Plugin struct {
-	ID        int       `storm:"increment" json:"id"`
+	ID        int       `json:"id" storm:"increment"`
 	Name      string    `json:"name"`
-	AppKey    string    `storm:"unique index" json:"app_key"`
+	AppKey    string    `json:"app_key" storm:"unique index"`
 	AppSecret string    `json:"app_secret"`
 	Address   string    `json:"address"`
 	Path      string    `json:"path"`

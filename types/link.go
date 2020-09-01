@@ -5,7 +5,7 @@ import (
 )
 
 type Link struct {
-	ID      int       `storm:"increment" json:"id"`
+	ID      int       `json:"id" storm:"increment"`
 	Name    string    `json:"name"`
 	Serial  string    `json:"serial" storm:"index"`
 	Addr    string    `json:"addr"`

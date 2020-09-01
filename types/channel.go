@@ -24,7 +24,7 @@ type HeartBeatConf struct {
 }
 
 type Channel struct {
-	ID   int      `storm:"increment" json:"id"`
+	ID   int      `json:"id" storm:"increment"`
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`
 
