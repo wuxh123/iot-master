@@ -11,11 +11,14 @@ import {
   ApiOutline,
   HddOutline,
   ApartmentOutline,
+  ReloadOutline,
+  PlusOutline,
+  DeleteOutline,
 } from '@ant-design/icons-angular/icons';
 import {CommonModule} from '@angular/common';
 
 const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline,
-  FormOutline, SettingOutline, LogoutOutline, ApiOutline,
+  FormOutline, SettingOutline, LogoutOutline, ApiOutline, ReloadOutline, PlusOutline, DeleteOutline,
   HddOutline, ApartmentOutline];
 
 @NgModule({

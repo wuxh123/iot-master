@@ -1,6 +1,14 @@
 <app-toolbar>
-  <button nz-button (click)="edit()" nzType="primary">创建</button>
-  <button nz-button (click)="load()" nzType="primary">刷新</button>
+  <nz-button-group>
+    <button nz-button (click)="load()">
+      <i nz-icon nzType="reload"></i>
+      刷新
+    </button>
+    <button nz-button (click)="edit()">
+      <i nz-icon nzType="plus"></i>
+      创建
+    </button>
+  </nz-button-group>
 </app-toolbar>
 <nz-table #basicTable [nzData]="channels">
   <thead>
@@ -27,7 +35,13 @@
     <td>
       <a>启动/停止</a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a>删除</a>
+      <a>
+        <i nz-icon nzType="delete"></i>
+      </a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a (click)="edit(data)">
+        <i nz-icon nzType="edit"></i>
+      </a>
     </td>
   </tr>
   </tbody>
