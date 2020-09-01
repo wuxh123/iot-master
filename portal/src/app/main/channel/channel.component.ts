@@ -32,7 +32,7 @@ export class ChannelComponent implements OnInit {
     this.drawer.create({
       nzTitle: c ? '编辑' : '创建',
       nzMaskClosable: false,
-      nzWidth: 400,
+      nzWidth: 500,
       nzContent: ChannelEditComponent,
       nzContentParams: {
         channel: c || {}

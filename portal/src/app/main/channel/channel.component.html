@@ -1,24 +1,25 @@
-<app-toolbar>
-  <nz-button-group>
+<nz-space>
+  <nz-space-item>
     <button nz-button (click)="load()">
       <i nz-icon nzType="reload"></i>
       刷新
     </button>
+  </nz-space-item>
+  <nz-space-item>
     <button nz-button (click)="edit()">
       <i nz-icon nzType="plus"></i>
       创建
     </button>
-  </nz-button-group>
-</app-toolbar>
+  </nz-space-item>
+</nz-space>
 <nz-table #basicTable [nzData]="channels">
   <thead>
   <tr>
     <th>ID</th>
     <th>名称</th>
     <th>标签</th>
-    <th>序号</th>
     <th>网络</th>
-    <th>地址</th>
+    <th>状态</th>
     <th>创建时间</th>
     <th></th>
   </tr>
@@ -28,13 +29,13 @@
     <td>{{ data.id }}</td>
     <td>{{ data.name }}</td>
     <td>{{ data.tags }}</td>
-    <td>{{ data.serial }}</td>
-    <td>{{ data.net }}</td>
-    <td>{{ data.addr }}</td>
-    <td>{{ data.created }}</td>
+    <td>{{ data.net.is_server ? '服务端':'客户端' }} {{data.net.type}} {{data.net.addr}}</td>
     <td>
+      {{data.disabled ? '禁用' : ''}}
       <a>启动/停止</a>
-      <nz-divider nzType="vertical"></nz-divider>
+    </td>
+    <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>
       <a>
         <i nz-icon nzType="delete"></i>
       </a>

@@ -32,7 +32,7 @@ func NewChannel(channel *types.Channel) *Channel {
 }
 
 func (c *Channel) Open() error {
-	if c.IsServer {
+	if c.Net.IsServer {
 		return c.Listen()
 	} else {
 		return c.Dial()
@@ -40,7 +40,7 @@ func (c *Channel) Open() error {
 }
 
 func (c *Channel) Dial() error {
-	conn, err := net.Dial(c.Net, c.Addr)
+	conn, err := net.Dial(c.Net.Type, c.Net.Addr)
 	if err != nil {
 		return err
 	}
@@ -54,16 +54,16 @@ func (c *Channel) Dial() error {
 
 func (c *Channel) Listen() error {
 	var err error
-	switch c.Net {
+	switch c.Net.Type {
 	case "tcp", "tcp4", "tcp6", "unix":
-		c.listener, err = net.Listen(c.Net, c.Addr)
+		c.listener, err = net.Listen(c.Net.Type, c.Net.Addr)
 		if err != nil {
 			return err
 		}
 		go c.accept()
 
 	case "udp", "udp4", "udp6", "unixgram":
-		c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
+		c.packetConn, err = net.ListenPacket(c.Net.Type, c.Net.Addr)
 
 		if err != nil {
 			return err

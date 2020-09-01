@@ -55,7 +55,7 @@ func CreateChannel(c *types.Channel) (*Channel, error)  {
 	return startChannel(c)
 }
 
-func GetChannel(id int64) (*Channel, error) {
+func GetChannel(id int) (*Channel, error) {
 	v, ok := channels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
@@ -63,7 +63,7 @@ func GetChannel(id int64) (*Channel, error) {
 	return v.(*Channel), nil
 }
 
-func DeleteChannel(id int64) error {
+func DeleteChannel(id int) error {
 	v, ok := channels.Load(id)
 	if !ok {
 		return errors.New("通道不存在")

@@ -1,53 +1,93 @@
-<form nz-form nzLayout="horizontal" [formGroup]="validateForm" (ngSubmit)="submit()">
-  <nz-form-item>
-    <nz-form-label>名称</nz-form-label>
-    <nz-form-control nzErrorTip="请输入名称">
-      <input nz-input formControlName="name" placeholder="名称" />
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label>序列号</nz-form-label>
-    <nz-form-control nzErrorTip="请输入序列号">
-      <input nz-input formControlName="serial" placeholder="序列号" />
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label>网络类型</nz-form-label>
-    <nz-form-control nzErrorTip="请输入类型">
-      <input nz-input formControlName="net" placeholder="下拉" />
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label>地址</nz-form-label>
-    <nz-form-control nzErrorTip="请输入地址">
-      <input nz-input formControlName="addr" placeholder=":1843" />
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label>服务端</nz-form-label>
-    <nz-form-control nzErrorTip="请勾选">
-      <nz-switch formControlName="is_server"></nz-switch>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label>心跳</nz-form-label>
-    <nz-form-control nzErrorTip="请勾选">
-      <label nz-checkbox formControlName="heart_beat.enable">
-        <span>启用</span>
-      </label>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label>注册包</nz-form-label>
-    <nz-form-control nzErrorTip="请勾选">
-      <label nz-checkbox formControlName="register.enable">
-        <span>启用</span>
-      </label>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-control>
-      <button nz-button nzType="primary">保存</button>
-    </nz-form-control>
-  </nz-form-item>
-</form>
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    名称
+  </div>
+  <div nz-col nzSpan="20">
+    <input nz-input [(ngModel)]="channel.name" placeholder="名称"/>
+  </div>
+</div>
+
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    网络
+  </div>
+  <div nz-col nzSpan="20">
+    <nz-input-group style="display: flex">
+      <nz-select [(ngModel)]="channel.net.is_server">
+        <nz-option nzLabel="服务端" [nzValue]="true"></nz-option>
+        <nz-option nzLabel="客户端" [nzValue]="false"></nz-option>
+      </nz-select>
+      <nz-select [(ngModel)]="channel.net.type" style="width:80px;">
+        <nz-option nzLabel="TCP" nzValue="tcp"></nz-option>
+        <nz-option nzLabel="UDP" nzValue="udp"></nz-option>
+      </nz-select>
+      <input nz-input [(ngModel)]="channel.net.addr" placeholder=":1843" style="flex: 1;">
+    </nz-input-group>
+  </div>
+</div>
+
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    禁用
+  </div>
+  <div nz-col nzSpan="20">
+    <nz-switch [(ngModel)]="channel.disabled"></nz-switch>
+  </div>
+</div>
+
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    注册包
+  </div>
+  <div nz-col nzSpan="20">
+    <nz-switch [(ngModel)]="channel.register.enable"></nz-switch>
+  </div>
+</div>
+
+<div *ngIf="channel.register.enable">
+  <div class="item" nz-row nzAlign="middle">
+    <div nz-col nzSpan="6" nzOffset="2">
+      正则表达式
+    </div>
+    <div nz-col nzSpan="16">
+      <input nz-input [(ngModel)]="channel.register.regex"/>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    心跳包
+  </div>
+  <div nz-col nzSpan="20">
+    <nz-switch [(ngModel)]="channel.heart_beat.enable"></nz-switch>
+  </div>
+</div>
+
+<div *ngIf="channel.heart_beat.enable">
+  <div class="item" nz-row nzAlign="middle">
+    <div nz-col nzSpan="6" nzOffset="2">
+      间隔（秒）
+    </div>
+    <div nz-col nzSpan="16">
+      <nz-input-number [(ngModel)]="channel.heart_beat.interval" [nzMin]="5" [nzMax]="60"
+                       [nzStep]="1"></nz-input-number>
+    </div>
+  </div>
+
+  <div class="item" nz-row nzAlign="middle">
+    <div nz-col nzSpan="6" nzOffset="2">
+      内容（十六进制）
+    </div>
+    <div nz-col nzSpan="16">
+      <input nz-input [(ngModel)]="channel.heart_beat.content"/>
+    </div>
+  </div>
+
+</div>
+
+
+<button nz-button nzType="primary" (click)="submit()">保存</button>
+

@@ -14,8 +14,8 @@ import {
   NzCheckboxModule, NzDividerModule, NzDrawerModule,
   NzFormModule,
   NzIconModule,
-  NzInputModule,
-  NzModalModule, NzPopconfirmModule, NzSwitchModule,
+  NzInputModule, NzInputNumberModule,
+  NzModalModule, NzPopconfirmModule, NzSelectModule, NzSwitchModule,
   NzTableModule,
   NzToolTipModule
 } from 'ng-zorro-antd';
@@ -31,6 +31,7 @@ import {ChannelDetailComponent} from './channel-detail/channel-detail.component'
 import {LinkDetailComponent} from './link-detail/link-detail.component';
 import {UserEditComponent} from './user-edit/user-edit.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
+import {NzSpaceModule} from "ng-zorro-antd/space";
 
 
 @NgModule({
@@ -64,6 +65,9 @@ import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
     IconsProviderModule,
     NzDividerModule,
     NzDrawerModule,
+    NzSelectModule,
+    NzSpaceModule,
+    NzInputNumberModule,
   ],
   bootstrap: [MainComponent]
 })

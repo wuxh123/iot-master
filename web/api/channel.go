@@ -7,18 +7,14 @@ import (
 	"github.com/zgwit/dtu-admin/types"
 )
 
-func channelAll(ctx *gin.Context) {
+
+func channels(ctx *gin.Context) {
 	var cs []types.Channel
 	err := storage.DB("channel").All(&cs)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, cs)
-}
-
-func channels(ctx *gin.Context) {
-	cs := dtu.Channels()
 	replyOk(ctx, cs)
 }
 
@@ -29,14 +25,15 @@ func channelCreate(ctx *gin.Context) {
 		return
 	}
 
-	//创建并启动
-	c, err := dtu.CreateChannel(&channel)
+	err := storage.DB("channel").Save(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, c)
+	//TODO 启动服务
+
+	replyOk(ctx, channel)
 }
 
 func channelDelete(ctx *gin.Context) {
@@ -45,17 +42,36 @@ func channelDelete(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	err := dtu.DeleteChannel(pid.Id)
+
+	err := storage.DB("channel").DeleteStruct(&types.Channel{ID: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
+	//TODO 删除服务
+
 	replyOk(ctx, nil)
 }
 
-func channelModify(ctx *gin.Context) {
 
+func channelModify(ctx *gin.Context) {
+	var channel types.Channel
+	if err := ctx.ShouldBindJSON(&channel); err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	//TODO 不能全部字段更新，应该先取值，修改，再存入
+	err := storage.DB("channel").Update(&channel)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	//TODO 重新启动服务
+
+	replyOk(ctx, channel)
 }
 
 func channelGet(ctx *gin.Context) {
@@ -64,13 +80,15 @@ func channelGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := dtu.GetChannel(pid.Id)
+
+	var channel types.Channel
+	err := storage.DB("channel").One("ID", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, c)
+	replyOk(ctx, channel)
 }
 
 func channelStart(ctx *gin.Context) {
