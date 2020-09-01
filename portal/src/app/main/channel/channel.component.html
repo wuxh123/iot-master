@@ -31,7 +31,7 @@
     <td>{{ data.tags }}</td>
     <td>{{ data.net.is_server ? '服务端':'客户端' }} {{data.net.type}} {{data.net.addr}}</td>
     <td>
-      {{data.disabled ? '禁用' : ''}}
+      {{data.net.disabled ? '禁用' : ''}}
       <a>启动/停止</a>
     </td>
     <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>

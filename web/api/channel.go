@@ -5,6 +5,8 @@ import (
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/storage"
 	"github.com/zgwit/dtu-admin/types"
+	"log"
+	"time"
 )
 
 
@@ -25,13 +27,21 @@ func channelCreate(ctx *gin.Context) {
 		return
 	}
 
+	// channel.Creator = TODO 从session中获取
+	channel.Created = time.Now()
 	err := storage.DB("channel").Save(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//TODO 启动服务
+	//启动服务
+	go func() {
+		_, err := dtu.StartChannel(&channel)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	replyOk(ctx, channel)
 }
@@ -51,6 +61,7 @@ func channelDelete(ctx *gin.Context) {
 
 	//TODO 删除服务
 
+
 	replyOk(ctx, nil)
 }
 
@@ -61,6 +72,8 @@ func channelModify(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
+
+	log.Println("update", channel)
 
 	//TODO 不能全部字段更新，应该先取值，修改，再存入
 	err := storage.DB("channel").Update(&channel)

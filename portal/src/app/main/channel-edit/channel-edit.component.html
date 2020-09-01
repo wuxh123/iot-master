@@ -31,7 +31,7 @@
     禁用
   </div>
   <div nz-col nzSpan="20">
-    <nz-switch [(ngModel)]="channel.disabled"></nz-switch>
+    <nz-switch [(ngModel)]="channel.net.disabled"></nz-switch>
   </div>
 </div>
 
@@ -79,10 +79,20 @@
 
   <div class="item" nz-row nzAlign="middle">
     <div nz-col nzSpan="6" nzOffset="2">
-      内容（十六进制）
+      内容
     </div>
     <div nz-col nzSpan="16">
       <input nz-input [(ngModel)]="channel.heart_beat.content"/>
+    </div>
+  </div>
+
+
+  <div class="item" nz-row nzAlign="middle">
+    <div nz-col nzSpan="6" nzOffset="2">
+      十六进制
+    </div>
+    <div nz-col nzSpan="16">
+      <nz-switch [(ngModel)]="channel.heart_beat.is_hex"></nz-switch>
     </div>
   </div>
 

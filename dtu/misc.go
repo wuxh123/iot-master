@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/zgwit/dtu-admin/storage"
 	"github.com/zgwit/dtu-admin/types"
+	"log"
 	"sync"
 )
 
@@ -29,15 +30,20 @@ func Recovery() error {
 	}
 
 	for _, c := range cs {
-		if !c.Disabled {
-			_, _ = startChannel(&c)
+		if !c.Net.Disabled {
+			_, err = StartChannel(&c)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 
 	return nil
 }
 
-func startChannel(c *types.Channel) (*Channel, error) {
+func StartChannel(c *types.Channel) (*Channel, error) {
+	log.Println("start", c)
+
 	channel := NewChannel(c)
 	err := channel.Open()
 	if err != nil && channel != nil {
@@ -47,14 +53,6 @@ func startChannel(c *types.Channel) (*Channel, error) {
 	return channel, err
 }
 
-func CreateChannel(c *types.Channel) (*Channel, error)  {
-	err := storage.DB("channel").Save(c)
-	if err != nil {
-		return nil, err
-	}
-	return startChannel(c)
-}
-
 func GetChannel(id int) (*Channel, error) {
 	v, ok := channels.Load(id)
 	if !ok {
@@ -62,15 +60,3 @@ func GetChannel(id int) (*Channel, error) {
 	}
 	return v.(*Channel), nil
 }
-
-func DeleteChannel(id int) error {
-	v, ok := channels.Load(id)
-	if !ok {
-		return errors.New("通道不存在")
-	}
-	channel := v.(*Channel)
-	channel.Close()
-	channels.Delete(id)
-	return nil
-}
-

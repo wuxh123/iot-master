@@ -2,6 +2,7 @@ package dtu
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
@@ -68,10 +69,22 @@ func (l *Link) onData(buf []byte) {
 		return
 	}
 
-	//检查心跳包
-	if l.channel.HeartBeat.Enable && bytes.Compare(l.channel.HeartBeat.Content, buf) == 0 {
-		//TODO 判断上次收发时间，是否已经过去心跳间隔
-		return
+	hb := l.channel.HeartBeat
+	//检查心跳包, 判断上次收发时间，是否已经过去心跳间隔
+	if hb.Enable && time.Now().Sub(l.lastTime) > time.Second * time.Duration(hb.Interval) {
+		var b []byte
+		if hb.IsHex {
+			var e error
+			b, e = hex.DecodeString(hb.Content)
+			if e != nil {
+				log.Println(e)
+			}
+		} else {
+			b = []byte(hb.Content)
+		}
+		if bytes.Compare(b, buf) == 0 {
+			return
+		}
 	}
 
 	//TODO 内容转发，暂时直接回复

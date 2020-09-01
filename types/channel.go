@@ -3,6 +3,7 @@ package types
 import "time"
 
 type NetConf struct {
+	Disabled bool   `json:"disabled"` //此处 禁用 直接放到顶级，Update无效
 	Type     string `json:"type"`
 	Addr     string `json:"addr"`
 	IsServer bool   `json:"is_server"`
@@ -18,7 +19,8 @@ type RegisterConf struct {
 type HeartBeatConf struct {
 	Enable   bool   `json:"enable"`
 	Interval int    `json:"interval"` //TODO 改为秒
-	Content  []byte `json:"content"`
+	Content  string `json:"content"`
+	IsHex    bool   `json:"is_hex"`
 }
 
 type Channel struct {
@@ -30,7 +32,6 @@ type Channel struct {
 	Register  RegisterConf  `json:"register"`
 	HeartBeat HeartBeatConf `json:"heart_beat"`
 
-	Disabled bool      `json:"disabled"`
-	Created  time.Time `json:"created"`
-	Creator  int       `json:"creator"`
+	Created time.Time `json:"created"`
+	Creator int       `json:"creator"`
 }
