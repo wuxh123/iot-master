@@ -45,8 +45,7 @@ func (l *Link) checkRegister(buf []byte) error {
 		}
 	}
 
-	//按序号保存索引，供外部使用
-	connections.Store(serial, l)
+	//TODO 更新数据库中 serial
 
 	return nil
 }

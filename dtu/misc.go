@@ -10,7 +10,6 @@ import (
 
 
 var channels sync.Map
-var connections sync.Map
 
 func Channels() []*Channel {
 	cs := make([]*Channel, 0)

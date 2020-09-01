@@ -57,11 +57,18 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/channel/:id/start", channelStart)
 	app.GET("/channel/:id/stop", channelStop)
 
-	app.GET("/channel/:id/connections")
-	app.POST("/channel/:id/connections")
-	app.DELETE("/channel/:id/connection/:id2") //关闭连接
-	app.GET("/channel/:id/connection/:id2/statistic")
-	app.GET("/channel/:id/connection/:id2/pipe") //转Websocket透传
+	app.GET("/channel/:id/links")
+	app.POST("/channel/:id/links")
+	app.DELETE("/channel/:id/link/:id2") //关闭连接
+	app.GET("/channel/:id/link/:id2/statistic")
+	app.GET("/channel/:id/link/:id2/pipe") //转Websocket透传
+
+	app.GET("/links", links)
+	app.DELETE("/link/:id", linkDelete)
+	app.PUT("/link/:id", linkModify)
+	app.GET("/link/:id", linkGet)
+	//app.GET("/link/:id/watch", linkWatch)
+	//app.GET("/link/:id/stop", linkStop)
 
 }
 

@@ -1,1 +1,42 @@
-<p>link works!</p>
+<nz-space>
+  <nz-space-item>
+    <button nz-button (click)="load()">
+      <i nz-icon nzType="reload"></i>
+      刷新
+    </button>
+  </nz-space-item>
+</nz-space>
+<nz-table #basicTable [nzData]="links">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>名称</th>
+    <th>序列号</th>
+    <th>地址</th>
+    <th>状态</th>
+    <th>创建时间</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of basicTable.data">
+    <td>{{ data.id }}</td>
+    <td>{{ data.name }}</td>
+    <td>{{ data.serial }}</td>
+    <td>{{ data.addr}}</td>
+    <td>
+
+    </td>
+    <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>
+      <a>
+        <i nz-icon nzType="delete"></i>
+      </a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a (click)="edit(data)">
+        <i nz-icon nzType="edit"></i>
+      </a>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

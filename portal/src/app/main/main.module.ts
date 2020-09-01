@@ -32,12 +32,13 @@ import {LinkDetailComponent} from './link-detail/link-detail.component';
 import {UserEditComponent} from './user-edit/user-edit.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {NzSpaceModule} from "ng-zorro-antd/space";
+import {LinkEditComponent} from "./link-edit/link-edit.component";
 
 
 @NgModule({
   declarations: [MainComponent, DashComponent,
     ChannelComponent, ChannelDetailComponent, ChannelEditComponent,
-    LinkComponent, LinkDetailComponent, LinkMonitorComponent,
+    LinkComponent, LinkDetailComponent, LinkMonitorComponent, LinkEditComponent,
     UserComponent, UserEditComponent,
     PasswordComponent],
   imports: [

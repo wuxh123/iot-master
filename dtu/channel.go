@@ -3,10 +3,12 @@ package dtu
 import (
 	"errors"
 	"fmt"
+	"github.com/zgwit/dtu-admin/storage"
 	"github.com/zgwit/dtu-admin/types"
 	"log"
 	"net"
 	"sync"
+	"time"
 )
 
 
@@ -16,13 +18,12 @@ type Channel struct {
 	Error string
 
 	listener      net.Listener
+
 	packetConn    net.PacketConn
-	packetIndexes sync.Map
+
+	packetIndexes sync.Map //<Link>
 
 	links sync.Map
-
-	//自增ID
-	increment int64
 }
 
 func NewChannel(channel *types.Channel) *Channel {
@@ -110,7 +111,7 @@ func (c *Channel) accept() {
 func (c *Channel) receive(conn net.Conn) {
 	client := newConnection(conn)
 	client.channel = c
-	c.storeConnection(client)
+	c.storeLink(client)
 
 	buf := make([]byte, 1024)
 	for client.conn != nil {
@@ -126,9 +127,15 @@ func (c *Channel) receive(conn net.Conn) {
 
 }
 
-func (c *Channel) storeConnection(conn *Link)  {
-	c.increment++
-	conn.ID = c.increment
+func (c *Channel) storeLink(conn *Link)  {
+
+	lnk := types.Link{
+		Addr:    conn.RemoteAddr.String(),
+		Channel: c.ID,
+		Created: time.Now(),
+	}
+
+	storage.DB("link").Save(&lnk)
 
 	//根据ID保存
 	c.links.Store(c.ID, conn)
@@ -155,7 +162,7 @@ func (c *Channel) receivePacket() {
 			client.channel = c
 
 			//根据ID保存
-			c.storeConnection(client)
+			c.storeLink(client)
 
 			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, client)
