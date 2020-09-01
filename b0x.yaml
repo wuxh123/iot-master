@@ -1,0 +1,14 @@
+pkg: wwwFiles
+
+dest: "./www"
+
+fmt: true
+
+spread: true
+
+custom:
+  - files:
+      - "./portal/dist/"
+
+    base: "portal/dist"
+
