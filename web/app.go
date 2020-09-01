@@ -22,29 +22,24 @@ func Serve()  {
 	//GIN初始化
 	app := gin.Default()
 
-	//前端静态文件
-	//app.Use(static.Serve("/", static.LocalFile("./www/", false)))
-
 	api.RegisterRoutes(app.Group("/api"))
 	open.RegisterRoutes(app.Group("/open"))
-
 
 	//Swagger文档，需要先执行swag init生成文档
 	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	//app.Use( ginSwagger.WrapHandler(wwwFiles.Handler))
-
-	//支持前端框架Angular的无“#”路由
+	//前端静态文件
 	//app.GET("/*any", func(c *gin.Context) {
 	app.Use(func(c *gin.Context) {
 		if c.Request.Method == http.MethodGet {
+			//支持前端框架Angular的无“#”路由
 			if c.Request.RequestURI == "/" {
 				c.Request.URL.Path = "index.html"
 			} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, c.Request.RequestURI) ; err != nil {
 				c.Request.URL.Path = "index.html"
 			}
+			//文件失效期已经在Handler中处理
 			wwwFiles.Handler.ServeHTTP(c.Writer, c.Request)
-			//http.ServeFile(c.Writer, c.Request, "./www/index.html")
 		}
 	})
 
