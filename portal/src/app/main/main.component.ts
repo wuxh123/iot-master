@@ -36,6 +36,13 @@ export class MainComponent implements OnInit {
       ]
     },
     {
+      title: 'Modbus',
+      icon: 'apartment',
+      open: false,
+      children: [
+      ]
+    },
+    {
       title: '系统设置',
       icon: 'setting',
       open: false,
