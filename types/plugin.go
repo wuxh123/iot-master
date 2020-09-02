@@ -10,5 +10,6 @@ type Plugin struct {
 	Address   string    `json:"address"`
 	Path      string    `json:"path"`
 	Entry     string    `json:"entry"`
+	Expire    time.Time `json:"expire"`
 	Created   time.Time `json:"created"`
 }
