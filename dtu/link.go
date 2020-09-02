@@ -45,7 +45,19 @@ func (l *Link) checkRegister(buf []byte) error {
 		}
 	}
 
-	//TODO 更新数据库中 serial
+	////TODO 更新数据库中 serial online
+	//db := storage.DB("link")
+	//var link types.Link
+	//err := db.Select(q.Eq("Channel", l.channel.ID), q.Eq("Serial", serial)).First(&link)
+	//
+	//storage.DB("link").Update(&types.Link{
+	//	ID:      l.ID,
+	//	Name:    "",
+	//	Serial:  "",
+	//	Addr:    "",
+	//	Channel: 0,
+	//	Online:  time.Time{},
+	//})
 
 	return nil
 }
