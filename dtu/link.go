@@ -5,6 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/asdine/storm/v3/q"
+	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/types"
 	"log"
 	"net"
 	"regexp"
@@ -12,7 +15,7 @@ import (
 )
 
 type Link struct {
-	ID int64
+	ID int
 
 	Error      string
 	Serial     string
@@ -26,7 +29,6 @@ type Link struct {
 	lastTime time.Time
 
 	channel *Channel
-
 }
 
 func (l *Link) checkRegister(buf []byte) error {
@@ -45,19 +47,37 @@ func (l *Link) checkRegister(buf []byte) error {
 		}
 	}
 
-	////TODO 更新数据库中 serial online
-	//db := storage.DB("link")
-	//var link types.Link
-	//err := db.Select(q.Eq("Channel", l.channel.ID), q.Eq("Serial", serial)).First(&link)
-	//
-	//storage.DB("link").Update(&types.Link{
-	//	ID:      l.ID,
-	//	Name:    "",
-	//	Serial:  "",
-	//	Addr:    "",
-	//	Channel: 0,
-	//	Online:  time.Time{},
-	//})
+	//配置序列号
+	l.Serial = serial
+
+	//查找数据库同通道，同序列号链接，更新数据库中 serial online
+	db := storage.DB("link")
+	var link types.Link
+	err := db.Select(q.Eq("Channel", l.channel.ID), q.Eq("Serial", serial)).First(&link)
+	if err == nil {
+		//更新客户端地址，
+		err = storage.DB("link").Update(&types.Link{
+			ID:     link.ID,
+			Addr:   l.RemoteAddr.String(),
+			Online: time.Now(),
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		link = types.Link{
+			Serial:  serial,
+			Addr:    l.RemoteAddr.String(),
+			Channel: l.channel.ID,
+			Online:  time.Now(),
+			Created: time.Now(),
+		}
+		err = storage.DB("link").Save(&link)
+		if err != nil {
+			log.Println(err)
+		}
+		l.ID = link.ID
+	}
 
 	return nil
 }
@@ -67,7 +87,7 @@ func (l *Link) onData(buf []byte) {
 	l.lastTime = time.Now()
 
 	//检查注册包
-	if l.channel.Register.Enable && l.Serial != "" {
+	if l.channel.Register.Enable && l.Serial == "" {
 		err := l.checkRegister(buf)
 		if err != nil {
 			log.Println(err)
@@ -82,7 +102,7 @@ func (l *Link) onData(buf []byte) {
 
 	hb := l.channel.HeartBeat
 	//检查心跳包, 判断上次收发时间，是否已经过去心跳间隔
-	if hb.Enable && time.Now().Sub(l.lastTime) > time.Second * time.Duration(hb.Interval) {
+	if hb.Enable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(hb.Interval) {
 		var b []byte
 		if hb.IsHex {
 			var e error

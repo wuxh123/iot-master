@@ -111,7 +111,11 @@ func (c *Channel) accept() {
 func (c *Channel) receive(conn net.Conn) {
 	client := newConnection(conn)
 	client.channel = c
-	c.storeLink(client)
+
+	//TODO 未开启注册，则直接保存
+	if !c.Register.Enable {
+		c.storeLink(client)
+	}
 
 	buf := make([]byte, 1024)
 	for client.conn != nil {
@@ -162,7 +166,9 @@ func (c *Channel) receivePacket() {
 			client.channel = c
 
 			//根据ID保存
-			c.storeLink(client)
+			if !c.Register.Enable {
+				c.storeLink(client)
+			}
 
 			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, client)
