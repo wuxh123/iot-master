@@ -9,7 +9,7 @@ require (
 	github.com/bmatcuk/doublestar v1.3.2 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
-	github.com/gin-contrib/static v0.0.0-20200815103939-31fb0c56a3d1
+	github.com/gin-contrib/static v0.0.0-20200815103939-31fb0c56a3d1 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/spec v0.19.9 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
@@ -26,7 +26,7 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
-	golang.org/x/net v0.0.0-20200822124328-c89045814202
+	golang.org/x/net v0.0.0-20200822124328-c89045814202 // indirect
 	golang.org/x/sys v0.0.0-20200831180312-196b9ba8737a // indirect
 	golang.org/x/tools v0.0.0-20200828161849-5deb26317202 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
