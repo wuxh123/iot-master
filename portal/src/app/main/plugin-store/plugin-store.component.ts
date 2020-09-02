@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-plugin-store',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PluginStoreComponent implements OnInit {
 
-  constructor() { }
+  src: SafeUrl; // = "localhost:4200";
+
+  constructor(private sanitizer: DomSanitizer) {
+  }
 
   ngOnInit(): void {
+  }
+
+  test(src): void {
+    this.src = this.sanitizer.bypassSecurityTrustResourceUrl(src);
   }
 
 }

@@ -4,3 +4,11 @@
 <p>TODO 拉取服务器数据，以列表方式显示，一键安装，（购买跳转收费，开票）</p>
 
 <p>搜索，筛选，排序</p>
+
+<button (click)="test('http://localhost:4200')">Test1</button>
+<button (click)="test('http://localhost:4200/admin/channel#abc')">Test2</button>
+<button (click)="test('http://localhost:4200/admin/channel#def')">Test3</button>
+
+<p>src:{{src}}</p>
+
+<iframe [src]="src" width="700" height="400"></iframe>
