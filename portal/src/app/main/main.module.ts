@@ -31,15 +31,17 @@ import {ChannelDetailComponent} from './channel-detail/channel-detail.component'
 import {LinkDetailComponent} from './link-detail/link-detail.component';
 import {UserEditComponent} from './user-edit/user-edit.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
-import {NzSpaceModule} from "ng-zorro-antd/space";
-import {LinkEditComponent} from "./link-edit/link-edit.component";
+import {NzSpaceModule} from 'ng-zorro-antd/space';
+import {LinkEditComponent} from './link-edit/link-edit.component';
+import {PluginComponent} from './plugin/plugin.component';
+import {PluginStoreComponent} from './plugin-store/plugin-store.component';
 
 
 @NgModule({
   declarations: [MainComponent, DashComponent,
     ChannelComponent, ChannelDetailComponent, ChannelEditComponent,
     LinkComponent, LinkDetailComponent, LinkMonitorComponent, LinkEditComponent,
-    UserComponent, UserEditComponent,
+    UserComponent, UserEditComponent, PluginComponent, PluginStoreComponent,
     PasswordComponent],
   imports: [
     CommonModule,

@@ -55,6 +55,8 @@ func (l *Link) checkRegister(buf []byte) error {
 	var link types.Link
 	err := db.Select(q.Eq("Channel", l.channel.ID), q.Eq("Serial", serial)).First(&link)
 	if err == nil {
+		//检查工作状态，如果同序号连接还在正常通讯，则关闭当前连接，回复：Duplicate register
+
 		//更新客户端地址，
 		err = storage.DB("link").Update(&types.Link{
 			ID:     link.ID,

@@ -6,6 +6,8 @@ import {PasswordComponent} from './password/password.component';
 import {LinkComponent} from './link/link.component';
 import {ChannelComponent} from './channel/channel.component';
 import {UserComponent} from './user/user.component';
+import {PluginComponent} from './plugin/plugin.component';
+import {PluginStoreComponent} from './plugin-store/plugin-store.component';
 
 const routes: Routes = [
   {
@@ -16,6 +18,8 @@ const routes: Routes = [
       {path: 'dash', component: DashComponent},
       {path: 'channel', component: ChannelComponent},
       {path: 'link', component: LinkComponent},
+      {path: 'plugin', component: PluginComponent},
+      {path: 'plugin-store', component: PluginStoreComponent},
       {path: 'user', component: UserComponent},
       {path: 'password', component: PasswordComponent},
     ]

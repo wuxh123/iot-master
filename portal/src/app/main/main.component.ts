@@ -36,10 +36,18 @@ export class MainComponent implements OnInit {
       ]
     },
     {
-      title: 'Modbus',
-      icon: 'apartment',
+      title: '插件管理',
+      icon: 'appstore',
       open: false,
       children: [
+        {
+          title: '已安装插件',
+          router: 'plugin'
+        },
+        {
+          title: '插件市场',
+          router: 'plugin-store'
+        }
       ]
     },
     {
