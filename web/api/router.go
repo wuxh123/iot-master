@@ -9,11 +9,18 @@ import (
 	"net/http"
 )
 
+type paramFilter struct {
+	Key   string   `form:"key"`
+	Value []string `form:"value"`
+}
+
 type paramSearch struct {
-	Offset    int    `form:"offset"`
-	Length    int    `form:"length"`
-	SortKey   string `form:"sortKey"`
-	SortOrder string `form:"sortOrder"`
+	Offset    int           `form:"offset"`
+	Length    int           `form:"length"`
+	SortKey   string        `form:"sortKey"`
+	SortOrder string        `form:"sortOrder"`
+	Filters   []paramFilter `form:"filters"`
+	Keyword   string        `form:"keyword"`
 }
 
 type paramId struct {
