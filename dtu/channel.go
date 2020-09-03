@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zgwit/dtu-admin/storage"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"net"
 	"sync"
@@ -13,7 +13,7 @@ import (
 
 
 type Channel struct {
-	types.Channel
+	model.Channel
 
 	Error string
 
@@ -26,7 +26,7 @@ type Channel struct {
 	links sync.Map
 }
 
-func NewChannel(channel *types.Channel) *Channel {
+func NewChannel(channel *model.Channel) *Channel {
 	return &Channel{
 		Channel: *channel,
 	}
@@ -133,7 +133,7 @@ func (c *Channel) receive(conn net.Conn) {
 
 func (c *Channel) storeLink(conn *Link)  {
 
-	lnk := types.Link{
+	lnk := model.Link{
 		Addr:    conn.RemoteAddr.String(),
 		Channel: c.ID,
 		Created: time.Now(),

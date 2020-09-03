@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/storage"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"time"
 )
 
 
 func channels(ctx *gin.Context) {
-	var cs []types.Channel
+	var cs []model.Channel
 	err := storage.DB("channel").All(&cs)
 	if err != nil {
 		replyError(ctx, err)
@@ -21,7 +21,7 @@ func channels(ctx *gin.Context) {
 }
 
 func channelCreate(ctx *gin.Context) {
-	var channel types.Channel
+	var channel model.Channel
 	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
@@ -53,7 +53,7 @@ func channelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := storage.DB("channel").DeleteStruct(&types.Channel{ID: pid.Id})
+	err := storage.DB("channel").DeleteStruct(&model.Channel{ID: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -67,7 +67,7 @@ func channelDelete(ctx *gin.Context) {
 
 
 func channelModify(ctx *gin.Context) {
-	var channel types.Channel
+	var channel model.Channel
 	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
@@ -94,7 +94,7 @@ func channelGet(ctx *gin.Context) {
 		return
 	}
 
-	var channel types.Channel
+	var channel model.Channel
 	err := storage.DB("channel").One("ID", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)

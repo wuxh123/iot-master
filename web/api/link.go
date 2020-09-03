@@ -3,12 +3,12 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/storage"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"log"
 )
 
 func links(ctx *gin.Context) {
-	var cs []types.Link
+	var cs []model.Link
 	err := storage.DB("link").All(&cs)
 	if err != nil {
 		replyError(ctx, err)
@@ -24,7 +24,7 @@ func linkDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := storage.DB("link").DeleteStruct(&types.Link{ID: pid.Id})
+	err := storage.DB("link").DeleteStruct(&model.Link{ID: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -38,7 +38,7 @@ func linkDelete(ctx *gin.Context) {
 
 
 func linkModify(ctx *gin.Context) {
-	var link types.Link
+	var link model.Link
 	if err := ctx.ShouldBindJSON(&link); err != nil {
 		replyError(ctx, err)
 		return
@@ -65,7 +65,7 @@ func linkGet(ctx *gin.Context) {
 		return
 	}
 
-	var link types.Link
+	var link model.Link
 	err := storage.DB("link").One("ID", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)

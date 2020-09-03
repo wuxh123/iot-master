@@ -5,7 +5,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ type paramId2 struct {
 
 func RegisterRoutes(app *gin.RouterGroup) {
 	//注册 User类型
-	gob.Register(&types.User{})
+	gob.Register(&model.User{})
 	//启用session
 	app.Use(sessions.Sessions("dtu-admin", memstore.NewStore([]byte("dtu-admin-secret"))))
 

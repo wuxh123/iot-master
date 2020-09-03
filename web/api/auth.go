@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/storage"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"time"
 )
 
@@ -25,7 +25,7 @@ func authLogin(ctx *gin.Context) {
 	}
 
 	userDB := storage.DB("user")
-	var user types.User
+	var user model.User
 	err = userDB.One("username", obj.Username, &user)
 	if err != nil {
 		//初始化root 账户

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/asdine/storm/v3/q"
 	"github.com/zgwit/dtu-admin/storage"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"net"
 	"regexp"
@@ -52,13 +52,13 @@ func (l *Link) checkRegister(buf []byte) error {
 
 	//查找数据库同通道，同序列号链接，更新数据库中 serial online
 	db := storage.DB("link")
-	var link types.Link
+	var link model.Link
 	err := db.Select(q.Eq("Channel", l.channel.ID), q.Eq("Serial", serial)).First(&link)
 	if err == nil {
 		//检查工作状态，如果同序号连接还在正常通讯，则关闭当前连接，回复：Duplicate register
 
 		//更新客户端地址，
-		err = storage.DB("link").Update(&types.Link{
+		err = storage.DB("link").Update(&model.Link{
 			ID:     link.ID,
 			Addr:   l.RemoteAddr.String(),
 			Online: time.Now(),
@@ -67,7 +67,7 @@ func (l *Link) checkRegister(buf []byte) error {
 			log.Println(err)
 		}
 	} else {
-		link = types.Link{
+		link = model.Link{
 			Serial:  serial,
 			Addr:    l.RemoteAddr.String(),
 			Channel: l.channel.ID,

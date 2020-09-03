@@ -3,7 +3,7 @@ package dtu
 import (
 	"errors"
 	"github.com/zgwit/dtu-admin/storage"
-	"github.com/zgwit/dtu-admin/types"
+	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"sync"
 )
@@ -22,7 +22,7 @@ func Channels() []*Channel {
 
 
 func Recovery() error {
-	var cs []types.Channel
+	var cs []model.Channel
 	err := storage.DB("channel").All(&cs)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func Recovery() error {
 	return nil
 }
 
-func StartChannel(c *types.Channel) (*Channel, error) {
+func StartChannel(c *model.Channel) (*Channel, error) {
 	log.Println("start", c)
 
 	channel := NewChannel(c)
