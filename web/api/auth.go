@@ -3,9 +3,8 @@ package api
 import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
-	"time"
 )
 
 type loginObj struct {
@@ -24,22 +23,17 @@ func authLogin(ctx *gin.Context) {
 		return
 	}
 
-	userDB := storage.DB("user")
 	var user model.User
-	err = userDB.One("username", obj.Username, &user)
+	has, err := db.Engine.Where("username=?", obj.Username).Get(&user)
 	if err != nil {
-		//初始化root 账户
-		if obj.Username == "admin" {
-			user.Username = "admin"
-			user.Password = "123456"
-			user.Created = time.Now()
-			userDB.Save(&user)
-		} else {
-			replyFail(ctx, "无此用户")
-			return
-		}
+		replyError(ctx, err)
+		return
 	}
 
+	if !has {
+		replyFail(ctx, "无此用户")
+		return
+	}
 	if obj.Password != user.Password {
 		replyFail(ctx, "密码错误")
 		return

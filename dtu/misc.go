@@ -2,7 +2,7 @@ package dtu
 
 import (
 	"errors"
-	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"sync"
@@ -23,13 +23,13 @@ func Channels() []*Channel {
 
 func Recovery() error {
 	var cs []model.Channel
-	err := storage.DB("channel").All(&cs)
+	err := db.Engine.Find(&cs)
 	if err != nil {
 		return err
 	}
 
 	for _, c := range cs {
-		if !c.Net.Disabled {
+		if !c.Disabled {
 			_, err = StartChannel(&c)
 			if err != nil {
 				log.Println(err)
@@ -48,7 +48,7 @@ func StartChannel(c *model.Channel) (*Channel, error) {
 	if err != nil && channel != nil {
 		channel.Error = err.Error()
 	}
-	channels.Store(c.ID, channel)
+	channels.Store(c.Id, channel)
 	return channel, err
 }
 

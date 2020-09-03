@@ -15,6 +15,8 @@ type Channel struct {
 
 	RegisterEnable bool   `json:"register_enable" xorm:"default 0"`
 	RegisterRegex  string `json:"register_regex" xorm:"varchar(128)"`
+	RegisterMin    int    `json:"register_min"`
+	RegisterMax    int    `json:"register_max"`
 
 	HeartBeatEnable   bool   `json:"heart_beat_enable" xorm:"default 0"`
 	HeartBeatInterval int    `json:"heart_beat_interval"` //TODO 改为秒

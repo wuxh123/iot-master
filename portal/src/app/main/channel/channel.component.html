@@ -18,7 +18,6 @@
   <tr>
     <th>ID</th>
     <th>名称</th>
-    <th>标签</th>
     <th>网络</th>
     <th>状态</th>
     <th>创建时间</th>
@@ -29,10 +28,9 @@
   <tr *ngFor="let data of basicTable.data">
     <td>{{ data.id }}</td>
     <td>{{ data.name }}</td>
-    <td>{{ data.tags }}</td>
-    <td>{{ data.net.is_server ? '服务端':'客户端' }} {{data.net.type}} {{data.net.addr}}</td>
+    <td>{{ data.is_server ? '服务端':'客户端' }} {{data.type}} {{data.addr}}</td>
     <td>
-      {{data.net.disabled ? '禁用' : ''}}
+      {{data.disabled ? '禁用' : ''}}
       <a>启动/停止</a>
     </td>
     <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>

@@ -3,7 +3,7 @@ package dtu
 import (
 	"errors"
 	"fmt"
-	"github.com/zgwit/dtu-admin/storage"
+	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"net"
@@ -33,7 +33,7 @@ func NewChannel(channel *model.Channel) *Channel {
 }
 
 func (c *Channel) Open() error {
-	if c.Net.IsServer {
+	if c.IsServer {
 		return c.Listen()
 	} else {
 		return c.Dial()
@@ -41,7 +41,7 @@ func (c *Channel) Open() error {
 }
 
 func (c *Channel) Dial() error {
-	conn, err := net.Dial(c.Net.Type, c.Net.Addr)
+	conn, err := net.Dial(c.Type, c.Addr)
 	if err != nil {
 		return err
 	}
@@ -55,16 +55,16 @@ func (c *Channel) Dial() error {
 
 func (c *Channel) Listen() error {
 	var err error
-	switch c.Net.Type {
+	switch c.Type {
 	case "tcp", "tcp4", "tcp6", "unix":
-		c.listener, err = net.Listen(c.Net.Type, c.Net.Addr)
+		c.listener, err = net.Listen(c.Type, c.Addr)
 		if err != nil {
 			return err
 		}
 		go c.accept()
 
 	case "udp", "udp4", "udp6", "unixgram":
-		c.packetConn, err = net.ListenPacket(c.Net.Type, c.Net.Addr)
+		c.packetConn, err = net.ListenPacket(c.Type, c.Addr)
 
 		if err != nil {
 			return err
@@ -113,7 +113,7 @@ func (c *Channel) receive(conn net.Conn) {
 	client.channel = c
 
 	//TODO 未开启注册，则直接保存
-	if !c.Register.Enable {
+	if !c.RegisterEnable {
 		c.storeLink(client)
 	}
 
@@ -135,14 +135,19 @@ func (c *Channel) storeLink(conn *Link)  {
 
 	lnk := model.Link{
 		Addr:    conn.RemoteAddr.String(),
-		Channel: c.ID,
+		ChannelId: c.Id,
 		Created: time.Now(),
 	}
 
-	storage.DB("link").Save(&lnk)
+	//storage.DB("link").Save(&lnk)
+	//TODO 保存链接
+	_, err := db.Engine.Insert(&lnk)
+	if err != nil {
+		log.Println(err)
+	}
 
 	//根据ID保存
-	c.links.Store(c.ID, conn)
+	c.links.Store(c.Id, conn)
 }
 
 func (c *Channel) receivePacket() {
@@ -166,7 +171,7 @@ func (c *Channel) receivePacket() {
 			client.channel = c
 
 			//根据ID保存
-			if !c.Register.Enable {
+			if !c.RegisterEnable {
 				c.storeLink(client)
 			}
 

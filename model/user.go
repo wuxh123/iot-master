@@ -3,7 +3,7 @@ package model
 import "time"
 
 type User struct {
-	//ID，自增
+	//Id，自增
 	Id   int64 `json:"id"`
 
 	//用户名

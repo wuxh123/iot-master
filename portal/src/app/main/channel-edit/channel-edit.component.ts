@@ -10,17 +10,15 @@ import {NzDrawerRef} from 'ng-zorro-antd';
 })
 export class ChannelEditComponent implements OnInit {
 
-  @Input() channel: any = {};
+  @Input() channel: any = {is_server: true, type: 'tcp', addr: ':1843'};
 
   constructor(private as: ApiService, private drawerRef: NzDrawerRef<string>) {
   }
 
   ngOnInit(): void {
-    this.initChannel();
     if (this.channel.id) {
       this.as.get('channel/' + this.channel.id).subscribe(res => {
         this.channel = res.data;
-        this.initChannel();
       });
     }
   }
@@ -39,11 +37,5 @@ export class ChannelEditComponent implements OnInit {
         this.drawerRef.close(res.data);
       });
     }
-  }
-
-  initChannel(): void {
-      this.channel.net = this.channel.net || { is_server: true, type: 'tcp', addr: ':1843'};
-      this.channel.register = this.channel.register || {};
-      this.channel.heart_beat = this.channel.heart_beat || {};
   }
 }

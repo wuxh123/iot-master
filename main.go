@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/zgwit/dtu-admin/conf"
+	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/flag"
 	"github.com/zgwit/dtu-admin/web"
@@ -30,8 +31,14 @@ func main() {
 	//加载配置
 	conf.Load()
 
+	err := db.Open()
+	if err != nil {
+		log.Println("数据库错误：", err)
+		return
+	}
+
 	//恢复之前的链接
-	err := dtu.Recovery()
+	err = dtu.Recovery()
 	if err != nil {
 		log.Println("恢复链接：", err)
 		return
