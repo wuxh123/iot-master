@@ -138,6 +138,7 @@ func (c *Channel) storeLink(conn *Link) {
 	lnk := model.Link{
 		Addr:      conn.RemoteAddr.String(),
 		ChannelId: c.Id,
+		Online:    time.Now(),
 		Created:   time.Now(),
 	}
 
