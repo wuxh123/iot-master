@@ -36,7 +36,7 @@ func (l *Link) checkRegister(buf []byte) error {
 		return fmt.Errorf("register package is too short %d %s", n, string(buf[:n]))
 	}
 	serial := string(buf[:n])
-	if n > l.channel.RegisterMax {
+	if l.channel.RegisterMax > 0 && l.channel.RegisterMax >= l.channel.RegisterMin && n > l.channel.RegisterMax {
 		serial = string(buf[:l.channel.RegisterMax])
 	}
 
@@ -84,7 +84,7 @@ func (l *Link) checkRegister(buf []byte) error {
 	}
 
 	//处理剩余内容
-	if n > l.channel.RegisterMax {
+	if l.channel.RegisterMax > 0 && n > l.channel.RegisterMax {
 		l.onData(buf[l.channel.RegisterMax:])
 	}
 

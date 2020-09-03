@@ -26,8 +26,7 @@ export class ChannelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private modal: NzModalService, private viewContainerRef: ViewContainerRef,
-              private drawer: NzDrawerService) {
+  constructor(private as: ApiService, private drawer: NzDrawerService) {
   }
 
   ngOnInit(): void {
@@ -50,8 +49,6 @@ export class ChannelComponent implements OnInit {
       filters: this.filters,
       keyword: this.keyword,
     }).subscribe(res => {
-
-      console.log('res', res);
 
       this.channels = res.data;
       this.total = res.total;

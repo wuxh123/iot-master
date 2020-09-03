@@ -24,12 +24,12 @@ type paramSearch struct {
 }
 
 type paramId struct {
-	Id int `uri:"id"`
+	Id int64 `uri:"id"`
 }
 
 type paramId2 struct {
-	Id  int `uri:"id"`
-	Id2 int `uri:"id2"`
+	Id  int64 `uri:"id"`
+	Id2 int64 `uri:"id2"`
 }
 
 func RegisterRoutes(app *gin.RouterGroup) {

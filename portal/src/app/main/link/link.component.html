@@ -1,13 +1,22 @@
 <nz-space>
   <nz-space-item>
-    <button nz-button (click)="load()">
+    <button nz-button (click)="load()" [nzLoading]="loading">
       <i nz-icon nzType="reload"></i>
       刷新
     </button>
   </nz-space-item>
-  <nz-space-item>TODO: 按名称、序列号搜索，标签筛选，状态筛选等，以及排序，后台翻页</nz-space-item>
+  <nz-space-item>
+    <nz-input-group nzSearch nzCompact [nzAddOnAfter]="suffixButton">
+      <input type="text" nz-input [(ngModel)]="keyword" placeholder="名称、地址"/>
+    </nz-input-group>
+
+    <ng-template #suffixButton>
+      <button nz-button nzSearch (click)="search()">搜索</button>
+    </ng-template>
+  </nz-space-item>
 </nz-space>
-<nz-table #basicTable [nzData]="links">
+<nz-table #tbl [nzData]="links" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
+          [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>
     <th>ID</th>
@@ -15,15 +24,15 @@
     <th>名称</th>
     <th>序列号</th>
     <th>地址</th>
-    <th>状态</th>
-    <th>上线时间</th>
+    <th nzColumnKey="status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
+    <th nzColumnKey="online" [nzSortFn]="true">上线时间</th>
     <th></th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let data of basicTable.data">
+  <tr *ngFor="let data of tbl.data">
     <td>{{ data.id }}</td>
-    <td>{{ data.channel }}</td>
+    <td>{{ data.channel_id }}</td>
     <td>{{ data.name }}</td>
     <td>{{ data.serial }}</td>
     <td>{{ data.addr}}</td>
