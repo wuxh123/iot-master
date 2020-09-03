@@ -55,8 +55,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.POST("/password", authPassword)
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
-	app.GET("/channels", channels)
-	//app.POST("/channels")
+	app.POST("/channels", channels)
 	app.POST("/channel", channelCreate)
 	app.DELETE("/channel/:id", channelDelete)
 	app.PUT("/channel/:id", channelModify)
@@ -70,7 +69,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/channel/:id/link/:id2/statistic")
 	app.GET("/channel/:id/link/:id2/pipe") //转Websocket透传
 
-	app.GET("/links", links)
+	app.POST("/links", links)
 	app.DELETE("/link/:id", linkDelete)
 	app.PUT("/link/:id", linkModify)
 	app.GET("/link/:id", linkGet)

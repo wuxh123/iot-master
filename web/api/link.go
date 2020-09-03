@@ -17,7 +17,7 @@ func links(ctx *gin.Context) {
 		return
 	}
 
-	//op := db.Engine.Where("type=?", body.Type)
+	//op := db.Engine.Where("type=?", body.Net)
 	op := db.Engine.NewSession()
 	for _, filter := range body.Filters {
 		if len(filter.Value) > 0 {

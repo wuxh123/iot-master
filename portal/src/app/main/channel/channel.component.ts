@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ChannelEditComponent} from '../channel-edit/channel-edit.component';
-import {NzDrawerService, NzModalService} from 'ng-zorro-antd';
+import {NzDrawerService, NzModalService, NzTableQueryParams} from 'ng-zorro-antd';
 import {ChannelDetailComponent} from "../channel-detail/channel-detail.component";
 
 @Component({
@@ -12,20 +12,68 @@ import {ChannelDetailComponent} from "../channel-detail/channel-detail.component
 export class ChannelComponent implements OnInit {
 
   channels: [];
+  total = 0;
+  pageIndex = 1;
+  pageSize = 10;
+  sortField = null;
+  sortOrder = null;
+  filters = [];
+  keyword = '';
+  loading = false;
 
-  constructor(private as: ApiService, private modal: NzModalService, private viewContainerRef: ViewContainerRef, private drawer: NzDrawerService) {
+  roleFilters = [{text: '服务器', value: true}, {text: '客户端', value: false}];
+  netFilters = [{text: 'TCP', value: 'tcp'}, {text: 'UDP', value: 'udp'}];
+  statusFilters = [{text: '启动', value: 1}];
+
+
+  constructor(private as: ApiService, private modal: NzModalService, private viewContainerRef: ViewContainerRef,
+              private drawer: NzDrawerService) {
   }
 
   ngOnInit(): void {
+    this.loadFilters();
+  }
+
+  reload(): void {
+    this.pageIndex = 1;
+    this.keyword = '';
     this.load();
   }
 
   load(): void {
-    this.as.get('channels').subscribe(res => {
-      if (res.ok) {
-        this.channels = res.data;
-      }
+    this.loading = true;
+    this.as.post('channels', {
+      offset: (this.pageIndex - 1) * this.pageSize,
+      length: this.pageSize,
+      sortKey: this.sortField,
+      sortOrder: this.sortOrder,
+      filters: this.filters,
+      keyword: this.keyword,
+    }).subscribe(res => {
+
+      console.log('res', res);
+
+      this.channels = res.data;
+      this.total = res.total;
+    }, error => {
+      console.log('error', error);
+    }, () => {
+      this.loading = false;
     });
+  }
+
+  loadFilters(): void {
+    // this.as.get('distinct/copy/host').subscribe(res => {
+    //   console.log('res', res);
+    //   this.hosts = res.data.map(h => {
+    //     return {
+    //       text: h.host,
+    //       value: h.host
+    //     };
+    //   });
+    // }, error => {
+    //   console.log('error', error);
+    // });
   }
 
   edit(c?): void {
@@ -35,7 +83,7 @@ export class ChannelComponent implements OnInit {
       nzWidth: 500,
       nzContent: ChannelEditComponent,
       nzContentParams: {
-        channel: c || {}
+        channel: c || {net: 'tcp', addr: ':1843', is_server: true}
       }
     });
   }
@@ -51,4 +99,19 @@ export class ChannelComponent implements OnInit {
     });
   }
 
+  onTableQuery(params: NzTableQueryParams): void {
+    const {pageSize, pageIndex, sort, filter} = params;
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+    const currentSort = sort.find(item => item.value !== null);
+    this.sortField = (currentSort && currentSort.key) || null;
+    this.sortOrder = (currentSort && currentSort.value) || null;
+    this.filters = filter;
+    this.load();
+  }
+
+  search(): void {
+    this.pageIndex = 1;
+    this.load();
+  }
 }

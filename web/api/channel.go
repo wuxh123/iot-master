@@ -11,7 +11,7 @@ import (
 )
 
 func channels(ctx *gin.Context) {
-	var cs []model.Channel
+	cs := make([]model.Channel, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -20,7 +20,7 @@ func channels(ctx *gin.Context) {
 		return
 	}
 
-	//op := db.Engine.Where("type=?", body.Type)
+	//op := db.Engine.Where("type=?", body.Net)
 	op := db.Engine.NewSession()
 	for _, filter := range body.Filters {
 		if len(filter.Value) > 0 {
@@ -33,7 +33,7 @@ func channels(ctx *gin.Context) {
 	}
 	if body.Keyword != "" {
 		kw := "%" + body.Keyword + "%"
-		op.And("name like ? or type like ? or addr like ?", kw, kw, kw)
+		op.And("name like ? or addr like ?", kw, kw)
 	}
 
 	op.Limit(body.Length, body.Offset)
@@ -134,7 +134,7 @@ func channelModify(ctx *gin.Context) {
 	//log.Println("update", channel)
 	_, err := db.Engine.ID(pid.Id).
 		Cols("name", "disabled",
-			"type", "addr", "is_server", "timeout",
+			"type", "addr", "role", "timeout",
 			"register_enable", "register_regex",
 			"heart_beat_enable", "heart_beat_interval", "heart_beat_content", "heart_beat_is_hex",
 			"plugin_id").Update(&channel)

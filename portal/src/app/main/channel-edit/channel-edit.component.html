@@ -13,11 +13,11 @@
   </div>
   <div nz-col nzSpan="20">
     <nz-input-group style="display: flex">
-      <nz-select [(ngModel)]="channel.is_server">
-        <nz-option nzLabel="服务端" [nzValue]="true"></nz-option>
-        <nz-option nzLabel="客户端" [nzValue]="false"></nz-option>
+      <nz-select [(ngModel)]="channel.role">
+        <nz-option nzLabel="服务端" nzValue="server"></nz-option>
+        <nz-option nzLabel="客户端" nzValue="client"></nz-option>
       </nz-select>
-      <nz-select [(ngModel)]="channel.type" style="width:80px;">
+      <nz-select [(ngModel)]="channel.net" style="width:80px;">
         <nz-option nzLabel="TCP" nzValue="tcp"></nz-option>
         <nz-option nzLabel="UDP" nzValue="udp"></nz-option>
       </nz-select>

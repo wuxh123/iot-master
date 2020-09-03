@@ -11,15 +11,14 @@ import (
 	"time"
 )
 
-
 type Channel struct {
 	model.Channel
 
 	Error string
 
-	listener      net.Listener
+	listener net.Listener
 
-	packetConn    net.PacketConn
+	packetConn net.PacketConn
 
 	packetIndexes sync.Map //<Link>
 
@@ -33,15 +32,18 @@ func NewChannel(channel *model.Channel) *Channel {
 }
 
 func (c *Channel) Open() error {
-	if c.IsServer {
+	switch c.Role {
+	case "server":
 		return c.Listen()
-	} else {
+	case "client":
 		return c.Dial()
+	default:
+		return errors.New("未知角色")
 	}
 }
 
 func (c *Channel) Dial() error {
-	conn, err := net.Dial(c.Type, c.Addr)
+	conn, err := net.Dial(c.Net, c.Addr)
 	if err != nil {
 		return err
 	}
@@ -55,16 +57,16 @@ func (c *Channel) Dial() error {
 
 func (c *Channel) Listen() error {
 	var err error
-	switch c.Type {
+	switch c.Net {
 	case "tcp", "tcp4", "tcp6", "unix":
-		c.listener, err = net.Listen(c.Type, c.Addr)
+		c.listener, err = net.Listen(c.Net, c.Addr)
 		if err != nil {
 			return err
 		}
 		go c.accept()
 
 	case "udp", "udp4", "udp6", "unixgram":
-		c.packetConn, err = net.ListenPacket(c.Type, c.Addr)
+		c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
 
 		if err != nil {
 			return err
@@ -131,12 +133,12 @@ func (c *Channel) receive(conn net.Conn) {
 
 }
 
-func (c *Channel) storeLink(conn *Link)  {
+func (c *Channel) storeLink(conn *Link) {
 
 	lnk := model.Link{
-		Addr:    conn.RemoteAddr.String(),
+		Addr:      conn.RemoteAddr.String(),
 		ChannelId: c.Id,
-		Created: time.Now(),
+		Created:   time.Now(),
 	}
 
 	//storage.DB("link").Save(&lnk)

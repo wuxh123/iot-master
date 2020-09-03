@@ -2,6 +2,8 @@ package db
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	//_ "github.com/lib/pq" //PostgreSQL
+	//_ "github.com/mattn/go-sqlite3" //需要GCC并且启用CGO
 	"github.com/zgwit/dtu-admin/conf"
 	"github.com/zgwit/dtu-admin/model"
 	"log"

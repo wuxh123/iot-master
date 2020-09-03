@@ -8,9 +8,9 @@ type Channel struct {
 	//Tags string `json:"tags" xorm:"varchar(256)"`
 
 	Disabled bool   `json:"disabled" xorm:"default 0"` //此处 禁用 直接放到顶级，Update无效
-	Type     string `json:"type" xorm:"varchar(16) notnull"`
+	Role     string `json:"role" xorm:"varchar(16) notnull"`
+	Net      string `json:"net" xorm:"varchar(16) notnull"`
 	Addr     string `json:"addr" xorm:"varchar(128) notnull"`
-	IsServer bool   `json:"is_server" xorm:"default 0"`
 	Timeout  int    `json:"timeout"` //TODO 改为秒
 
 	RegisterEnable bool   `json:"register_enable" xorm:"default 0"`
