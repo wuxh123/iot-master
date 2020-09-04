@@ -2,10 +2,10 @@ package web
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	//"github.com/swaggo/files"
+	//"github.com/swaggo/gin-swagger"
 	"github.com/zgwit/dtu-admin/conf"
-	_ "github.com/zgwit/dtu-admin/docs"
+	//_ "github.com/zgwit/dtu-admin/docs"
 	"github.com/zgwit/dtu-admin/web/api"
 	"github.com/zgwit/dtu-admin/web/open"
 	wwwFiles "github.com/zgwit/dtu-admin/www"
@@ -25,8 +25,9 @@ func Serve()  {
 	api.RegisterRoutes(app.Group("/api"))
 	open.RegisterRoutes(app.Group("/open"))
 
+	//TODO 加入swagger会增加10M多体积，改在线
 	//Swagger文档，需要先执行swag init生成文档
-	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	//app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//前端静态文件
 	//app.GET("/*any", func(c *gin.Context) {
