@@ -81,12 +81,17 @@ func linkDelete(ctx *gin.Context) {
 
 	//TODO 删除服务
 	go func() {
-		channel, err := dtu.GetChannel(link.ChannelId)
+		c, err := dtu.GetChannel(link.ChannelId)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		//channel.GetLink(link.Id)
+		l, err := c.GetLink(link.Id)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		_ = l.Close()
 	}()
 
 }

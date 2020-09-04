@@ -122,11 +122,15 @@ func (c *Channel) Close() error {
 }
 
 func (c *Channel) GetLink(id int64) (*Link, error) {
-	v, ok := c.clients.Load(id)
-	if !ok {
-		return nil, errors.New("连接不存在")
+	if c.Role == "server" {
+		v, ok := c.clients.Load(id)
+		if !ok {
+			return nil, errors.New("连接不存在")
+		}
+		return v.(*Link), nil
+	} else {
+		return c.client, nil
 	}
-	return v.(*Link), nil
 }
 
 func (c *Channel) accept() {
@@ -142,6 +146,30 @@ func (c *Channel) accept() {
 
 func (c *Channel) receiveClient(conn net.Conn) {
 	c.client = newLink(c, conn)
+
+	var link model.Link
+	has, err := db.Engine.Where("channel_id=?", c.Id).And("role=?", "client").Get(&link)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if has {
+		//复用连接，更新地址，状态，等
+		link.Addr = conn.RemoteAddr().String()
+		link.Online = true
+		link.OnlineAt = time.Now()
+		link.Error = ""
+		_, err = db.Engine.ID(link.Id).Cols("addr", "error", "online", "online_at").Update(link)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	} else {
+		_, err := db.Engine.Insert(&c.client.Link)
+		if err != nil {
+			log.Println(err)
+		}
+	}
 
 	buf := make([]byte, 1024)
 	for c.client != nil && c.client.conn != nil {

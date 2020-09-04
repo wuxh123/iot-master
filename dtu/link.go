@@ -16,6 +16,8 @@ import (
 type Link struct {
 	model.Link
 
+	registerChecked bool
+
 	//RemoteAddr net.Addr
 
 	Rx int
@@ -103,8 +105,8 @@ func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
-	//检查注册包
-	if l.channel.RegisterEnable && l.Serial == "" {
+	//检查注册包（只有服务端是检测）
+	if !l.registerChecked && l.channel.RegisterEnable && l.channel.Role == "server" {
 		err := l.checkRegister(buf)
 		if err != nil {
 			log.Println(err)
@@ -114,6 +116,7 @@ func (l *Link) onData(buf []byte) {
 		}
 		return
 	}
+	l.registerChecked = true
 
 	//检查心跳包, 判断上次收发时间，是否已经过去心跳间隔
 	if l.channel.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(l.channel.HeartBeatInterval) {
@@ -166,6 +169,8 @@ func (l *Link) storeError(err error) error {
 func newLink(c *Channel, conn net.Conn) *Link {
 	return &Link{
 		Link: model.Link{
+			Role:      c.Role,
+			Net:       c.Net,
 			Addr:      conn.RemoteAddr().String(),
 			ChannelId: c.Id,
 			PluginId:  c.PluginId,
@@ -180,6 +185,8 @@ func newLink(c *Channel, conn net.Conn) *Link {
 func newPacketLink(c *Channel, conn net.PacketConn, addr net.Addr) *Link {
 	return &Link{
 		Link: model.Link{
+			Role:      c.Role,
+			Net:       c.Net,
 			Addr:      addr.String(),
 			ChannelId: c.Id,
 			PluginId:  c.PluginId,

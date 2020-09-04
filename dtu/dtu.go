@@ -67,3 +67,11 @@ func GetChannel(id int64) (*Channel, error) {
 	}
 	return v.(*Channel), nil
 }
+
+func GetLink(channelId, linkId int64) (*Link, error)  {
+	channel, err := GetChannel(channelId)
+	if err != nil {
+		return nil, err
+	}
+	return channel.GetLink(linkId)
+}
