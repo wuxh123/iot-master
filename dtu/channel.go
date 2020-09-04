@@ -19,7 +19,6 @@ type Channel interface {
 	Close() error
 	GetLink(id int64) (*Link, error)
 	GetChannel() *model.Channel
-	StoreLink(link *Link)
 }
 
 func NewChannel(channel *model.Channel) (Channel, error) {
@@ -64,7 +63,7 @@ func (c *baseChannel) GetChannel() *model.Channel {
 	return &c.Channel
 }
 
-func (c *baseChannel) StoreLink(l *Link) {
+func (c *baseChannel) storeLink(l *Link) {
 	//保存链接
 	if l.Id > 0 {
 		_, err := db.Engine.ID(l.Id).Cols("addr", "error", "online", "online_at").Update(&l.Link)
@@ -162,7 +161,7 @@ func (c *Client) receive(conn net.Conn) {
 		c.client.Id = link.Id
 	}
 
-	c.StoreLink(c.client)
+	c.storeLink(c.client)
 
 	buf := make([]byte, 1024)
 	for c.client != nil && c.client.conn != nil {
@@ -324,7 +323,7 @@ func (c *Server) receive(conn net.Conn) {
 	}
 
 	//保存链接
-	c.StoreLink(link)
+	c.storeLink(link)
 
 
 	for link.conn != nil {
@@ -433,6 +432,8 @@ func (c *PacketServer) receive() {
 				}
 			}
 
+			//处理数据
+			link.onData(buf[:n])
 		} else {
 			link = newPacketLink(c, c.packetConn, addr)
 
@@ -481,15 +482,15 @@ func (c *PacketServer) receive() {
 				if c.RegisterMax > 0 && n > c.RegisterMax {
 					link.onData(buf[c.RegisterMax:])
 				}
+			} else {
+				link.onData(buf[:n])
 			}
 
 			//保存链接
-			c.StoreLink(link)
+			c.storeLink(link)
 
 			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, link)
 		}
-
-		link.onData(buf[:n])
 	}
 }
