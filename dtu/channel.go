@@ -98,7 +98,7 @@ func (c *Client) Open() error {
 		return err
 	}
 
-	go c.receiveClient(conn)
+	go c.receive(conn)
 
 	return nil
 }
@@ -122,7 +122,7 @@ func (c *Client) GetLink(id int64) (*Link, error) {
 	return c.client, nil
 }
 
-func (c *Client) receiveClient(conn net.Conn) {
+func (c *Client) receive(conn net.Conn) {
 	c.client = newLink(c, conn)
 
 	var link model.Link
@@ -133,21 +133,10 @@ func (c *Client) receiveClient(conn net.Conn) {
 	}
 	if has {
 		//复用连接，更新地址，状态，等
-		link.Addr = conn.RemoteAddr().String()
-		link.Online = true
-		link.OnlineAt = time.Now()
-		link.Error = ""
-		_, err = db.Engine.ID(link.Id).Cols("addr", "error", "online", "online_at").Update(link)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	} else {
-		_, err := db.Engine.Insert(&c.client.Link)
-		if err != nil {
-			log.Println(err)
-		}
+		c.client.Id = link.Id
 	}
+
+	c.StoreLink(c.client)
 
 	buf := make([]byte, 1024)
 	for c.client != nil && c.client.conn != nil {
