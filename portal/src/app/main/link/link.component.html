@@ -41,11 +41,15 @@
     </td>
     <td>{{ data.online | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
-      <a>
-        <i nz-icon nzType="delete"></i>
+      <a [routerLink]="'/admin/link-monitor/'+data.id" title="监控">
+        <i nz-icon nzType="aim"></i>
       </a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="edit(data)">
+      <a (click)="transfer(data)" title="透传">
+        <i nz-icon nzType="swap"></i>
+      </a>
+      <nz-divider nzType="vertical"></nz-divider>
+      <a (click)="edit(data)" title="编辑">
         <i nz-icon nzType="edit"></i>
       </a>
     </td>

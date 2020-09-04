@@ -8,6 +8,8 @@ import {ChannelComponent} from './channel/channel.component';
 import {UserComponent} from './user/user.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {PluginStoreComponent} from './plugin-store/plugin-store.component';
+import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
+import {ChannelMonitorComponent} from './channel-monitor/channel-monitor.component';
 
 const routes: Routes = [
   {
@@ -17,11 +19,14 @@ const routes: Routes = [
       {path: '', redirectTo: 'dash'},
       {path: 'dash', component: DashComponent},
       {path: 'channel', component: ChannelComponent},
+      {path: 'channel-monitor/:id', component: ChannelMonitorComponent},
       {path: 'link', component: LinkComponent},
+      {path: 'link-monitor/:id', component: LinkMonitorComponent},
       {path: 'plugin', component: PluginComponent},
       {path: 'plugin-store', component: PluginStoreComponent},
       {path: 'user', component: UserComponent},
-      {path: 'password', component: PasswordComponent},
+      // {path: 'password', component: PasswordComponent},
+      {path: '**', redirectTo: 'dash'},
     ]
   },
 ];

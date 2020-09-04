@@ -21,6 +21,7 @@ import {
   NzMessageModule
 } from 'ng-zorro-antd';
 import {IconsProviderModule} from './icons-provider.module';
+import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 
 registerLocaleData(zh);
 
@@ -28,6 +29,7 @@ registerLocaleData(zh);
   declarations: [
     AppComponent,
     LoginComponent,
+    PageNotFoundComponent,
   ],
   imports: [
     BrowserModule,

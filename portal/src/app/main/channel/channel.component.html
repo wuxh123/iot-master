@@ -46,11 +46,11 @@
     </td>
     <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
-      <a>
-        <i nz-icon nzType="delete"></i>
+      <a [routerLink]="'/admin/channel-monitor/'+data.id" title="监控">
+        <i nz-icon nzType="aim"></i>
       </a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="edit(data)">
+      <a (click)="edit(data)" title="编辑">
         <i nz-icon nzType="edit"></i>
       </a>
     </td>
