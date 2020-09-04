@@ -12,6 +12,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7

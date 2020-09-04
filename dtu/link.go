@@ -5,18 +5,24 @@ import (
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
 	"net"
+	"sync"
 	"time"
 )
 
 type Link struct {
 	model.Link
 
-	registerChecked bool
-
 	Rx int
 	Tx int
 
+	//设备连接
 	conn net.Conn
+	//透传链接
+	peer net.Conn
+
+	//监视器连接，
+	monitors sync.Map // <string, websocket>
+
 
 	lastTime time.Time
 }
@@ -25,15 +31,40 @@ func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
-	//TODO 内容转发，暂时直接回复
-	_, _ = l.Send(buf)
+	if l.peer != nil {
+		//TODO 协议封装 ChannelId + LinkId + recv + buf
+		_, _ = l.peer.Write(buf)
+	}
+
+	l.monitors.Range(func(key, value interface{}) bool {
+		//TODO Websocket && 协议封装
+		con := value.(net.Conn)
+		_, _ = con.Write(buf)
+		return true
+	})
+	//内容转发，暂时直接回复
+	//_, _ = l.Send(buf)
 }
 
 func (l *Link) Send(buf []byte) (int, error) {
 	l.Tx += len(buf)
 	l.lastTime = time.Now()
 
-	return l.conn.Write(buf)
+	n, e := l.conn.Write(buf)
+
+	if l.peer != nil {
+		//TODO 协议封装
+		_, _ = l.peer.Write(buf)
+	}
+
+	l.monitors.Range(func(key, value interface{}) bool {
+		//TODO Websocket && 协议封装
+		con := value.(net.Conn)
+		_, _ = con.Write(buf)
+		return true
+	})
+
+	return n, e
 }
 
 func (l *Link) Close() error {

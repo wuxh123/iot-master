@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/model"
@@ -127,8 +128,8 @@ func linkGet(ctx *gin.Context) {
 		return
 	}
 
-	var channel model.Channel
-	has, err := db.Engine.ID(pid.Id).Get(&channel)
+	var link model.Link
+	has, err := db.Engine.ID(pid.Id).Get(&link)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -138,5 +139,66 @@ func linkGet(ctx *gin.Context) {
 		return
 	}
 
-	replyOk(ctx, channel)
+	replyOk(ctx, link)
+}
+
+
+var upGrader = websocket.Upgrader{
+	CheckOrigin: func (r *http.Request) bool {
+		return true
+	},
+}
+
+
+func linkMonitor(ctx *gin.Context){
+	var pid paramId
+	if err := ctx.BindUri(&pid); err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	var link model.Link
+	has, err := db.Engine.ID(pid.Id).Get(&link)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+	if !has {
+		replyFail(ctx, "找不到通道")
+		return
+	}
+
+	_, err = dtu.GetLink(link.ChannelId, link.Id)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+
+	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		return
+	}
+
+	//TODO 嵌入Link，监听数据
+	//lnk.Add
+
+	defer ws.Close()
+	for {
+		//读取ws中的数据
+		mt, message, err := ws.ReadMessage()
+		if err != nil {
+			break
+		}
+		if string(message) == "ping" {
+			message = []byte("pong")
+		}
+		//写入ws数据
+		err = ws.WriteMessage(mt, message)
+		if err != nil {
+			break
+		}
+	}
+
+	//replyOk(ctx, link)
 }
