@@ -79,7 +79,6 @@ func linkDelete(ctx *gin.Context) {
 
 	replyOk(ctx, nil)
 
-	//TODO 删除服务
 	go func() {
 		c, err := dtu.GetChannel(link.ChannelId)
 		if err != nil {
@@ -92,6 +91,7 @@ func linkDelete(ctx *gin.Context) {
 			return
 		}
 		_ = l.Close()
+		//TODO 强制删除连接
 	}()
 
 }
