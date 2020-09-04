@@ -491,6 +491,8 @@ func (c *PacketServer) receive() {
 
 			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, link)
+
+			//TODO 超时自动断线，应该在一个独立的线程中检查
 		}
 	}
 }
