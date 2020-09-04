@@ -3,7 +3,9 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/dtu-admin/db"
+	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/model"
+	"log"
 	"net/http"
 )
 
@@ -64,14 +66,28 @@ func linkDelete(ctx *gin.Context) {
 		return
 	}
 
-	_, err := db.Engine.ID(pid.Id).Get(&model.Link{})
+	var link model.Link
+	has, err := db.Engine.ID(pid.Id).Get(&link)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
+	if !has {
+		replyFail(ctx, "记录不存在")
+		return
+	}
+
 	replyOk(ctx, nil)
 
 	//TODO 删除服务
+	go func() {
+		channel, err := dtu.GetChannel(link.ChannelId)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		//channel.GetLink(link.Id)
+	}()
 
 }
 

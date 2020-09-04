@@ -89,7 +89,7 @@ func (l *Link) checkRegister(buf []byte) error {
 	}
 
 	//保存链接
-	l.channel.links.Store(link.Id, l)
+	l.channel.clients.Store(link.Id, l)
 
 	//处理剩余内容
 	if l.channel.RegisterMax > 0 && n > l.channel.RegisterMax {

@@ -66,8 +66,6 @@ func channelCreate(ctx *gin.Context) {
 		return
 	}
 
-	// channel.Creator = TODO 从session中获取
-
 	_, err := db.Engine.Insert(&channel)
 	if err != nil {
 		replyError(ctx, err)

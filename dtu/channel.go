@@ -18,12 +18,13 @@ type Channel struct {
 	Tx int
 
 	listener net.Listener
+	client   *Link    //作为客户端的连接
+	clients  sync.Map //接入的客户端
 
-	packetConn net.PacketConn
-
+	//处理UDP Server
+	packetConn    net.PacketConn
 	packetIndexes sync.Map //<Link>
 
-	links sync.Map
 }
 
 func NewChannel(channel *model.Channel) *Channel {
@@ -35,8 +36,14 @@ func NewChannel(channel *model.Channel) *Channel {
 func (c *Channel) Open() error {
 	switch c.Role {
 	case "server":
+		if c.listener != nil {
+			return errors.New("已经打开监听了")
+		}
 		return c.Listen()
 	case "client":
+		if c.client != nil {
+			return errors.New("已经连接了")
+		}
 		return c.Dial()
 	default:
 		return errors.New("未知角色")
@@ -46,15 +53,13 @@ func (c *Channel) Open() error {
 func (c *Channel) Dial() error {
 	conn, err := net.Dial(c.Net, c.Addr)
 	if err != nil {
-		c.Error = err.Error()
+		_ = c.storeError(err)
 		return err
 	}
 
-	go c.receive(conn)
+	go c.receiveClient(conn)
 
-	//TODO 自动重连机制
-
-	return err
+	return nil
 }
 
 func (c *Channel) Listen() error {
@@ -63,7 +68,7 @@ func (c *Channel) Listen() error {
 	case "tcp", "tcp4", "tcp6", "unix":
 		c.listener, err = net.Listen(c.Net, c.Addr)
 		if err != nil {
-			c.Error = err.Error()
+			_ = c.storeError(err)
 			return err
 		}
 		go c.accept()
@@ -72,7 +77,7 @@ func (c *Channel) Listen() error {
 		c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
 
 		if err != nil {
-			c.Error = err.Error()
+			_ = c.storeError(err)
 			return err
 		}
 		go c.receivePacket()
@@ -83,15 +88,29 @@ func (c *Channel) Listen() error {
 }
 
 func (c *Channel) Close() error {
+	c.clients.Range(func(key, value interface{}) bool {
+		l := value.(*Link)
+		_ = l.Close()
+		return true
+	})
+	c.clients = sync.Map{}
+
+	if c.client != nil {
+		err := c.client.Close()
+		if err != nil {
+			return err
+		}
+		c.client = nil
+	}
+
 	if c.listener != nil {
 		err := c.listener.Close()
 		if err != nil {
 			return err
 		}
 		c.listener = nil
-
-		//TODO 删除子连接
 	}
+
 	if c.packetConn != nil {
 		err := c.packetConn.Close()
 		if err != nil {
@@ -103,7 +122,7 @@ func (c *Channel) Close() error {
 }
 
 func (c *Channel) GetLink(id int64) (*Link, error) {
-	v, ok := c.links.Load(id)
+	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
 	}
@@ -117,11 +136,40 @@ func (c *Channel) accept() {
 			log.Println("accept fail:", err)
 			continue
 		}
-		go c.receive(conn)
+		go c.receiveServer(conn)
 	}
 }
 
-func (c *Channel) receive(conn net.Conn) {
+func (c *Channel) receiveClient(conn net.Conn) {
+	c.client = newLink(c, conn)
+
+	buf := make([]byte, 1024)
+	for c.client != nil && c.client.conn != nil {
+		n, e := conn.Read(buf)
+		if e != nil {
+			log.Println(e)
+			break
+		}
+		c.client.onData(buf[:n])
+	}
+
+	//关闭了通道，就再不管了
+	if c.client == nil {
+		return
+	}
+
+	if c.client.conn != nil {
+		err := c.client.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	//重连，要判断是否是关闭状态，计算重连次数
+	_ = c.Dial()
+}
+
+func (c *Channel) receiveServer(conn net.Conn) {
 	link := newLink(c, conn)
 
 	//未开启注册，则直接保存
@@ -145,31 +193,15 @@ func (c *Channel) receive(conn net.Conn) {
 		log.Println(err)
 	}
 
-	if c.Role == "server" && link.Serial != "" {
-		c.links.Delete(link.Id)
+	//无序号，直接删除
+	if link.Serial != "" {
+		c.clients.Delete(link.Id)
 	} else {
-		//等待5分钟，之后设为离线
+		//有序号，等待5分钟，之后设为离线
 		time.AfterFunc(time.Minute*5, func() {
-			c.links.Delete(link.Id)
+			c.clients.Delete(link.Id)
 		})
 	}
-}
-
-func (c *Channel) storeLink(l *Link) {
-	//保存链接
-	_, err := db.Engine.Insert(&l.Link)
-	if err != nil {
-		log.Println(err)
-	}
-
-	//根据ID保存
-	c.links.Store(c.Id, l)
-}
-
-func (c *Channel) storeError(err error) error {
-	c.Error = err.Error()
-	_, err = db.Engine.ID(c.Id).Cols("error").Update(&c.Channel)
-	return err
 }
 
 func (c *Channel) receivePacket() {
@@ -202,4 +234,21 @@ func (c *Channel) receivePacket() {
 
 		client.onData(buf[:n])
 	}
+}
+
+func (c *Channel) storeLink(l *Link) {
+	//保存链接
+	_, err := db.Engine.Insert(&l.Link)
+	if err != nil {
+		log.Println(err)
+	}
+
+	//根据ID保存
+	c.clients.Store(c.Id, l)
+}
+
+func (c *Channel) storeError(err error) error {
+	c.Error = err.Error()
+	_, err = db.Engine.ID(c.Id).Cols("error").Update(&c.Channel)
+	return err
 }
