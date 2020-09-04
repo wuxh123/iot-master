@@ -11,46 +11,87 @@ import (
 	"time"
 )
 
-type Channel struct {
+type Channel interface {
+	Open() error
+	Close() error
+	GetLink(id int64) (*Link, error)
+	GetChannel() *model.Channel
+	StoreLink(link *Link)
+}
+
+func NewChannel(channel *model.Channel) (Channel, error) {
+	if channel.Role == "client" {
+		return &Client{
+			baseChannel: baseChannel{
+				Channel: *channel,
+			},
+		}, nil
+	} else if channel.Role == "server" {
+		switch channel.Net {
+		case "tcp", "tcp4", "tcp6", "unix":
+			return &Server{
+				baseChannel: baseChannel{
+					Channel: *channel,
+				},
+			}, nil
+		case "udp", "udp4", "udp6", "unixgram":
+			return &PacketServer{
+				baseChannel: baseChannel{
+					Channel: *channel,
+				},
+			}, nil
+		default:
+			return nil, fmt.Errorf("未知的网络类型 %s", channel.Net)
+		}
+	} else {
+		return nil, fmt.Errorf("未知的角色 %s", channel.Role)
+	}
+}
+
+type baseChannel struct {
 	model.Channel
 
-	Rx int
-	Tx int
+	clients sync.Map
 
-	listener net.Listener
-	client   *Link    //作为客户端的连接
-	clients  sync.Map //接入的客户端
-
-	//处理UDP Server
-	packetConn    net.PacketConn
-	packetIndexes sync.Map //<Link>
-
+	Rx int `json:"rx"`
+	Tx int `json:"tx"`
 }
 
-func NewChannel(channel *model.Channel) *Channel {
-	return &Channel{
-		Channel: *channel,
-	}
+func (c *baseChannel) GetChannel() *model.Channel {
+	return &c.Channel
 }
 
-func (c *Channel) Open() error {
-	switch c.Role {
-	case "server":
-		if c.listener != nil {
-			return errors.New("已经打开监听了")
+func (c *baseChannel) StoreLink(l *Link) {
+	//保存链接
+	if l.Id > 0 {
+		_, err := db.Engine.ID(l.Id).Cols("addr", "error", "online", "online_at").Update(&l.Link)
+		if err != nil {
+			log.Println(err)
 		}
-		return c.Listen()
-	case "client":
-		if c.client != nil {
-			return errors.New("已经连接了")
+	} else {
+		_, err := db.Engine.Insert(&l.Link)
+		if err != nil {
+			log.Println(err)
 		}
-		return c.Dial()
-	default:
-		return errors.New("未知角色")
 	}
+
+	//根据ID保存
+	c.clients.Store(l.Id, l)
 }
 
-func (c *Channel) Dial() error {
+func (c *baseChannel) storeError(err error) error {
+	c.Error = err.Error()
+	_, err = db.Engine.ID(c.Id).Cols("error").Update(&c.Channel)
+	return err
+}
+
+type Client struct {
+	baseChannel
+
+	client *Link //作为客户端的连接
+}
+
+func (c *Client) Open() error {
 	conn, err := net.Dial(c.Net, c.Addr)
 	if err != nil {
 		_ = c.storeError(err)
@@ -62,37 +103,8 @@ func (c *Channel) Dial() error {
 	return nil
 }
 
-func (c *Channel) Listen() error {
-	var err error
-	switch c.Net {
-	case "tcp", "tcp4", "tcp6", "unix":
-		c.listener, err = net.Listen(c.Net, c.Addr)
-		if err != nil {
-			_ = c.storeError(err)
-			return err
-		}
-		go c.accept()
+func (c *Client) Close() error {
 
-	case "udp", "udp4", "udp6", "unixgram":
-		c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
-
-		if err != nil {
-			_ = c.storeError(err)
-			return err
-		}
-		go c.receivePacket()
-	default:
-		return errors.New("未知的网络类型")
-	}
-	return nil
-}
-
-func (c *Channel) Close() error {
-	c.clients.Range(func(key, value interface{}) bool {
-		l := value.(*Link)
-		_ = l.Close()
-		return true
-	})
 	c.clients = sync.Map{}
 
 	if c.client != nil {
@@ -103,48 +115,14 @@ func (c *Channel) Close() error {
 		c.client = nil
 	}
 
-	if c.listener != nil {
-		err := c.listener.Close()
-		if err != nil {
-			return err
-		}
-		c.listener = nil
-	}
-
-	if c.packetConn != nil {
-		err := c.packetConn.Close()
-		if err != nil {
-			return err
-		}
-		c.packetConn = nil
-	}
 	return nil
 }
 
-func (c *Channel) GetLink(id int64) (*Link, error) {
-	if c.Role == "server" {
-		v, ok := c.clients.Load(id)
-		if !ok {
-			return nil, errors.New("连接不存在")
-		}
-		return v.(*Link), nil
-	} else {
-		return c.client, nil
-	}
+func (c *Client) GetLink(id int64) (*Link, error) {
+	return c.client, nil
 }
 
-func (c *Channel) accept() {
-	for c.listener != nil {
-		conn, err := c.listener.Accept()
-		if err != nil {
-			log.Println("accept fail:", err)
-			continue
-		}
-		go c.receiveServer(conn)
-	}
-}
-
-func (c *Channel) receiveClient(conn net.Conn) {
+func (c *Client) receiveClient(conn net.Conn) {
 	c.client = newLink(c, conn)
 
 	var link model.Link
@@ -194,15 +172,71 @@ func (c *Channel) receiveClient(conn net.Conn) {
 	}
 
 	//重连，要判断是否是关闭状态，计算重连次数
-	_ = c.Dial()
+	_ = c.Open()
 }
 
-func (c *Channel) receiveServer(conn net.Conn) {
+type Server struct {
+	baseChannel
+
+	listener net.Listener
+}
+
+func (c *Server) Open() error {
+	var err error
+	c.listener, err = net.Listen(c.Net, c.Addr)
+	if err != nil {
+		_ = c.storeError(err)
+		return err
+	}
+	go c.accept()
+
+	return nil
+}
+
+func (c *Server) Close() error {
+	c.clients.Range(func(key, value interface{}) bool {
+		l := value.(*Link)
+		_ = l.Close()
+		return true
+	})
+	c.clients = sync.Map{}
+
+	if c.listener != nil {
+		err := c.listener.Close()
+		if err != nil {
+			return err
+		}
+		c.listener = nil
+	}
+
+	return nil
+}
+
+func (c *Server) GetLink(id int64) (*Link, error) {
+	v, ok := c.clients.Load(id)
+	if !ok {
+		return nil, errors.New("连接不存在")
+	}
+	return v.(*Link), nil
+}
+
+func (c *Server) accept() {
+	for c.listener != nil {
+		conn, err := c.listener.Accept()
+		if err != nil {
+			log.Println("accept fail:", err)
+			continue
+		}
+		go c.receive(conn)
+	}
+}
+
+func (c *Server) receive(conn net.Conn) {
 	link := newLink(c, conn)
 
 	//未开启注册，则直接保存
 	if !c.RegisterEnable {
-		c.storeLink(link)
+		c.StoreLink(link)
 	}
 
 	buf := make([]byte, 1024)
@@ -232,7 +266,49 @@ func (c *Channel) receiveServer(conn net.Conn) {
 	}
 }
 
-func (c *Channel) receivePacket() {
+type PacketServer struct {
+	baseChannel
+
+	//处理UDP Server
+	packetConn    net.PacketConn
+	packetIndexes sync.Map //<Link>
+
+}
+
+func (c *PacketServer) Open() error {
+	var err error
+	c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
+
+	if err != nil {
+		_ = c.storeError(err)
+		return err
+	}
+	go c.receive()
+	return nil
+}
+
+func (c *PacketServer) Close() error {
+
+	if c.packetConn != nil {
+		err := c.packetConn.Close()
+		if err != nil {
+			return err
+		}
+		c.packetConn = nil
+	}
+	c.clients = sync.Map{}
+	return nil
+}
+
+func (c *PacketServer) GetLink(id int64) (*Link, error) {
+	v, ok := c.clients.Load(id)
+	if !ok {
+		return nil, errors.New("连接不存在")
+	}
+	return v.(*Link), nil
+}
+
+func (c *PacketServer) receive() {
 	buf := make([]byte, 1024)
 	for c.packetConn != nil {
 		n, addr, err := c.packetConn.ReadFrom(buf)
@@ -253,7 +329,7 @@ func (c *Channel) receivePacket() {
 
 			//根据ID保存
 			if !c.RegisterEnable {
-				c.storeLink(client)
+				c.StoreLink(client)
 			}
 
 			//根据地址保存，收到UDP包之后，方便索引
@@ -262,21 +338,4 @@ func (c *Channel) receivePacket() {
 
 		client.onData(buf[:n])
 	}
-}
-
-func (c *Channel) storeLink(l *Link) {
-	//保存链接
-	_, err := db.Engine.Insert(&l.Link)
-	if err != nil {
-		log.Println(err)
-	}
-
-	//根据ID保存
-	c.clients.Store(c.Id, l)
-}
-
-func (c *Channel) storeError(err error) error {
-	c.Error = err.Error()
-	_, err = db.Engine.ID(c.Id).Cols("error").Update(&c.Channel)
-	return err
 }

@@ -27,22 +27,24 @@ type Link struct {
 
 	lastTime time.Time
 
-	channel *Channel
+	channel Channel
 }
 
 func (l *Link) checkRegister(buf []byte) error {
+	ch := l.channel.GetChannel()
+
 	n := len(buf)
-	if n < l.channel.RegisterMin {
+	if n < ch.RegisterMin {
 		return fmt.Errorf("register package is too short %d %s", n, string(buf[:n]))
 	}
 	serial := string(buf[:n])
-	if l.channel.RegisterMax > 0 && l.channel.RegisterMax >= l.channel.RegisterMin && n > l.channel.RegisterMax {
-		serial = string(buf[:l.channel.RegisterMax])
+	if ch.RegisterMax > 0 && ch.RegisterMax >= ch.RegisterMin && n > ch.RegisterMax {
+		serial = string(buf[:ch.RegisterMax])
 	}
 
 	// 正则表达式判断合法性
-	if l.channel.RegisterRegex != "" {
-		reg := regexp.MustCompile(`^` + l.channel.RegisterRegex + `$`)
+	if ch.RegisterRegex != "" {
+		reg := regexp.MustCompile(`^` + ch.RegisterRegex + `$`)
 		match := reg.MatchString(serial)
 		if !match {
 			return fmt.Errorf("register package format error %s", serial)
@@ -54,12 +56,12 @@ func (l *Link) checkRegister(buf []byte) error {
 
 	//查找数据库同通道，同序列号链接，更新数据库中 addr online
 	var link model.Link
-	has, err := db.Engine.Where("channel_id=?", l.channel.Id).And("serial=?", serial).Get(&link)
+	has, err := db.Engine.Where("channel_id=?", ch.Id).And("serial=?", serial).Get(&link)
 	if err != nil {
 		return err
 	}
 	if has {
-		lnk, err := l.channel.GetLink(link.Id)
+		lnk, _ := l.channel.GetLink(link.Id)
 		if lnk != nil {
 			//如果同序号连接还在正常通讯，则关闭当前连接
 			if lnk.conn != nil {
@@ -73,29 +75,17 @@ func (l *Link) checkRegister(buf []byte) error {
 			//复制watcher
 		}
 
-		link.Addr = l.conn.RemoteAddr().String()
-		link.Online = true
-		link.OnlineAt = time.Now()
-		link.Error = ""
-
-		_, err = db.Engine.ID(link.Id).Cols("addr", "error", "online", "online_at").Update(link)
-		if err != nil {
-			return err
-		}
-	} else {
-		//插入新记录
-		_, err := db.Engine.Insert(&l.Link)
-		if err != nil {
-			return err
-		}
+		l.Id = link.Id
+		l.Name = link.Name
+		l.Serial = link.Serial
 	}
 
 	//保存链接
-	l.channel.clients.Store(link.Id, l)
+	l.channel.StoreLink(l)
 
 	//处理剩余内容
-	if l.channel.RegisterMax > 0 && n > l.channel.RegisterMax {
-		l.onData(buf[l.channel.RegisterMax:])
+	if ch.RegisterMax > 0 && n > ch.RegisterMax {
+		l.onData(buf[ch.RegisterMax:])
 	}
 
 	return nil
@@ -105,8 +95,10 @@ func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
+	ch := l.channel.GetChannel()
+
 	//检查注册包（只有服务端是检测）
-	if !l.registerChecked && l.channel.RegisterEnable && l.channel.Role == "server" {
+	if !l.registerChecked && ch.RegisterEnable && ch.Role == "server" {
 		err := l.checkRegister(buf)
 		if err != nil {
 			log.Println(err)
@@ -114,21 +106,21 @@ func (l *Link) onData(buf []byte) {
 			_ = l.Close()
 			return
 		}
+		l.registerChecked = true
 		return
 	}
-	l.registerChecked = true
 
 	//检查心跳包, 判断上次收发时间，是否已经过去心跳间隔
-	if l.channel.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(l.channel.HeartBeatInterval) {
+	if ch.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(ch.HeartBeatInterval) {
 		var b []byte
-		if l.channel.HeartBeatIsHex {
+		if ch.HeartBeatIsHex {
 			var e error
-			b, e = hex.DecodeString(l.channel.HeartBeatContent)
+			b, e = hex.DecodeString(ch.HeartBeatContent)
 			if e != nil {
 				log.Println(e)
 			}
 		} else {
-			b = []byte(l.channel.HeartBeatContent)
+			b = []byte(ch.HeartBeatContent)
 		}
 		if bytes.Compare(b, buf) == 0 {
 			return
@@ -166,7 +158,8 @@ func (l *Link) storeError(err error) error {
 	return err
 }
 
-func newLink(c *Channel, conn net.Conn) *Link {
+func newLink(ch Channel, conn net.Conn) *Link {
+	c := ch.GetChannel()
 	return &Link{
 		Link: model.Link{
 			Role:      c.Role,
@@ -177,12 +170,13 @@ func newLink(c *Channel, conn net.Conn) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		channel: c,
+		channel: ch,
 		conn:    conn,
 	}
 }
 
-func newPacketLink(c *Channel, conn net.PacketConn, addr net.Addr) *Link {
+func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
+	c := ch.GetChannel()
 	return &Link{
 		Link: model.Link{
 			Role:      c.Role,
@@ -193,7 +187,7 @@ func newPacketLink(c *Channel, conn net.PacketConn, addr net.Addr) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		channel: c,
+		channel: ch,
 		conn: &PackConn{
 			PacketConn: conn,
 			addr:       addr,

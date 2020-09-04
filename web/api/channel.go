@@ -143,29 +143,13 @@ func channelModify(ctx *gin.Context) {
 
 	//重新启动服务
 	go func() {
+		_ = dtu.DeleteChannel(channel.Id)
 		//如果 disabled，则删除之
 		if channel.Disabled {
-			_ = dtu.DeleteChannel(channel.Id)
 			return
 		}
 
-		ch, err := dtu.GetChannel(pid.Id)
-		if err != nil {
-			log.Println(err)
-			//找不到，重新启动一个
-			_, _ = dtu.StartChannel(&channel)
-			return
-		}
-
-		err = ch.Close()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		//重置参数，重新启动
-		ch.Channel = channel
-		err = ch.Open()
+		_, err := dtu.StartChannel(&channel)
 		if err != nil {
 			log.Println(err)
 			return

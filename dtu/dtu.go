@@ -11,10 +11,10 @@ import (
 
 var channels sync.Map
 
-func Channels() []*Channel {
-	cs := make([]*Channel, 0)
+func Channels() []Channel {
+	cs := make([]Channel, 0)
 	channels.Range(func(key, value interface{}) bool {
-		cs = append(cs, value.(*Channel))
+		cs = append(cs, value.(Channel))
 		return true
 	})
 	return cs
@@ -40,10 +40,13 @@ func Recovery() error {
 	return nil
 }
 
-func StartChannel(c *model.Channel) (*Channel, error) {
+func StartChannel(c *model.Channel) (Channel, error) {
 	//log.Println("Start channel", c)
-	channel := NewChannel(c)
-	err := channel.Open()
+	channel, err := NewChannel(c)
+	if err != nil {
+		return nil, err
+	}
+	err = channel.Open()
 	if err != nil {
 		return nil, err
 	}
@@ -57,15 +60,15 @@ func DeleteChannel(id int64) error  {
 		return errors.New("通道不存在")
 	}
 	channels.Delete(id)
-	return v.(*Channel).Close()
+	return v.(Channel).Close()
 }
 
-func GetChannel(id int64) (*Channel, error) {
+func GetChannel(id int64) (Channel, error) {
 	v, ok := channels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
 	}
-	return v.(*Channel), nil
+	return v.(Channel), nil
 }
 
 func GetLink(channelId, linkId int64) (*Link, error)  {
