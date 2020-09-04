@@ -30,7 +30,7 @@
     <th nzColumnKey="role" nzShowFilter [nzFilterFn]="true" [nzFilters]="roleFilters">角色</th>
     <th nzColumnKey="net" nzShowFilter [nzFilterFn]="true" [nzFilters]="netFilters">网络</th>
     <th nzColumnKey="status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
-    <th nzColumnKey="created" [nzSortFn]="true">创建时间</th>
+    <th nzColumnKey="created_at" [nzSortFn]="true">创建时间</th>
     <th></th>
   </tr>
   </thead>
@@ -44,7 +44,7 @@
       {{data.disabled ? '禁用' : ''}}
       <a>启动/停止</a>
     </td>
-    <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a [routerLink]="'/admin/channel-monitor/'+data.id" title="监控">
         <i nz-icon nzType="aim"></i>

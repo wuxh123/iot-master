@@ -10,6 +10,6 @@ type Plugin struct {
 	Address   string    `json:"address" xorm:"varchar(128)"`
 	Path      string    `json:"path" xorm:"varchar(256)"`
 	Entry     string    `json:"entry" xorm:"varchar(256)"`
-	Expire    time.Time `json:"expire"`
-	Created time.Time `json:"created" xorm:"created"`
+	ExpireAt  time.Time `json:"expire_at"`
+	CreatedAt time.Time `json:"created_at" xorm:"created"`
 }

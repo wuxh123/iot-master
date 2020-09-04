@@ -5,7 +5,7 @@ import "time"
 type Channel struct {
 	Id   int64  `json:"id"`
 	Name string `json:"name" xorm:"varchar(64)"`
-	//Tags string `json:"tags" xorm:"varchar(256)"`
+	Error string `json:"error" xorm:"varchar(256)"`
 
 	Disabled bool   `json:"disabled" xorm:"default 0"` //此处 禁用 直接放到顶级，Update无效
 	Role     string `json:"role" xorm:"varchar(16) notnull"`
@@ -26,5 +26,5 @@ type Channel struct {
 	PluginId int64 `json:"plugin_id"`
 
 	//Creator int       `json:"creator"`
-	Created time.Time `json:"created" xorm:"created"`
+	CreatedAt  time.Time `json:"created_at" xorm:"created"`
 }

@@ -14,16 +14,14 @@ import (
 )
 
 type Link struct {
-	Id int64
+	model.Link
 
-	Error      string
-	Serial     string
-	RemoteAddr net.Addr
+	//RemoteAddr net.Addr
 
 	Rx int
 	Tx int
 
-	conn interface{}
+	conn net.Conn
 
 	lastTime time.Time
 
@@ -59,29 +57,39 @@ func (l *Link) checkRegister(buf []byte) error {
 		return err
 	}
 	if has {
-		//TODO 检查工作状态，如果同序号连接还在正常通讯，则关闭当前连接，回复：Duplicate register
+		lnk, err := l.channel.GetLink(link.Id)
+		if lnk != nil {
+			//如果同序号连接还在正常通讯，则关闭当前连接
+			if lnk.conn != nil {
+				return fmt.Errorf("duplicate serial %s", serial)
+			}
 
-		//更新客户端地址，
-		link.Addr = l.RemoteAddr.String()
-		link.Online = time.Now()
-		_, err := db.Engine.ID(link.Id).Cols("addr", "online").Update(link)
+			//复制有用的历史数据
+			l.Rx = lnk.Rx
+			l.Tx = lnk.Tx
+
+			//复制watcher
+		}
+
+		link.Addr = l.conn.RemoteAddr().String()
+		link.Online = true
+		link.OnlineAt = time.Now()
+		link.Error = ""
+
+		_, err = db.Engine.ID(link.Id).Cols("addr", "error", "online", "online_at").Update(link)
 		if err != nil {
 			return err
 		}
 	} else {
-		link = model.Link{
-			Serial:    serial,
-			Addr:      l.RemoteAddr.String(),
-			ChannelId: l.channel.Id,
-			Online:    time.Now(),
-			Created:   time.Now(),
-		}
-		_, err := db.Engine.Insert(&link)
+		//插入新记录
+		_, err := db.Engine.Insert(&l.Link)
 		if err != nil {
 			return err
 		}
-		l.Id = link.Id
 	}
+
+	//保存链接
+	l.channel.links.Store(link.Id, l)
 
 	//处理剩余内容
 	if l.channel.RegisterMax > 0 && n > l.channel.RegisterMax {
@@ -132,29 +140,56 @@ func (l *Link) Send(buf []byte) (int, error) {
 	l.Tx += len(buf)
 	l.lastTime = time.Now()
 
-	if conn, ok := l.conn.(net.Conn); ok {
-		return conn.Write(buf)
-	}
-	if conn, ok := l.conn.(net.PacketConn); ok {
-		return conn.WriteTo(buf, l.RemoteAddr)
-	}
-	return 0, errors.New("错误的链接类型")
+	return l.conn.Write(buf)
 }
 
 func (l *Link) Close() error {
-	return l.conn.(net.Conn).Close()
+	if l.conn == nil {
+		return errors.New("连接已经关闭")
+	}
+	err := l.conn.Close()
+	l.conn = nil
+	if err != nil {
+		return err
+	}
+	l.Online = false
+	_, err = db.Engine.ID(l.Id).Cols("online").Update(&l.Link)
+	return err
 }
 
-func newConnection(conn net.Conn) *Link {
+func (l *Link) storeError(err error) error {
+	l.Error = err.Error()
+	_, err = db.Engine.ID(l.Id).Cols("error").Update(&l.Link)
+	return err
+}
+
+func newLink(c *Channel, conn net.Conn) *Link {
 	return &Link{
-		RemoteAddr: conn.RemoteAddr(),
-		conn:       conn,
+		Link: model.Link{
+			Addr:      conn.RemoteAddr().String(),
+			ChannelId: c.Id,
+			PluginId:  c.PluginId,
+			Online:    true,
+			OnlineAt:  time.Now(),
+		},
+		channel: c,
+		conn:    conn,
 	}
 }
 
-func newPacketConnection(conn net.PacketConn, addr net.Addr) *Link {
+func newPacketLink(c *Channel, conn net.PacketConn, addr net.Addr) *Link {
 	return &Link{
-		RemoteAddr: addr,
-		conn:       conn,
+		Link: model.Link{
+			Addr:      addr.String(),
+			ChannelId: c.Id,
+			PluginId:  c.PluginId,
+			Online:    true,
+			OnlineAt:  time.Now(),
+		},
+		channel: c,
+		conn: &PackConn{
+			PacketConn: conn,
+			addr:       addr,
+		},
 	}
 }

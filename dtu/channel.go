@@ -14,7 +14,8 @@ import (
 type Channel struct {
 	model.Channel
 
-	Error string
+	Rx int
+	Tx int
 
 	listener net.Listener
 
@@ -45,6 +46,7 @@ func (c *Channel) Open() error {
 func (c *Channel) Dial() error {
 	conn, err := net.Dial(c.Net, c.Addr)
 	if err != nil {
+		c.Error = err.Error()
 		return err
 	}
 
@@ -61,6 +63,7 @@ func (c *Channel) Listen() error {
 	case "tcp", "tcp4", "tcp6", "unix":
 		c.listener, err = net.Listen(c.Net, c.Addr)
 		if err != nil {
+			c.Error = err.Error()
 			return err
 		}
 		go c.accept()
@@ -69,6 +72,7 @@ func (c *Channel) Listen() error {
 		c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
 
 		if err != nil {
+			c.Error = err.Error()
 			return err
 		}
 		go c.receivePacket()
@@ -98,6 +102,14 @@ func (c *Channel) Close() error {
 	return nil
 }
 
+func (c *Channel) GetLink(id int64) (*Link, error) {
+	v, ok := c.links.Load(id)
+	if !ok {
+		return nil, errors.New("连接不存在")
+	}
+	return v.(*Link), nil
+}
+
 func (c *Channel) accept() {
 	for c.listener != nil {
 		conn, err := c.listener.Accept()
@@ -105,52 +117,59 @@ func (c *Channel) accept() {
 			log.Println("accept fail:", err)
 			continue
 		}
-
 		go c.receive(conn)
 	}
 }
 
 func (c *Channel) receive(conn net.Conn) {
-	client := newConnection(conn)
-	client.channel = c
+	link := newLink(c, conn)
 
-	//TODO 未开启注册，则直接保存
+	//未开启注册，则直接保存
 	if !c.RegisterEnable {
-		c.storeLink(client)
+		c.storeLink(link)
 	}
 
 	buf := make([]byte, 1024)
-	for client.conn != nil {
+	for link.conn != nil {
 		n, e := conn.Read(buf)
 		if e != nil {
 			log.Println(e)
 			break
 		}
-		client.onData(buf[:n])
+		link.onData(buf[:n])
 	}
 
-	//TODO 删除connect，或状态置空
+	//删除connect，或状态置空
+	err := link.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
+	if c.Role == "server" && link.Serial != "" {
+		c.links.Delete(link.Id)
+	} else {
+		//等待5分钟，之后设为离线
+		time.AfterFunc(time.Minute*5, func() {
+			c.links.Delete(link.Id)
+		})
+	}
 }
 
-func (c *Channel) storeLink(conn *Link) {
-
-	lnk := model.Link{
-		Addr:      conn.RemoteAddr.String(),
-		ChannelId: c.Id,
-		Online:    time.Now(),
-		Created:   time.Now(),
-	}
-
-	//storage.DB("link").Save(&lnk)
-	//TODO 保存链接
-	_, err := db.Engine.Insert(&lnk)
+func (c *Channel) storeLink(l *Link) {
+	//保存链接
+	_, err := db.Engine.Insert(&l.Link)
 	if err != nil {
 		log.Println(err)
 	}
 
 	//根据ID保存
-	c.links.Store(c.Id, conn)
+	c.links.Store(c.Id, l)
+}
+
+func (c *Channel) storeError(err error) error {
+	c.Error = err.Error()
+	_, err = db.Engine.ID(c.Id).Cols("error").Update(&c.Channel)
+	return err
 }
 
 func (c *Channel) receivePacket() {
@@ -170,8 +189,7 @@ func (c *Channel) receivePacket() {
 		if ok {
 			client = v.(*Link)
 		} else {
-			client = newPacketConnection(c.packetConn, addr)
-			client.channel = c
+			client = newPacketLink(c, c.packetConn, addr)
 
 			//根据ID保存
 			if !c.RegisterEnable {

@@ -41,12 +41,11 @@ func Recovery() error {
 }
 
 func StartChannel(c *model.Channel) (*Channel, error) {
-	log.Println("start", c)
-
+	//log.Println("Start channel", c)
 	channel := NewChannel(c)
 	err := channel.Open()
-	if err != nil && channel != nil {
-		channel.Error = err.Error()
+	if err != nil {
+		return nil, err
 	}
 	channels.Store(c.Id, channel)
 	return channel, err

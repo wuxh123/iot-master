@@ -7,7 +7,6 @@ import (
 	"github.com/zgwit/dtu-admin/model"
 	"log"
 	"net/http"
-	"time"
 )
 
 func channels(ctx *gin.Context) {
@@ -68,7 +67,6 @@ func channelCreate(ctx *gin.Context) {
 	}
 
 	// channel.Creator = TODO 从session中获取
-	channel.Created = time.Now()
 
 	_, err := db.Engine.Insert(&channel)
 	if err != nil {

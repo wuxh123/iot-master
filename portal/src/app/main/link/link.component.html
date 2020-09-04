@@ -25,7 +25,7 @@
     <th>序列号</th>
     <th>地址</th>
     <th nzColumnKey="status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
-    <th nzColumnKey="online" [nzSortFn]="true">上线时间</th>
+    <th nzColumnKey="online_at" [nzSortFn]="true">上线时间</th>
     <th></th>
   </tr>
   </thead>
@@ -37,9 +37,9 @@
     <td>{{ data.serial }}</td>
     <td>{{ data.addr}}</td>
     <td>
-
+      {{data.online ? '在线' : '离线'}}
     </td>
-    <td>{{ data.online | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>{{ data.online_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a [routerLink]="'/admin/link-monitor/'+data.id" title="监控">
         <i nz-icon nzType="aim"></i>
