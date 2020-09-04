@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/denisbrodbeck/machineid"
 	"github.com/zgwit/dtu-admin/conf"
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dtu"
@@ -31,7 +32,14 @@ func main() {
 	//加载配置
 	conf.Load()
 
-	err := db.Open()
+	id, err := machineid.ID()
+	if err != nil {
+		log.Println("ID错误：", err)
+		return
+	}
+	log.Println("Machine ID:", id)
+
+	err = db.Open()
 	if err != nil {
 		log.Println("数据库错误：", err)
 		return
