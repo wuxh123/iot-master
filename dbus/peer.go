@@ -8,7 +8,7 @@ import (
 
 
 type Peer struct {
-	Client
+	baseClient
 
 	link *dtu.Link
 }

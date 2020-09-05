@@ -52,9 +52,11 @@ func (s *Server) receive(conn net.Conn) {
 
 	var parser packet.Parser
 
-	p := &Plugin{conn: conn}
 
-	for p.conn != nil {
+	c := NewClient()
+	//p := &Plugin{conn: conn}
+
+	for {
 		n, e := conn.Read(buf)
 		if e != nil {
 			log.Println(e)
@@ -62,12 +64,12 @@ func (s *Server) receive(conn net.Conn) {
 		}
 		packs := parser.Parse(buf[:n])
 		for _, pack := range packs {
-			p.handle(pack)
+			c.handle(pack)
 		}
 	}
 
 	//关闭透传
-	p.CLose()
+	c.CLose()
 }
 
 
