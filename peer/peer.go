@@ -1,4 +1,4 @@
-package dtu
+package peer
 
 import (
 	"github.com/zgwit/dtu-admin/packet"
@@ -43,5 +43,8 @@ func (p *Peer) receive() {
 func (p *Peer) handle(msg *packet.Packet) {
 	switch msg.Type {
 	//
+	case packet.TypeConnect:
+		//
+
 	}
 }

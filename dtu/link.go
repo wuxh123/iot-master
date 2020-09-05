@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
+	"github.com/zgwit/dtu-admin/packet"
+	"github.com/zgwit/dtu-admin/peer"
 	"log"
 	"net"
 	"sync"
@@ -20,11 +22,10 @@ type Link struct {
 	conn net.Conn
 
 	//透传链接
-	peer net.Conn
+	peer *peer.Peer
 
 	//监视器连接，
 	monitors sync.Map // <string, websocket>
-
 
 	lastTime time.Time
 }
@@ -34,8 +35,14 @@ func (l *Link) onData(buf []byte) {
 	l.lastTime = time.Now()
 
 	if l.peer != nil {
+		_ = l.peer.Send(&packet.Packet{
+			Type: packet.TypeTransfer,
+			Data: buf,
+		})
+	} else {
 		//TODO 协议封装 ChannelId + LinkId + recv + buf
-		_, _ = l.peer.Write(buf)
+		//b := make([]byte, 8 + len(buf))
+		//发送插件
 	}
 
 	l.reportMonitor("recv", buf)
@@ -46,11 +53,6 @@ func (l *Link) Send(buf []byte) (int, error) {
 	l.lastTime = time.Now()
 
 	n, e := l.conn.Write(buf)
-
-	if l.peer != nil {
-		//TODO 协议封装
-		_, _ = l.peer.Write(buf)
-	}
 
 	l.reportMonitor("send", buf)
 
@@ -69,7 +71,6 @@ func (l *Link) Close() error {
 	l.Online = false
 	_, err = db.Engine.ID(l.Id).Cols("online").Update(&l.Link)
 
-
 	l.reportMonitor("send", nil)
 
 	return err
@@ -80,7 +81,7 @@ func (l *Link) Monitor(m *Monitor) {
 }
 
 // 发送给监视器
-func (l *Link) reportMonitor(typ string, data []byte)  {
+func (l *Link) reportMonitor(typ string, data []byte) {
 	l.monitors.Range(func(key, value interface{}) bool {
 		m := value.(*Monitor)
 		err := m.Report(typ, data)
@@ -110,7 +111,7 @@ func newLink(ch Channel, conn net.Conn) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		conn:    conn,
+		conn: conn,
 	}
 }
 
