@@ -1,30 +1,30 @@
-package peer
+package dbus
 
 import (
-	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
 	"time"
 )
 
-type Peer struct {
-	Key  string
+type Client struct {
 	conn net.Conn
-
-	link *dtu.Link
 }
 
-func (p *Peer) CLose() {
+func (p *Client) CLose() error {
+	if p.conn == nil {
+		return nil
+	}
+	err := p.conn.Close()
 	p.conn = nil
-	//TODO 从列表中删除，从link中删除
+	return err
 }
 
-func (p *Peer) Send(msg *packet.Packet) error {
+func (p *Client) Send(msg *packet.Packet) error {
 	return p.Write(msg.Encode())
 }
 
-func (p *Peer) Write(b []byte) error {
+func (p *Client) Write(b []byte) error {
 	n, e := p.conn.Write(b)
 	if e != nil {
 		return e
@@ -40,7 +40,11 @@ func (p *Peer) Write(b []byte) error {
 	return nil
 }
 
-func (p *Peer) handle(msg *packet.Packet) {
+type Plugin struct {
+	Client
+}
+
+func (p *Plugin) handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
 		p.handleConnect(msg)
@@ -54,16 +58,14 @@ func (p *Peer) handle(msg *packet.Packet) {
 	}
 }
 
-func (p *Peer) handleConnect(msg *packet.Packet) {
-	p.Key = string(msg.Data)
-	//TODO 检查Key，获取对应的 通道，连接号
-	//TODO 在link中设置peer
+func (p *Plugin) handleConnect(msg *packet.Packet) {
+	//TODO 根据appkey, secret校验身份，注册插件到对应通道和链接上
 
 }
 
-func (p *Peer) handleTransfer(msg *packet.Packet) {
-	_, _ = p.link.Send(msg.Data)
-	//TODO 判断link是否为空
-	//TODO 如果link断线，缓存 数据包
+func (p *Plugin) handleTransfer(msg *packet.Packet) {
+	//TODO 找到对应链接，发送之
+	//TODO 使用 int64 还是 int32
+	//p.link.Send(msg.Data[8:])
 
 }

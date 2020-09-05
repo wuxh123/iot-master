@@ -1,4 +1,4 @@
-package plugin
+package dbus
 
 import (
 	"github.com/zgwit/dtu-admin/packet"
@@ -51,6 +51,7 @@ func (s *Server) receive(conn net.Conn) {
 	//TODO 接收Key，并校验
 
 	var parser packet.Parser
+
 	p := &Plugin{conn: conn}
 
 	for p.conn != nil {

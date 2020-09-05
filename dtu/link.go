@@ -3,10 +3,9 @@ package dtu
 import (
 	"errors"
 	"github.com/zgwit/dtu-admin/db"
+	"github.com/zgwit/dtu-admin/dbus"
 	"github.com/zgwit/dtu-admin/model"
 	"github.com/zgwit/dtu-admin/packet"
-	"github.com/zgwit/dtu-admin/peer"
-	"github.com/zgwit/dtu-admin/plugin"
 	"log"
 	"net"
 	"sync"
@@ -26,9 +25,9 @@ type Link struct {
 	cache [][]byte
 
 	//透传链接
-	peer *peer.Peer
+	peer *dbus.Peer
 
-	plugin *plugin.Plugin
+	plugin *dbus.Plugin
 
 	//监视器连接，
 	monitors sync.Map // <string, websocket>
