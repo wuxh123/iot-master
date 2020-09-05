@@ -148,7 +148,13 @@ func (c *Client) GetLink(id int64) (*Link, error) {
 }
 
 func (c *Client) receive(conn net.Conn) {
-	c.client = newLink(c, conn)
+	//c.client = newLink(c, conn)
+	client := newLink(c, conn)
+	if c.client != nil {
+		//重发数据
+		client.cache = c.client.cache
+	}
+	c.client = client
 
 	var link model.Link
 	has, err := db.Engine.Where("channel_id=?", c.Id).And("role=?", "client").Get(&link)
@@ -308,6 +314,8 @@ func (c *Server) receive(conn net.Conn) {
 				link.Tx = l.Tx
 
 				//复制watcher
+
+				link.Resume()
 			}
 
 			link.Id = lnk.Id
@@ -470,6 +478,7 @@ func (c *PacketServer) receive() {
 						link.Tx = l.Tx
 
 						//复制watcher
+						link.Resume()
 					}
 
 					link.Id = lnk.Id

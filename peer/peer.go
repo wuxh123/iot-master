@@ -12,9 +12,6 @@ type Peer struct {
 	Key  string
 	conn net.Conn
 
-	//发送缓存
-	cache [][]byte
-
 	link *dtu.Link
 }
 

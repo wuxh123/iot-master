@@ -22,6 +22,9 @@ type Link struct {
 	//设备连接
 	conn net.Conn
 
+	//发送缓存
+	cache [][]byte
+
 	//透传链接
 	peer *peer.Peer
 
@@ -66,7 +69,20 @@ func (l *Link) onData(buf []byte) {
 	l.reportMonitor("recv", buf)
 }
 
+func (l *Link) Resume() {
+	for _, b := range l.cache {
+		_, _ = l.Send(b)
+	}
+	l.cache = make([][]byte, 0)
+}
+
 func (l *Link) Send(buf []byte) (int, error) {
+	//检查状态，如果关闭，则缓存
+	if l.conn == nil {
+		l.cache = append(l.cache, buf)
+		return 0, errors.New("链接已关闭")
+	}
+
 	l.Tx += len(buf)
 	l.lastTime = time.Now()
 
@@ -90,7 +106,7 @@ func (l *Link) Close() error {
 	l.Online = false
 	_, err = db.Engine.ID(l.Id).Cols("online").Update(&l.Link)
 
-	l.reportMonitor("send", nil)
+	l.reportMonitor("close", nil)
 
 	return err
 }
@@ -130,7 +146,8 @@ func newLink(ch Channel, conn net.Conn) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		conn: conn,
+		conn:  conn,
+		cache: make([][]byte, 0),
 	}
 }
 
@@ -150,5 +167,6 @@ func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 			PacketConn: conn,
 			addr:       addr,
 		},
+		cache: make([][]byte, 0),
 	}
 }
