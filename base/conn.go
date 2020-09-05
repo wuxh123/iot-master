@@ -10,6 +10,13 @@ type PackConn struct {
 	addr net.Addr
 }
 
+func NewPackConn(packConn net.PacketConn, addr net.Addr) *PackConn {
+	return &PackConn{
+		PacketConn: packConn,
+		addr:       addr,
+	}
+}
+
 func (c *PackConn) Read(b []byte) (n int, err error) {
 	return 0, errors.New("此接口不支持读")
 }

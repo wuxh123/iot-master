@@ -165,10 +165,7 @@ func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		conn: &base.PackConn{
-			PacketConn: conn,
-			addr:       addr,
-		},
+		conn: base.NewPackConn(conn, addr),
 		cache: make([][]byte, 0),
 	}
 }
