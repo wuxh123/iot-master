@@ -1,6 +1,7 @@
 package peer
 
 import (
+	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
@@ -10,6 +11,10 @@ type Peer struct {
 	Key  string
 	conn net.Conn
 
+	//发送缓存
+	cache [][]byte
+
+	link   *dtu.Link
 	parser packet.Parser
 }
 
@@ -18,6 +23,11 @@ func NewPeer(key string, conn net.Conn) *Peer {
 		Key:  key,
 		conn: conn,
 	}
+}
+
+func (p *Peer) CLose() {
+	p.conn = nil
+	//TODO 从列表中删除，从link中删除
 }
 
 func (p *Peer) Send(msg *packet.Packet) error {
@@ -44,7 +54,19 @@ func (p *Peer) handle(msg *packet.Packet) {
 	switch msg.Type {
 	//
 	case packet.TypeConnect:
-		//
+		p.Key = string(msg.Data)
+	//TODO 检查Key，获取对应的 通道，连接号
+	//TODO 在link中设置peer
 
+	case packet.TypeHeartBeak:
+	case packet.TypePing:
+		_ = p.Send(&packet.Packet{
+			Type: packet.TypePong,
+			Data: nil,
+		})
+	case packet.TypeTransfer:
+		_, _ = p.link.Send(msg.Data)
+		//TODO 判断link是否为空
+		//TODO 如果link断线，缓存 数据包
 	}
 }

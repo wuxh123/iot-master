@@ -28,8 +28,8 @@ func (p *Parser) Parse(buf []byte) []*Packet {
 		}
 
 		var msg Packet
-		msg.Type = uint8(buf[2])
-		msg.Status = uint8(buf[3])
+		msg.Type = buf[2]
+		msg.Status = buf[3]
 
 		l := int(uint16(buf[4])<<8 + uint16(buf[5]))
 		if remain-6 < l {
@@ -54,7 +54,7 @@ func (p *Parser) Parse(buf []byte) []*Packet {
 	return packs
 }
 
-func dup(b []byte) []byte  {
+func dup(b []byte) []byte {
 	buf := make([]byte, len(b))
 	copy(buf, b)
 	return buf

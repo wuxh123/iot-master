@@ -6,6 +6,7 @@ import (
 	"github.com/zgwit/dtu-admin/model"
 	"github.com/zgwit/dtu-admin/packet"
 	"github.com/zgwit/dtu-admin/peer"
+	"github.com/zgwit/dtu-admin/plugin"
 	"log"
 	"net"
 	"sync"
@@ -24,6 +25,8 @@ type Link struct {
 	//透传链接
 	peer *peer.Peer
 
+	plugin *plugin.Plugin
+
 	//监视器连接，
 	monitors sync.Map // <string, websocket>
 
@@ -34,15 +37,30 @@ func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
+	//透传至工具（虚拟串口）
 	if l.peer != nil {
 		_ = l.peer.Send(&packet.Packet{
 			Type: packet.TypeTransfer,
 			Data: buf,
 		})
-	} else {
+	} else if l.plugin != nil {
+		//透传至插件
 		//TODO 协议封装 ChannelId + LinkId + recv + buf
-		//b := make([]byte, 8 + len(buf))
+		b := make([]byte, 8+len(buf))
+		b[0] = uint8(l.ChannelId << 24)
+		b[1] = uint8(l.ChannelId << 16)
+		b[2] = uint8(l.ChannelId << 8)
+		b[3] = uint8(l.ChannelId)
+		b[4] = uint8(l.Id << 24)
+		b[5] = uint8(l.Id << 16)
+		b[6] = uint8(l.Id << 8)
+		b[7] = uint8(l.Id)
+		copy(b[8:], buf)
 		//发送插件
+		_ = l.plugin.Send(&packet.Packet{
+			Type: packet.TypeTransfer,
+			Data: b,
+		})
 	}
 
 	l.reportMonitor("recv", buf)
@@ -53,6 +71,7 @@ func (l *Link) Send(buf []byte) (int, error) {
 	l.lastTime = time.Now()
 
 	n, e := l.conn.Write(buf)
+	//TODO 没发完，继续发
 
 	l.reportMonitor("send", buf)
 

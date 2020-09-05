@@ -1,21 +1,21 @@
 package plugin
 
 import (
+	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
-	"strings"
 	"time"
 )
 
-type Client struct {
+type Plugin struct {
 	conn net.Conn
 }
 
-func (c *Client) Send(msg *Message) error {
+func (c *Plugin) Send(msg *packet.Packet) error {
 	return c.Write(msg.Encode())
 }
 
-func (c *Client) Write(b []byte) error {
+func (c *Plugin) Write(b []byte) error {
 	n, e := c.conn.Write(b)
 	if e != nil {
 		return e
@@ -31,47 +31,28 @@ func (c *Client) Write(b []byte) error {
 	return nil
 }
 
-func (c *Client) handle(msg *Message) {
-	log.Println("handle message", msg)
+func (c *Plugin) handle(msg *packet.Packet) {
+	//log.Println("handle message", msg)
 
-	ss := strings.Split(msg.cmd, "/")
-
-	cmd := ss[0]
-	args := ss[1:]
-
-	switch cmd {
-	case "register":
-		c.handleRegister(args)
-	case "subscribe":
-		c.handleSubscribe(args)
-	case "unsubscribe":
-		c.handleUnsubscribe(args)
-	case "transfer":
-		c.handleTransfer(args)
-	//case "event": // 应该只有插件处理
+	switch msg.Type {
+	case packet.TypeConnect:
+		c.handleRegister(msg)
+	case packet.TypeHeartBeak:
+	case packet.TypePing:
+		_ = c.Send(&packet.Packet{Type: packet.TypePong})
+	case packet.TypeTransfer:
+		c.handleTransfer(msg)
 	default:
 		log.Println("unknown command", msg)
 	}
 }
 
-func (c *Client) handleRegister(args []string) {
+func (c *Plugin) handleRegister(msg *packet.Packet) {
+	//TODO 根据appkey, secret校验身份，注册插件到对应通道和链接上
 
 }
 
-// subscribe/:channel/:id
-func (c *Client) handleSubscribe(args []string) {
+func (c *Plugin) handleTransfer(msg *packet.Packet) {
+	//TODO 找到对应链接，发送之
 
 }
-
-// unsubscribe/:channel/:id
-func (c *Client) handleUnsubscribe(args []string) {
-
-}
-
-//开始 transfer/:channel/:id/start（非必需调用）
-//透传 transfer/:channel/:id,
-//停止 transfer/:channel/:id/stop
-func (c *Client) handleTransfer(args []string) {
-
-}
-
