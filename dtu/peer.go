@@ -20,6 +20,11 @@ func NewPeer(key string, conn net.Conn) *Peer {
 	}
 }
 
+func (p *Peer) Send(msg *packet.Packet) error {
+	_, err := p.conn.Write(msg.Encode())
+	return err
+}
+
 func (p *Peer) receive() {
 	buf := make([]byte, 1024)
 	for p.conn != nil {
