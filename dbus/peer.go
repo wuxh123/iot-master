@@ -1,7 +1,6 @@
 package dbus
 
 import (
-	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 )
@@ -10,7 +9,7 @@ import (
 type Peer struct {
 	baseClient
 
-	link *dtu.Link
+	//link *dtu.Link
 }
 
 func (p *Peer) handle(msg *packet.Packet) {
@@ -35,7 +34,7 @@ func (p *Peer) handleConnect(msg *packet.Packet) {
 }
 
 func (p *Peer) handleTransfer(msg *packet.Packet) {
-	_, _ = p.link.Send(msg.Data)
+	//_, _ = p.link.Send(msg.Data)
 	//TODO 判断link是否为空
 	//TODO 如果link断线，缓存 数据包
 

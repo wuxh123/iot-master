@@ -28,7 +28,7 @@ func (p *Parser) Parse(buf []byte) []*Packet {
 		}
 
 		var msg Packet
-		msg.Type = buf[2]
+		msg.Type = Type(buf[2])
 		msg.Status = buf[3]
 
 		l := int(uint16(buf[4])<<8 + uint16(buf[5]))

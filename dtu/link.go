@@ -8,7 +8,6 @@ import (
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
-	"sync"
 	"time"
 )
 
@@ -25,12 +24,13 @@ type Link struct {
 	cache [][]byte
 
 	//透传链接
-	peer *dbus.Peer
+	peer dbus.Client
 
-	plugin *dbus.Plugin
+	plugin dbus.Client
 
 	//监视器连接，
-	monitors sync.Map // <string, websocket>
+	monitor *Monitor
+	//monitors sync.Map // <string, websocket>
 
 	lastTime time.Time
 }
@@ -47,7 +47,7 @@ func (l *Link) onData(buf []byte) {
 		})
 	} else if l.plugin != nil {
 		//透传至插件
-		//TODO 协议封装 ChannelId + LinkId + recv + buf
+		//TODO 协议封装 ChannelId + LinkId + buf
 		b := make([]byte, 8+len(buf))
 		b[0] = uint8(l.ChannelId << 24)
 		b[1] = uint8(l.ChannelId << 16)
@@ -110,21 +110,23 @@ func (l *Link) Close() error {
 	return err
 }
 
-func (l *Link) Monitor(m *Monitor) {
-	l.monitors.Store(m, true)
+func (l *Link) Monitor(m *Monitor) error {
+	if l.monitor != nil {
+		//TODO 不能同时监听
+	}
+	l.monitor = m
+	return nil
 }
 
 // 发送给监视器
 func (l *Link) reportMonitor(typ string, data []byte) {
-	l.monitors.Range(func(key, value interface{}) bool {
-		m := value.(*Monitor)
-		err := m.Report(typ, data)
+		err := l.monitor.Report(typ, data)
 		if err != nil {
 			log.Println(err)
-			l.monitors.Delete(key)
+			//TODO 删除之
+			l.monitor.Link = nil
+			l.monitor = nil
 		}
-		return true
-	})
 }
 
 func (l *Link) storeError(err error) error {

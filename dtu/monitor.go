@@ -47,5 +47,5 @@ func (m *Monitor) receive() {
 		}
 	}
 
-	m.Link.monitors.Delete(m)
+	m.Link.monitor = nil
 }
