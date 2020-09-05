@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
+	"log"
 	"net"
 	"sync"
 	"time"
@@ -17,6 +18,7 @@ type Link struct {
 
 	//设备连接
 	conn net.Conn
+
 	//透传链接
 	peer net.Conn
 
@@ -36,14 +38,7 @@ func (l *Link) onData(buf []byte) {
 		_, _ = l.peer.Write(buf)
 	}
 
-	l.monitors.Range(func(key, value interface{}) bool {
-		//TODO Websocket && 协议封装
-		con := value.(net.Conn)
-		_, _ = con.Write(buf)
-		return true
-	})
-	//内容转发，暂时直接回复
-	//_, _ = l.Send(buf)
+	l.reportMonitor("recv", buf)
 }
 
 func (l *Link) Send(buf []byte) (int, error) {
@@ -57,12 +52,7 @@ func (l *Link) Send(buf []byte) (int, error) {
 		_, _ = l.peer.Write(buf)
 	}
 
-	l.monitors.Range(func(key, value interface{}) bool {
-		//TODO Websocket && 协议封装
-		con := value.(net.Conn)
-		_, _ = con.Write(buf)
-		return true
-	})
+	l.reportMonitor("send", buf)
 
 	return n, e
 }
@@ -78,7 +68,28 @@ func (l *Link) Close() error {
 	}
 	l.Online = false
 	_, err = db.Engine.ID(l.Id).Cols("online").Update(&l.Link)
+
+
+	l.reportMonitor("send", nil)
+
 	return err
+}
+
+func (l *Link) Monitor(m *Monitor) {
+	l.monitors.Store(m, true)
+}
+
+// 发送给监视器
+func (l *Link) reportMonitor(typ string, data []byte)  {
+	l.monitors.Range(func(key, value interface{}) bool {
+		m := value.(*Monitor)
+		err := m.Report(typ, data)
+		if err != nil {
+			log.Println(err)
+			l.monitors.Delete(key)
+		}
+		return true
+	})
 }
 
 func (l *Link) storeError(err error) error {

@@ -15,7 +15,7 @@ func channels(ctx *gin.Context) {
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		replyError(ctx, err)
 		return
 	}
 

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/hex"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/zgwit/dtu-admin/db"
@@ -16,7 +17,7 @@ func links(ctx *gin.Context) {
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		replyError(ctx, err)
 		return
 	}
 
@@ -142,15 +143,13 @@ func linkGet(ctx *gin.Context) {
 	replyOk(ctx, link)
 }
 
-
 var upGrader = websocket.Upgrader{
-	CheckOrigin: func (r *http.Request) bool {
+	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
-
-func linkMonitor(ctx *gin.Context){
+func linkMonitor(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
@@ -168,37 +167,76 @@ func linkMonitor(ctx *gin.Context){
 		return
 	}
 
-	_, err = dtu.GetLink(link.ChannelId, link.Id)
+	lnk, err := dtu.GetLink(link.ChannelId, link.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-
 	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
+		replyError(ctx, err)
 		return
 	}
 
-	//TODO 嵌入Link，监听数据
-	//lnk.Add
+	lnk.Monitor(&dtu.Monitor{
+		//Key:  "",
+		Conn: ws,
+		Link: lnk,
+	})
 
-	defer ws.Close()
-	for {
-		//读取ws中的数据
-		mt, message, err := ws.ReadMessage()
-		if err != nil {
-			break
-		}
-		if string(message) == "ping" {
-			message = []byte("pong")
-		}
-		//写入ws数据
-		err = ws.WriteMessage(mt, message)
-		if err != nil {
-			break
-		}
+	replyOk(ctx, nil)
+}
+
+type linkSendBody struct {
+	IsHex bool   `form:"is_hex"`
+	Data  string `form:"data"`
+}
+
+func linkSend(ctx *gin.Context) {
+	var pid paramId
+	if err := ctx.BindUri(&pid); err != nil {
+		replyError(ctx, err)
+		return
 	}
 
-	//replyOk(ctx, link)
+	var body linkSendBody
+	err := ctx.ShouldBind(&body)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	var link model.Link
+	has, err := db.Engine.ID(pid.Id).Get(&link)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+	if !has {
+		replyFail(ctx, "找不到通道")
+		return
+	}
+
+	lnk, err := dtu.GetLink(link.ChannelId, link.Id)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	b := []byte(body.Data)
+	if body.IsHex {
+		b, err = hex.DecodeString(body.Data)
+		if err != nil {
+			replyError(ctx, err)
+			return
+		}
+	}
+	_, err = lnk.Send(b)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	replyOk(ctx, nil)
 }
