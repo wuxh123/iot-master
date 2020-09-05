@@ -11,12 +11,16 @@ type Plugin struct {
 	conn net.Conn
 }
 
-func (c *Plugin) Send(msg *packet.Packet) error {
-	return c.Write(msg.Encode())
+func (p *Plugin) CLose() {
+	p.conn = nil
 }
 
-func (c *Plugin) Write(b []byte) error {
-	n, e := c.conn.Write(b)
+func (p *Plugin) Send(msg *packet.Packet) error {
+	return p.Write(msg.Encode())
+}
+
+func (p *Plugin) Write(b []byte) error {
+	n, e := p.conn.Write(b)
 	if e != nil {
 		return e
 	}
@@ -25,35 +29,33 @@ func (c *Plugin) Write(b []byte) error {
 	if n < len(b) {
 		log.Println("发送不完整")
 		time.Sleep(time.Millisecond * 100)
-		_, _ = c.conn.Write(b[n:])
+		_, _ = p.conn.Write(b[n:])
 	}
 
 	return nil
 }
 
-func (c *Plugin) handle(msg *packet.Packet) {
-	//log.Println("handle message", msg)
-
+func (p *Plugin) handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
-		c.handleConnect(msg)
+		p.handleConnect(msg)
 	case packet.TypeHeartBeak:
 	case packet.TypePing:
-		_ = c.Send(&packet.Packet{Type: packet.TypePong})
+		_ = p.Send(&packet.Packet{Type: packet.TypePong})
 	case packet.TypeTransfer:
-		c.handleTransfer(msg)
+		p.handleTransfer(msg)
 	default:
 		log.Println("unknown command", msg)
 	}
 }
 
-func (c *Plugin) handleConnect(msg *packet.Packet) {
+func (p *Plugin) handleConnect(msg *packet.Packet) {
 	//TODO 根据appkey, secret校验身份，注册插件到对应通道和链接上
 
 }
 
-func (c *Plugin) handleTransfer(msg *packet.Packet) {
+func (p *Plugin) handleTransfer(msg *packet.Packet) {
 	//TODO 找到对应链接，发送之
-	c.link.Send(msg.Data[8:])
+	//p.link.Send(msg.Data[8:])
 
 }

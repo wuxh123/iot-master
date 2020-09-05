@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
 )
@@ -46,12 +47,33 @@ func (s *Server) accept() {
 }
 
 func (s *Server) receive(conn net.Conn) {
+	buf := make([]byte, 1024)
 	//TODO 接收Key，并校验
 
-	buf := make([]byte, 1024)
-	for {
-		n, e := conn.Read(buf)
-		//TODO 解析消息，并处理
+	var parser packet.Parser
+	p := &Plugin{conn: conn}
 
+	for p.conn != nil {
+		n, e := conn.Read(buf)
+		if e != nil {
+			log.Println(e)
+			break
+		}
+		packs := parser.Parse(buf[:n])
+		for _, pack := range packs {
+			p.handle(pack)
+		}
 	}
+
+	//关闭透传
+	p.CLose()
+}
+
+
+func ListenAndServe(addr string) error {
+	s := &Server{
+		Net:  "tcp",
+		Addr: addr,
+	}
+	return s.Listen()
 }
