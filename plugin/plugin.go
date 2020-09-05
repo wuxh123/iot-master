@@ -36,7 +36,7 @@ func (c *Plugin) handle(msg *packet.Packet) {
 
 	switch msg.Type {
 	case packet.TypeConnect:
-		c.handleRegister(msg)
+		c.handleConnect(msg)
 	case packet.TypeHeartBeak:
 	case packet.TypePing:
 		_ = c.Send(&packet.Packet{Type: packet.TypePong})
@@ -47,12 +47,13 @@ func (c *Plugin) handle(msg *packet.Packet) {
 	}
 }
 
-func (c *Plugin) handleRegister(msg *packet.Packet) {
+func (c *Plugin) handleConnect(msg *packet.Packet) {
 	//TODO 根据appkey, secret校验身份，注册插件到对应通道和链接上
 
 }
 
 func (c *Plugin) handleTransfer(msg *packet.Packet) {
 	//TODO 找到对应链接，发送之
+	c.link.Send(msg.Data[8:])
 
 }
