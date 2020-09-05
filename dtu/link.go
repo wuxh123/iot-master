@@ -2,6 +2,7 @@ package dtu
 
 import (
 	"errors"
+	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dbus"
 	"github.com/zgwit/dtu-admin/model"
@@ -164,7 +165,7 @@ func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		conn: &PackConn{
+		conn: &base.PackConn{
 			PacketConn: conn,
 			addr:       addr,
 		},
