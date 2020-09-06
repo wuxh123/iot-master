@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/db"
-	"github.com/zgwit/dtu-admin/dbus"
 	"github.com/zgwit/dtu-admin/model"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
@@ -25,9 +24,9 @@ type Link struct {
 	cache [][]byte
 
 	//透传链接
-	peer dbus.Client
+	peer base.Client
 
-	plugin dbus.Client
+	plugin base.Client
 
 	//监视器连接，
 	monitor *Monitor

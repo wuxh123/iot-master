@@ -1,6 +1,7 @@
 package dbus
 
 import (
+	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 )
@@ -9,10 +10,10 @@ import (
 type Peer struct {
 	baseClient
 
-	//link *dtu.Link
+	link *dtu.Link
 }
 
-func (p *Peer) handle(msg *packet.Packet) {
+func (p *Peer) Handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
 		p.handleConnect(msg)

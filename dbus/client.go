@@ -1,18 +1,12 @@
 package dbus
 
 import (
+	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
 	"time"
 )
-
-type Client interface {
-	CLose() error
-	Send(msg *packet.Packet) error
-	Write(b []byte) error
-	handle(msg *packet.Packet)
-}
 
 type baseClient struct {
 	conn net.Conn
@@ -47,7 +41,7 @@ func (p *baseClient) Write(b []byte) error {
 	return nil
 }
 
-func NewClient() Client  {
+func NewClient() base.Client  {
 	//根据类型
 	return nil
 }

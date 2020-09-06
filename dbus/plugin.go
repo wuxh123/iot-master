@@ -9,7 +9,7 @@ type Plugin struct {
 	baseClient
 }
 
-func (p *Plugin) handle(msg *packet.Packet) {
+func (p *Plugin) Handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
 		p.handleConnect(msg)

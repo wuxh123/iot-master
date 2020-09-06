@@ -64,7 +64,7 @@ func (s *Server) receive(conn net.Conn) {
 		}
 		packs := parser.Parse(buf[:n])
 		for _, pack := range packs {
-			c.handle(pack)
+			c.Handle(pack)
 		}
 	}
 
