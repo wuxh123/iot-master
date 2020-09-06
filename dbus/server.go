@@ -1,9 +1,12 @@
 package dbus
 
 import (
+	"errors"
+	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
+	"strings"
 )
 
 type Server struct {
@@ -47,14 +50,32 @@ func (s *Server) accept() {
 }
 
 func (s *Server) receive(conn net.Conn) {
-	buf := make([]byte, 1024)
-	//TODO 接收Key，并校验
 
 	var parser packet.Parser
+	buf := make([]byte, 1024)
 
-
-	c := NewClient()
-	//p := &Plugin{conn: conn}
+	//接收第一个包，作为类型校验
+	n, e := conn.Read(buf)
+	if e != nil {
+		log.Println(e)
+		return
+	}
+	packs := parser.Parse(buf[:n])
+	if len(packs) == 0 {
+		_ = conn.Close()
+		return
+	}
+	//根据第一个包创建客户羰
+	c, e := s.createTunnel(packs[0])
+	if e != nil {
+		_, _ = conn.Write([]byte(e.Error()))
+		_ = conn.Close()
+		return
+	}
+	//处理第一次接收的剩余包（网络拥堵时，可能会发生）
+	for _, pack := range packs[1:] {
+		c.Handle(pack)
+	}
 
 	for {
 		n, e := conn.Read(buf)
@@ -68,12 +89,30 @@ func (s *Server) receive(conn net.Conn) {
 		}
 	}
 
-	//关闭透传
-	c.CLose()
+	//关闭
+	_ = c.CLose()
 }
 
+func (s *Server) createTunnel(p *packet.Packet) (base.Client, error) {
+	if p.Type != packet.TypeConnect {
+		//告诉客户端，第一个包必须是注册包
+		return nil, errors.New("first packet must be connect")
+	}
 
-func ListenAndServe(addr string) error {
+	register := string(p.Data)
+	rs := strings.Split(register, ":")
+	switch rs[0] {
+	case "peer":
+		//TODO 解析 peer:key
+
+	case "plugin":
+		//TODO 解析 plugin:key:secret
+
+	}
+	return nil, errors.New("未支持的类型")
+}
+
+func Start(addr string) error {
 	s := &Server{
 		Net:  "tcp",
 		Addr: addr,

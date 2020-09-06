@@ -13,12 +13,12 @@ const (
 	TypeHeartBeak
 	TypePing
 	TypePong
+	TypeError
 
 	//透传
 	TypeTransfer = iota + 10
 	TypeOnline //上线
 	TypeOffline //掉线
-	TypeError
 
 )
 

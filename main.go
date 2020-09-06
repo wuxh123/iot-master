@@ -4,6 +4,7 @@ import (
 	"github.com/denisbrodbeck/machineid"
 	"github.com/zgwit/dtu-admin/conf"
 	"github.com/zgwit/dtu-admin/db"
+	"github.com/zgwit/dtu-admin/dbus"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/flag"
 	"github.com/zgwit/dtu-admin/web"
@@ -45,12 +46,20 @@ func main() {
 		return
 	}
 
+	//启动总线 TODO 添加配置
+	err = dbus.Start(":1843")
+	if err != nil {
+		log.Println("总线启动失败：", err)
+		return
+	}
+
 	//恢复之前的链接
 	err = dtu.Recovery()
 	if err != nil {
 		log.Println("恢复链接：", err)
 		return
 	}
+
 
 	//启动Web服务
 	web.Serve()
