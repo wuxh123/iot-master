@@ -24,7 +24,7 @@ func Open() error {
 	if err != nil {
 		return err
 	}
-	Engine.ShowSQL(cfg.ShowSQL)
+	Engine.ShowSQL(cfg.Debug)
 
 	//同步表
 	err = Engine.Sync2(model.Channel{}, model.User{}, model.Link{}, model.Plugin{})
