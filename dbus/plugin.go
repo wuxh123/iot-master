@@ -12,7 +12,9 @@ type Plugin struct {
 func (p *Plugin) Handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
-		p.handleConnect(msg)
+		_ = p.SendError("duplicate register")
+		_ = p.CLose()
+		//p.handleConnect(msg)
 	case packet.TypeHeartBeak:
 	case packet.TypePing:
 		_ = p.Send(&packet.Packet{Type: packet.TypePong})
@@ -21,11 +23,6 @@ func (p *Plugin) Handle(msg *packet.Packet) {
 	default:
 		log.Println("unknown command", msg)
 	}
-}
-
-func (p *Plugin) handleConnect(msg *packet.Packet) {
-	//TODO 根据appkey, secret校验身份，注册插件到对应通道和链接上
-
 }
 
 func (p *Plugin) handleTransfer(msg *packet.Packet) {

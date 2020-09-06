@@ -24,9 +24,9 @@ type Link struct {
 	cache [][]byte
 
 	//透传链接
-	peer base.Client
+	peer base.Tunnel
 
-	plugin base.Client
+	plugin base.Tunnel
 
 	//监视器连接，
 	monitor *Monitor

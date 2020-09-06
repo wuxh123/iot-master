@@ -93,7 +93,7 @@ func (s *Server) receive(conn net.Conn) {
 	_ = c.CLose()
 }
 
-func (s *Server) createTunnel(p *packet.Packet) (base.Client, error) {
+func (s *Server) createTunnel(p *packet.Packet) (base.Tunnel, error) {
 	if p.Type != packet.TypeConnect {
 		//告诉客户端，第一个包必须是注册包
 		return nil, errors.New("first packet must be connect")

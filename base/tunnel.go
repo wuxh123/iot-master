@@ -2,7 +2,7 @@ package base
 
 import "github.com/zgwit/dtu-admin/packet"
 
-type Client interface {
+type Tunnel interface {
 	CLose() error
 	Send(msg *packet.Packet) error
 	Write(b []byte) error

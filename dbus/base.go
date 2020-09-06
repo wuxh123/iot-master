@@ -1,7 +1,6 @@
 package dbus
 
 import (
-	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
@@ -41,7 +40,10 @@ func (p *baseClient) Write(b []byte) error {
 	return nil
 }
 
-func NewClient() base.Client  {
-	//根据类型
-	return nil
+func (p *baseClient) SendError(err string) error {
+	return p.Send(&packet.Packet{
+		Type:   packet.TypeError,
+		Status: 0,
+		Data:   []byte(err),
+	})
 }
