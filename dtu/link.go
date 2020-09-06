@@ -118,6 +118,15 @@ func (l *Link) Monitor(m *Monitor) error {
 	return nil
 }
 
+func (l *Link) Peer(tunnel base.Tunnel) {
+	l.peer = tunnel
+}
+
+func (l *Link) Plugin(tunnel base.Tunnel) {
+	l.plugin = tunnel
+}
+
+
 // 发送给监视器
 func (l *Link) reportMonitor(typ string, data []byte) {
 		err := l.monitor.Report(typ, data)

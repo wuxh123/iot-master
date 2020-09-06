@@ -3,6 +3,7 @@ package dbus
 import (
 	"errors"
 	"github.com/zgwit/dtu-admin/base"
+	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
 	"net"
@@ -66,7 +67,7 @@ func (s *Server) receive(conn net.Conn) {
 		return
 	}
 	//根据第一个包创建客户羰
-	c, e := s.createTunnel(packs[0])
+	c, e := s.createTunnel(conn, packs[0])
 	if e != nil {
 		_, _ = conn.Write([]byte(e.Error()))
 		_ = conn.Close()
@@ -93,7 +94,8 @@ func (s *Server) receive(conn net.Conn) {
 	_ = c.CLose()
 }
 
-func (s *Server) createTunnel(p *packet.Packet) (base.Tunnel, error) {
+func (s *Server) createTunnel(conn net.Conn, p *packet.Packet) (base.Tunnel, error) {
+
 	if p.Type != packet.TypeConnect {
 		//告诉客户端，第一个包必须是注册包
 		return nil, errors.New("first packet must be connect")
@@ -104,9 +106,23 @@ func (s *Server) createTunnel(p *packet.Packet) (base.Tunnel, error) {
 	switch rs[0] {
 	case "peer":
 		//TODO 解析 peer:key
-
+		if len(rs) < 2 {
+			return nil, errors.New("parameter missed")
+		}
+		key := rs[1]
+		v, ok := peerKeys.Load(key)
+		if !ok {
+			return nil, errors.New("not available or expired")
+		}
+		link := v.(*dtu.Link)
+		peer := &Peer{baseClient: baseClient{conn: conn}, link: link}
+		link.Peer(peer)
+		return peer, nil
 	case "plugin":
 		//TODO 解析 plugin:key:secret
+		if len(rs) < 2 {
+			return nil, errors.New("parameter missed")
+		}
 
 	}
 	return nil, errors.New("未支持的类型")

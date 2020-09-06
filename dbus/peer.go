@@ -1,11 +1,13 @@
 package dbus
 
 import (
+	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
 	"log"
+	"sync"
+	"time"
 )
-
 
 type Peer struct {
 	baseClient
@@ -33,4 +35,18 @@ func (p *Peer) handleTransfer(msg *packet.Packet) {
 	//TODO 判断link是否为空
 	//TODO 如果link断线，缓存 数据包
 
+}
+
+var peerKeys sync.Map // <key string, *Link>
+
+//TODO 要检查link是否正在透传
+func PreparePeer(link *dtu.Link) string {
+	key := base.RandomString(20)
+	//检查重复（基本不需要）
+	peerKeys.Store(key, link)
+	//1分钟自动清除
+	time.AfterFunc(time.Minute, func() {
+		peerKeys.Delete(key)
+	})
+	return key
 }
