@@ -24,6 +24,7 @@ type _web struct {
 type _baseAuth struct {
 	Desc     string `yaml:"desc"`
 	Disabled bool   `yaml:"disabled"`
+	External bool   `yaml:"external"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 }
