@@ -41,15 +41,15 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.POST("/login", authLogin)
 
 	//检查登录状态
-	app.Use(func(c *gin.Context) {
-		session := sessions.Default(c)
-		if user := session.Get("user"); user != nil {
-			c.Next()
-		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-			c.Abort()
-		}
-	})
+	//app.Use(func(c *gin.Context) {
+	//	session := sessions.Default(c)
+	//	if user := session.Get("user"); user != nil {
+	//		c.Next()
+	//	} else {
+	//		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	//		c.Abort()
+	//	}
+	//})
 
 	app.DELETE("/logout", authLogout)
 	app.POST("/password", authPassword)
@@ -73,6 +73,8 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.DELETE("/link/:id", linkDelete)
 	app.PUT("/link/:id", linkModify)
 	app.GET("/link/:id", linkGet)
+	app.GET("/link/:id/monitor", linkMonitor)
+	app.POST("/link/:id/send", linkSend)
 	//app.GET("/link/:id/watch", linkWatch)
 	//app.GET("/link/:id/stop", linkStop)
 

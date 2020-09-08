@@ -126,16 +126,18 @@ func (l *Link) Plugin(tunnel base.Tunnel) {
 	l.plugin = tunnel
 }
 
-
 // 发送给监视器
 func (l *Link) reportMonitor(typ string, data []byte) {
-		err := l.monitor.Report(typ, data)
-		if err != nil {
-			log.Println(err)
-			//TODO 删除之
-			l.monitor.Link = nil
-			l.monitor = nil
-		}
+	if l.monitor == nil {
+		return
+	}
+	err := l.monitor.Report(typ, data)
+	if err != nil {
+		log.Println(err)
+		//TODO 删除之
+		l.monitor.Link = nil
+		l.monitor = nil
+	}
 }
 
 func (l *Link) storeError(err error) error {
@@ -173,7 +175,7 @@ func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
-		conn: base.NewPackConn(conn, addr),
+		conn:  base.NewPackConn(conn, addr),
 		cache: make([][]byte, 0),
 	}
 }

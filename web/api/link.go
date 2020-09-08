@@ -179,13 +179,14 @@ func linkMonitor(ctx *gin.Context) {
 		return
 	}
 
-	lnk.Monitor(&dtu.Monitor{
+	m := &dtu.Monitor{
 		//Key:  "",
 		Conn: ws,
 		Link: lnk,
-	})
-
-	replyOk(ctx, nil)
+	}
+	lnk.Monitor(m)
+	m.Receive()
+	//replyOk(ctx, nil)
 }
 
 type linkSendBody struct {

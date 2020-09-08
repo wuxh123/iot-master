@@ -3,10 +3,32 @@
   TODO： 工作状态，数据收发量，速度
 </p>
 
-<p>
-  监控窗：接收的数据，发送的数据
-</p>
+<div>
+  <textarea cols="30" rows="10" [(ngModel)]="text"></textarea>
+  <button nz-button (click)="send()">发送</button>
 
-<p>
-  发送窗，支持字符串和十六进制
-</p>
+</div>
+
+<div nz-row>
+  <div nz-col nzSpan="12">
+    <div class="title">
+      数据接收
+    </div>
+    <div class="content" #contentRecv>
+      <div *ngFor="let d of dataRecv">
+        {{d.time | amDateFormat: 'hh:mm:ss'}} -&gt; {{d.data}}
+      </div>
+    </div>
+  </div>
+  <div nz-col nzSpan="12">
+    <div class="title">
+      数据发送
+    </div>
+    <div class="content" #contentSend>
+      <div *ngFor="let d of dataSend">
+        {{d.time | amDateFormat: 'hh:mm:ss'}} -&gt; {{d.data}}
+      </div>
+    </div>
+  </div>
+</div>
+
