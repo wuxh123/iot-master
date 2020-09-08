@@ -1,11 +1,8 @@
 package api
 
 import (
-	"encoding/gob"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/model"
 	"net/http"
 )
 
@@ -32,27 +29,24 @@ type paramId2 struct {
 	Id2 int64 `uri:"id2"`
 }
 
+func mustLogin(c *gin.Context) {
+	session := sessions.Default(c)
+	if user := session.Get("user"); user != nil {
+		c.Next()
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"ok": false, "error": "Unauthorized"})
+		c.Abort()
+	}
+}
+
 func RegisterRoutes(app *gin.RouterGroup) {
-	//注册 User类型
-	gob.Register(&model.User{})
-	//启用session
-	app.Use(sessions.Sessions("dtu-admin", memstore.NewStore([]byte("dtu-admin-secret"))))
+	//app.POST("/login", authLogin)
 
-	app.POST("/login", authLogin)
+	//app.DELETE("/logout", authLogout)
+	//app.POST("/password", authPassword)
 
-	//检查登录状态
-	//app.Use(func(c *gin.Context) {
-	//	session := sessions.Default(c)
-	//	if user := session.Get("user"); user != nil {
-	//		c.Next()
-	//	} else {
-	//		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-	//		c.Abort()
-	//	}
-	//})
-
-	app.DELETE("/logout", authLogout)
-	app.POST("/password", authPassword)
+	//检查 session，必须登录
+	app.Use(mustLogin) //TODO 返回前端静态文件，如果找不到，
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	app.POST("/channels", channels)
@@ -101,19 +95,6 @@ func replyError(ctx *gin.Context, err error) {
 	})
 }
 
-
 func nop(c *gin.Context) {
 	c.String(http.StatusForbidden, "Unsupported")
-}
-
-func mustLogin(c *gin.Context) {
-	//测试
-	session := sessions.Default(c)
-	if user := session.Get("user"); user != nil {
-		c.Next()
-	} else {
-		//c.Redirect(http.StatusSeeOther, "/login")
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		c.Abort()
-	}
 }

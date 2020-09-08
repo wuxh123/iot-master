@@ -15,24 +15,27 @@ type _database struct {
 }
 
 type _web struct {
-	Desc  string `yaml:"desc"`
-	Addr  string `yaml:"addr"`
-	Cors  bool   `yaml:"cors"`
-	Debug bool   `yaml:"debug"`
+	Desc      string `yaml:"desc"`
+	Addr      string `yaml:"addr"`
+	Cors      bool   `yaml:"cors"`
+	Debug     bool   `yaml:"debug"`
+	Anonymous bool   `yaml:"anonymous"` //匿名登录
 }
 
+type _users map[string]string
+
 type _baseAuth struct {
-	Desc     string `yaml:"desc"`
-	Disabled bool   `yaml:"disabled"`
-	External bool   `yaml:"external"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+	Desc   string `yaml:"desc"`
+	Enable bool   `yaml:"disabled"`
+	Users  _users `yaml:"users"`
 }
 
 type _sysAdmin struct {
 	Desc   string `yaml:"desc"`
 	Enable bool   `yaml:"enable"`
 	Addr   string `yaml:"addr"`
+	AppKey string `yaml:"appKey"`
+	Secret string `yaml:"secret"`
 }
 
 type _dbus struct {
@@ -43,8 +46,8 @@ type _dbus struct {
 type _config struct {
 	Database _database `yaml:"database"`
 	Web      _web      `yaml:"web"`
-	BaseAuth _baseAuth `yaml:"basic_auth"`
-	SysAdmin _sysAdmin `yaml:"sys_admin"`
+	BaseAuth _baseAuth `yaml:"basicAuth"`
+	SysAdmin _sysAdmin `yaml:"sysAdmin"`
 	DBus     _dbus     `yaml:"dbus"`
 }
 
@@ -55,13 +58,16 @@ var Config = _config{
 		Url:  "root:root@tcp(127.0.0.1:3306)/dtu-admin?charset=utf8",
 	},
 	Web: _web{
-		Desc: "Web服务配置",
-		Addr: ":8080",
+		Desc:      "Web服务配置",
+		Addr:      ":8080",
+		Anonymous: true,
 	},
 	BaseAuth: _baseAuth{
-		Desc:     "HTTP简单认证，仅用于超级管理员",
-		Username: "admin",
-		Password: "123456",
+		Desc:   "HTTP简单认证，仅用于超级管理员",
+		Enable: true,
+		Users: _users{
+			"admin": "123456",
+		},
 	},
 	SysAdmin: _sysAdmin{
 		Desc: "Sys Admin地址",
