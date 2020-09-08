@@ -14,14 +14,19 @@ import (
 	"net/http"
 )
 
-
-func Serve()  {
+func Serve() {
 	if !conf.Config.Web.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	//GIN初始化
 	app := gin.Default()
+
+	//开启基本HTTP认证
+	if !conf.Config.BaseAuth.Disabled {
+		//TODO 如果已经通 OAuth2登录了，就不用再BasicAuth
+		app.Use(gin.BasicAuth(gin.Accounts{conf.Config.BaseAuth.Username: conf.Config.BaseAuth.Password}))
+	}
 
 	api.RegisterRoutes(app.Group("/api"))
 	open.RegisterRoutes(app.Group("/open"))
@@ -37,7 +42,7 @@ func Serve()  {
 			//支持前端框架Angular的无“#”路由
 			if c.Request.RequestURI == "/" {
 				c.Request.URL.Path = "index.html"
-			} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, c.Request.RequestURI) ; err != nil {
+			} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, c.Request.RequestURI); err != nil {
 				c.Request.URL.Path = "index.html"
 			}
 			//文件失效期已经在Handler中处理
