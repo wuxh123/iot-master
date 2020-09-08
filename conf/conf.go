@@ -7,11 +7,10 @@ import (
 	"os"
 )
 
-type _database struct {
-	Desc  string `json:"desc" yaml:"desc"`
-	Type  string `json:"type" yaml:"type"`
-	Url   string `json:"url" yaml:"url"`
-	Debug bool   `json:"showSQL" yaml:"showSQL"`
+type _data struct {
+	Desc  string `yaml:"desc"`
+	Path  string `yaml:"path"`
+	Debug bool   `yaml:"debug"`
 }
 
 type _web struct {
@@ -44,7 +43,7 @@ type _dbus struct {
 }
 
 type _config struct {
-	Database _database `yaml:"database"`
+	Data     _data     `yaml:"data"`
 	Web      _web      `yaml:"web"`
 	BaseAuth _baseAuth `yaml:"basicAuth"`
 	SysAdmin _sysAdmin `yaml:"sysAdmin"`
@@ -52,10 +51,9 @@ type _config struct {
 }
 
 var Config = _config{
-	Database: _database{
-		Desc: "数据库配置",
-		Type: "mysql",
-		Url:  "root:root@tcp(127.0.0.1:3306)/dtu-admin?charset=utf8",
+	Data: _data{
+		Desc: "数据配置",
+		Path: "data",
 	},
 	Web: _web{
 		Desc:      "Web服务配置",
