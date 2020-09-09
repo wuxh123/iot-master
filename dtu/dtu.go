@@ -23,7 +23,7 @@ func Channels() []Channel {
 
 func Recovery() error {
 	var cs []model.Channel
-	err := db.Engine.Find(&cs)
+	err := db.DB("channel").All(&cs)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func StartChannel(c *model.Channel) (Channel, error) {
 	return channel, err
 }
 
-func DeleteChannel(id int64) error  {
+func DeleteChannel(id int) error  {
 	v, ok := channels.Load(id)
 	if !ok {
 		return errors.New("通道不存在")
@@ -63,7 +63,7 @@ func DeleteChannel(id int64) error  {
 	return v.(Channel).Close()
 }
 
-func GetChannel(id int64) (Channel, error) {
+func GetChannel(id int) (Channel, error) {
 	v, ok := channels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
@@ -71,7 +71,7 @@ func GetChannel(id int64) (Channel, error) {
 	return v.(Channel), nil
 }
 
-func GetLink(channelId, linkId int64) (*Link, error)  {
+func GetLink(channelId, linkId int) (*Link, error)  {
 	channel, err := GetChannel(channelId)
 	if err != nil {
 		return nil, err

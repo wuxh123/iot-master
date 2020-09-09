@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/model"
+	"github.com/zgwit/storm/v3"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net"
 	"regexp"
@@ -17,7 +19,7 @@ import (
 type Channel interface {
 	Open() error
 	Close() error
-	GetLink(id int64) (*Link, error)
+	GetLink(id int) (*Link, error)
 	GetChannel() *model.Channel
 }
 
@@ -66,12 +68,12 @@ func (c *baseChannel) GetChannel() *model.Channel {
 func (c *baseChannel) storeLink(l *Link) {
 	//保存链接
 	if l.Id > 0 {
-		_, err := db.Engine.ID(l.Id).Cols("addr", "error", "online", "online_at").Update(&l.Link)
+		err := db.DB("link").Update(&l.Link)
 		if err != nil {
 			log.Println(err)
 		}
 	} else {
-		_, err := db.Engine.Insert(&l.Link)
+		err := db.DB("link").Save(&l.Link)
 		if err != nil {
 			log.Println(err)
 		}
@@ -83,10 +85,8 @@ func (c *baseChannel) storeLink(l *Link) {
 
 func (c *baseChannel) storeError(err error) error {
 	c.Error = err.Error()
-	_, err = db.Engine.ID(c.Id).Cols("error").Update(&c.Channel)
-	return err
+	return db.DB("channel").UpdateField(&c.Channel, "error", c.Error)
 }
-
 
 func (c *baseChannel) checkRegister(buf []byte) (string, error) {
 	n := len(buf)
@@ -143,7 +143,7 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) GetLink(id int64) (*Link, error) {
+func (c *Client) GetLink(id int) (*Link, error) {
 	return c.client, nil
 }
 
@@ -157,12 +157,13 @@ func (c *Client) receive(conn net.Conn) {
 	c.client = client
 
 	var link model.Link
-	has, err := db.Engine.Where("channel_id=?", c.Id).And("role=?", "client").Get(&link)
-	if err != nil {
+	err := db.DB("link").Select(q.Eq("channel_id", c.Id), q.Eq("role", "client")).First(&link)
+	if err != storm.ErrNotFound {
+		//找不到
+	} else if err != nil {
 		log.Println(err)
 		return
-	}
-	if has {
+	} else {
 		//复用连接，更新地址，状态，等
 		c.client.Id = link.Id
 	}
@@ -250,7 +251,7 @@ func (c *Server) Close() error {
 	return nil
 }
 
-func (c *Server) GetLink(id int64) (*Link, error) {
+func (c *Server) GetLink(id int) (*Link, error) {
 	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
@@ -294,13 +295,15 @@ func (c *Server) receive(conn net.Conn) {
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
 		var lnk model.Link
-		has, err := db.Engine.Where("channel_id=?", c.Id).And("serial=?", serial).Get(&lnk)
-		if err != nil {
+		err = db.DB("link").Select(q.Eq("channel_id", c.Id), q.Eq("serial", serial)).First(&link)
+		if err != storm.ErrNotFound {
+			//找不到
+		} else if err != nil {
 			_, _ = link.Send([]byte("数据库异常"))
 			log.Println(err)
 			return
-		}
-		if has {
+		} else {
+			//复用连接，更新地址，状态，等
 			l, _ := c.GetLink(lnk.Id)
 			if l != nil {
 				//如果同序号连接还在正常通讯，则关闭当前连接
@@ -320,9 +323,7 @@ func (c *Server) receive(conn net.Conn) {
 
 			link.Id = lnk.Id
 			link.Name = lnk.Name
-			//link.Serial = lnk.Serial
 		}
-
 
 		//处理剩余内容
 		if c.RegisterMax > 0 && n > c.RegisterMax {
@@ -332,7 +333,6 @@ func (c *Server) receive(conn net.Conn) {
 
 	//保存链接
 	c.storeLink(link)
-
 
 	for link.conn != nil {
 		n, e := conn.Read(buf)
@@ -398,7 +398,7 @@ func (c *PacketServer) Close() error {
 	return nil
 }
 
-func (c *PacketServer) GetLink(id int64) (*Link, error) {
+func (c *PacketServer) GetLink(id int) (*Link, error) {
 	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
@@ -458,13 +458,15 @@ func (c *PacketServer) receive() {
 
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
 				var lnk model.Link
-				has, err := db.Engine.Where("channel_id=?", c.Id).And("serial=?", serial).Get(&lnk)
-				if err != nil {
+
+				err = db.DB("link").Select(q.Eq("channel_id", c.Id), q.Eq("serial", serial)).First(&link)
+				if err != storm.ErrNotFound {
+					//找不到
+				} else if err != nil {
 					_, _ = link.Send([]byte("数据库异常"))
 					log.Println(err)
 					return
-				}
-				if has {
+				} else {
 					l, _ := c.GetLink(lnk.Id)
 					if l != nil {
 						//如果同序号连接还在正常通讯，则关闭当前连接
@@ -483,9 +485,7 @@ func (c *PacketServer) receive() {
 
 					link.Id = lnk.Id
 					link.Name = lnk.Name
-					//link.Serial = lnk.Serial
 				}
-
 
 				//处理剩余内容
 				if c.RegisterMax > 0 && n > c.RegisterMax {

@@ -103,8 +103,8 @@ func (l *Link) Close() error {
 		return err
 	}
 	l.Online = false
-	_, err = db.Engine.ID(l.Id).Cols("online").Update(&l.Link)
-
+	err = db.DB("link").UpdateField(&l.Link, "online", false)
+    //TODO 数据库中，不应该保存是否在线的状态
 	l.reportMonitor("close", nil)
 
 	return err
@@ -142,8 +142,8 @@ func (l *Link) reportMonitor(typ string, data []byte) {
 
 func (l *Link) storeError(err error) error {
 	l.Error = err.Error()
-	_, err = db.Engine.ID(l.Id).Cols("error").Update(&l.Link)
-	return err
+	//_, err = db.Engine.ID(l.Id).Cols("error").Update(&l.Link)
+	return db.DB("link").UpdateField(&l.Link, "error", l.Error)
 }
 
 func newLink(ch Channel, conn net.Conn) *Link {

@@ -5,6 +5,7 @@ import (
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/model"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net/http"
 )
@@ -19,33 +20,38 @@ func channels(ctx *gin.Context) {
 		return
 	}
 
-	//op := db.Engine.Where("type=?", body.Net)
-	op := db.Engine.NewSession()
+	cond := make([]q.Matcher, 0)
+	//过滤条件
 	for _, filter := range body.Filters {
-		if len(filter.Value) > 0 {
-			if len(filter.Value) == 1 {
-				op.And(filter.Key+"=?", filter.Value[0])
-			} else {
-				op.In(filter.Key, filter.Value)
-			}
-		}
+		cond = append(cond, q.In(filter.Key, filter.Value))
 	}
+	//关键字
 	if body.Keyword != "" {
-		kw := "%" + body.Keyword + "%"
-		op.And("name like ? or addr like ?", kw, kw)
+		cond = append(cond, q.Re("name", body.Keyword), q.Re("addr", body.Keyword))
 	}
 
-	op.Limit(body.Length, body.Offset)
+	query := db.DB("channel").Select(cond...)
+	cnt, err := query.Count(&cs)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	//分页
+	query = query.Skip(body.Offset).Limit(body.Length)
+
+	//排序
 	if body.SortKey != "" {
 		if body.SortOrder == "desc" {
-			op.Desc(body.SortKey)
+			query = query.OrderBy(body.SortKey).Reverse()
 		} else {
-			op.Asc(body.SortKey)
+			query = query.OrderBy(body.SortKey)
 		}
 	} else {
-		op.Desc("id")
+		query = query.OrderBy("id").Reverse()
 	}
-	cnt, err := op.FindAndCount(&cs)
+
+	err = query.Find(&cs)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -66,13 +72,11 @@ func channelCreate(ctx *gin.Context) {
 		return
 	}
 
-	_, err := db.Engine.Insert(&channel)
+	err := db.DB("channel").Save(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	//获取完整内容
-	_, _ = db.Engine.ID(channel.Id).Get(&channel)
 	replyOk(ctx, channel)
 
 	//启动服务
@@ -91,7 +95,7 @@ func channelDelete(ctx *gin.Context) {
 		return
 	}
 
-	_, err := db.Engine.ID(pid.Id).Get(&model.Channel{})
+	err := db.DB("channel").DeleteStruct(&model.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -128,12 +132,7 @@ func channelModify(ctx *gin.Context) {
 	}
 
 	//log.Println("update", channel)
-	_, err := db.Engine.ID(pid.Id).
-		Cols("name", "disabled",
-			"type", "addr", "role", "timeout",
-			"register_enable", "register_regex",
-			"heart_beat_enable", "heart_beat_interval", "heart_beat_content", "heart_beat_is_hex",
-			"plugin_id").Update(&channel)
+	err := db.DB("channel").Update(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -157,24 +156,32 @@ func channelModify(ctx *gin.Context) {
 	}()
 }
 
+func getChannelFromUri(ctx *gin.Context) (*model.Channel, error) {
+	var pid paramId
+	if err := ctx.BindUri(&pid); err != nil {
+		return nil, err
+	}
+
+	var channel model.Channel
+	err := db.DB("channel").One("id", pid.Id, &channel)
+	if err != nil {
+		return nil, err
+	}
+	return &channel, nil
+}
+
 func channelGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-
 	var channel model.Channel
-	has, err := db.Engine.ID(pid.Id).Get(&channel)
+	err := db.DB("channel").One("id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	if !has {
-		replyFail(ctx, "找不到通道")
-		return
-	}
-
 	replyOk(ctx, channel)
 }
 

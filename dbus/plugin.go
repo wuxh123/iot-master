@@ -27,7 +27,7 @@ func (p *Plugin) Handle(msg *packet.Packet) {
 
 func (p *Plugin) handleTransfer(msg *packet.Packet) {
 	//TODO 找到对应链接，发送之
-	//TODO 使用 int64 还是 int32
+	//TODO 使用 int 还是 int32
 	//p.link.Send(msg.Data[8:])
 
 }

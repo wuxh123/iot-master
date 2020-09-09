@@ -7,6 +7,7 @@ import (
 	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/model"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net/http"
 )
@@ -21,33 +22,40 @@ func links(ctx *gin.Context) {
 		return
 	}
 
-	//op := db.Engine.Where("type=?", body.Net)
-	op := db.Engine.NewSession()
+	cond := make([]q.Matcher, 0)
+	//过滤条件
 	for _, filter := range body.Filters {
-		if len(filter.Value) > 0 {
-			if len(filter.Value) == 1 {
-				op.And(filter.Key+"=?", filter.Value[0])
-			} else {
-				op.In(filter.Key, filter.Value)
-			}
-		}
+		cond = append(cond, q.In(filter.Key, filter.Value))
 	}
+	//关键字
 	if body.Keyword != "" {
-		kw := "%" + body.Keyword + "%"
-		op.And("name like ? or serial like ? or addr like ?", kw, kw, kw)
+		cond = append(cond, q.Re("name", body.Keyword), q.Re("serial", body.Keyword), q.Re("addr", body.Keyword))
 	}
 
-	op.Limit(body.Length, body.Offset)
+	query := db.DB("channel").Select(cond...)
+
+	//计算总数
+	cnt, err := query.Count(&ls)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	//分页
+	query = query.Skip(body.Offset).Limit(body.Length)
+
+	//排序
 	if body.SortKey != "" {
 		if body.SortOrder == "desc" {
-			op.Desc(body.SortKey)
+			query = query.OrderBy(body.SortKey).Reverse()
 		} else {
-			op.Asc(body.SortKey)
+			query = query.OrderBy(body.SortKey)
 		}
 	} else {
-		op.Desc("id")
+		query = query.OrderBy("id").Reverse()
 	}
-	cnt, err := op.FindAndCount(&ls)
+
+	err = query.Find(&ls)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -69,18 +77,14 @@ func linkDelete(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	has, err := db.Engine.ID(pid.Id).Get(&link)
+	err := db.DB("link").DeleteStruct(&model.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	if !has {
-		replyFail(ctx, "记录不存在")
-		return
-	}
-
 	replyOk(ctx, nil)
 
+	//删除服务
 	go func() {
 		c, err := dtu.GetChannel(link.ChannelId)
 		if err != nil {
@@ -111,11 +115,12 @@ func linkModify(ctx *gin.Context) {
 		return
 	}
 
-	_, err := db.Engine.ID(pid.Id).Cols("name", "serial", "addr", "channel_id", "plugin_id").Update(&link)
+	err := db.DB("link").Update(&link)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
+
 	replyOk(ctx, link)
 
 	//TODO 重新启动服务
@@ -130,13 +135,9 @@ func linkGet(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	has, err := db.Engine.ID(pid.Id).Get(&link)
+	err := db.DB("link").One("id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
-		return
-	}
-	if !has {
-		replyFail(ctx, "找不到通道")
 		return
 	}
 
@@ -157,13 +158,9 @@ func linkMonitor(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	has, err := db.Engine.ID(pid.Id).Get(&link)
+	err := db.DB("link").One("id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
-		return
-	}
-	if !has {
-		replyFail(ctx, "找不到通道")
 		return
 	}
 
@@ -209,13 +206,9 @@ func linkSend(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	has, err := db.Engine.ID(pid.Id).Get(&link)
+	err = db.DB("link").One("id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
-		return
-	}
-	if !has {
-		replyFail(ctx, "找不到通道")
 		return
 	}
 

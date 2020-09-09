@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/zgwit/dtu-admin/conf"
 	"net/http"
 )
 
@@ -21,17 +22,28 @@ type paramSearch struct {
 }
 
 type paramId struct {
-	Id int64 `uri:"id"`
+	Id int `uri:"id"`
 }
 
 type paramId2 struct {
-	Id  int64 `uri:"id"`
-	Id2 int64 `uri:"id2"`
+	Id  int `uri:"id"`
+	Id2 int `uri:"id2"`
 }
 
 func mustLogin(c *gin.Context) {
-	session := sessions.Default(c)
-	if user := session.Get("user"); user != nil {
+	authorized := false
+	if conf.Config.SysAdmin.Enable {
+		session := sessions.Default(c)
+		if user := session.Get("user"); user != nil {
+			authorized = true
+		}
+	} else if conf.Config.BaseAuth.Enable {
+		_, authorized = c.Get(gin.AuthUserKey)
+	} else {
+		authorized = true
+	}
+
+	if authorized {
 		c.Next()
 	} else {
 		c.JSON(http.StatusUnauthorized, gin.H{"ok": false, "error": "Unauthorized"})
@@ -41,12 +53,11 @@ func mustLogin(c *gin.Context) {
 
 func RegisterRoutes(app *gin.RouterGroup) {
 	//app.POST("/login", authLogin)
-
 	//app.DELETE("/logout", authLogout)
 	//app.POST("/password", authPassword)
 
 	//检查 session，必须登录
-	app.Use(mustLogin) //TODO 返回前端静态文件，如果找不到，
+	app.Use(mustLogin)
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	app.POST("/channels", channels)

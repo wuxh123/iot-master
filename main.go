@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/denisbrodbeck/machineid"
 	"github.com/zgwit/dtu-admin/conf"
-	"github.com/zgwit/dtu-admin/db"
 	"github.com/zgwit/dtu-admin/dbus"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/flag"
@@ -35,19 +34,20 @@ func main() {
 
 	id, err := machineid.ID()
 	if err != nil {
-		log.Println("ID错误：", err)
+		log.Println("获取ID错误：", err)
 		return
 	}
-	log.Println("Machine ID:", id)
+	log.Println("Machine Id:", id)
 
-	err = db.Open()
-	if err != nil {
-		log.Println("数据库错误：", err)
-		return
-	}
+	//
+	//err = db.Open()
+	//if err != nil {
+	//	log.Println("数据库错误：", err)
+	//	return
+	//}
 
-	//启动总线 TODO 添加配置
-	err = dbus.Start(":1843")
+	//启动总线
+	err = dbus.Start(conf.Config.DBus.Addr)
 	if err != nil {
 		log.Println("总线启动失败：", err)
 		return

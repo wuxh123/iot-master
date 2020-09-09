@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/zgwit/dtu-admin/conf"
-	"github.com/zgwit/storm"
+	"github.com/zgwit/storm/v3"
 	"log"
 	"os"
 	"path/filepath"

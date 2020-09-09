@@ -25,7 +25,7 @@ type _users map[string]string
 
 type _baseAuth struct {
 	Desc   string `yaml:"desc"`
-	Enable bool   `yaml:"disabled"`
+	Enable bool   `yaml:"enable"`
 	Users  _users `yaml:"users"`
 }
 

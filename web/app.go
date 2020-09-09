@@ -4,14 +4,10 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	//"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
 	"github.com/zgwit/dtu-admin/conf"
-	_ "github.com/zgwit/dtu-admin/docs"
 	"github.com/zgwit/dtu-admin/web/api"
 	"github.com/zgwit/dtu-admin/web/open"
 	wwwFiles "github.com/zgwit/dtu-admin/www"
-	swaggerFiles "github.com/zgwit/swagger-files"
 	"log"
 	"net/http"
 )
@@ -26,7 +22,7 @@ func Serve() {
 
 	//加入swagger会增加10MB多体积，使用github.com/zgwit/swagger-files，去除Map文件，可以节省7MB左右
 	//Swagger文档，需要先执行swag init生成文档
-	app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	//app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	open.RegisterRoutes(app.Group("/open"))
 
