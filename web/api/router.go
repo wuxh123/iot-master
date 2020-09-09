@@ -72,7 +72,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.POST("/links", links)
 	app.DELETE("/link/:id", linkDelete)
 	app.PUT("/link/:id", linkModify)
-	//app.GET("/link/:id/monitor", linkMonitor)
+	app.GET("/link/:id/peer", linkPeer)
 	app.GET("/link/:id", linkGet)
 	app.POST("/link/:id/send", linkSend)
 

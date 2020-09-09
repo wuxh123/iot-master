@@ -46,6 +46,7 @@ func PreparePeer(link *dtu.Link) string {
 	peerKeys.Store(key, link)
 	//1分钟自动清除
 	time.AfterFunc(time.Minute, func() {
+		//TODO 应该考虑断线重连的问题
 		peerKeys.Delete(key)
 	})
 	return key

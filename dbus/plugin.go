@@ -1,8 +1,8 @@
 package dbus
 
 import (
+	"fmt"
 	"github.com/zgwit/dtu-admin/packet"
-	"log"
 )
 
 type Plugin struct {

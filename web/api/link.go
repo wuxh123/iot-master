@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/zgwit/dtu-admin/db"
+	"github.com/zgwit/dtu-admin/dbus"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/model"
 	"github.com/zgwit/storm/v3/q"
@@ -156,7 +157,7 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-func linkMonitor(ctx *gin.Context) {
+func linkPeer(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
@@ -181,9 +182,10 @@ func linkMonitor(ctx *gin.Context) {
 		return
 	}
 
-	//TODO 设置KEY，为WebSocket校验
+	//TODO 设置KEY
+	key := dbus.PreparePeer(lnk)
 
-	replyOk(ctx, nil)
+	replyOk(ctx, key)
 }
 
 type linkSendBody struct {
