@@ -1,10 +1,10 @@
 package dbus
 
 import (
+	"fmt"
 	"github.com/zgwit/dtu-admin/base"
 	"github.com/zgwit/dtu-admin/dtu"
 	"github.com/zgwit/dtu-admin/packet"
-	"log"
 	"sync"
 	"time"
 )
@@ -18,7 +18,7 @@ type Peer struct {
 func (p *Peer) Handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
-		_ = p.SendError("duplicate register")
+		_ = p.Disconnect("duplicate register")
 		_ = p.CLose()
 	case packet.TypeHeartBeak:
 	case packet.TypePing:
@@ -26,7 +26,7 @@ func (p *Peer) Handle(msg *packet.Packet) {
 	case packet.TypeTransfer:
 		p.handleTransfer(msg)
 	default:
-		log.Println("unknown command", msg)
+		_ = p.SendError(fmt.Sprintf("unknown command %d", msg.Type))
 	}
 }
 

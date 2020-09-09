@@ -47,3 +47,11 @@ func (p *baseClient) SendError(err string) error {
 		Data:   []byte(err),
 	})
 }
+
+func (p *baseClient) Disconnect(info string) error {
+	return p.Send(&packet.Packet{
+		Type:   packet.TypeDisconnect,
+		Status: 0,
+		Data:   []byte(info),
+	})
+}

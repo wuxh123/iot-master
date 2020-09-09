@@ -66,13 +66,18 @@ func (s *Server) receive(conn net.Conn) {
 		_ = conn.Close()
 		return
 	}
-	//根据第一个包创建客户羰
+	//根据第一个包创建客户
 	c, e := s.createTunnel(conn, packs[0])
 	if e != nil {
-		_, _ = conn.Write([]byte(e.Error()))
+		p := packet.Packet{
+			Type:   packet.TypeDisconnect,
+			Data:   []byte(e.Error()),
+		}
+		_, _ = conn.Write(p.Encode())
 		_ = conn.Close()
 		return
 	}
+
 	//处理第一次接收的剩余包（网络拥堵时，可能会发生）
 	for _, pack := range packs[1:] {
 		c.Handle(pack)
@@ -117,6 +122,8 @@ func (s *Server) createTunnel(conn net.Conn, p *packet.Packet) (base.Tunnel, err
 		link := v.(*dtu.Link)
 		peer := &Peer{baseClient: baseClient{conn: conn}, link: link}
 		link.Peer(peer)
+		//TODO 回复ConnectAck，连接信息
+
 		return peer, nil
 	case "plugin":
 		//TODO 解析 plugin:key:secret

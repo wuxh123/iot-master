@@ -12,16 +12,15 @@ type Plugin struct {
 func (p *Plugin) Handle(msg *packet.Packet) {
 	switch msg.Type {
 	case packet.TypeConnect:
-		_ = p.SendError("duplicate register")
+		_ = p.Disconnect("duplicate register")
 		_ = p.CLose()
-		//p.handleConnect(msg)
 	case packet.TypeHeartBeak:
 	case packet.TypePing:
 		_ = p.Send(&packet.Packet{Type: packet.TypePong})
 	case packet.TypeTransfer:
 		p.handleTransfer(msg)
 	default:
-		log.Println("unknown command", msg)
+		_ = p.SendError(fmt.Sprintf("unknown command %d", msg.Type))
 	}
 }
 
