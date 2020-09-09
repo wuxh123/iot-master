@@ -23,15 +23,22 @@ func channels(ctx *gin.Context) {
 	cond := make([]q.Matcher, 0)
 	//过滤条件
 	for _, filter := range body.Filters {
-		cond = append(cond, q.In(filter.Key, filter.Value))
+		if len(filter.Value) > 0 {
+			cond = append(cond, q.In(filter.Key, filter.Value))
+		}
 	}
 	//关键字
 	if body.Keyword != "" {
-		cond = append(cond, q.Re("name", body.Keyword), q.Re("addr", body.Keyword))
+		cond = append(cond, q.Or(
+			q.Re("Name", body.Keyword),
+			q.Re("Addr", body.Keyword),
+		))
 	}
 
 	query := db.DB("channel").Select(cond...)
-	cnt, err := query.Count(&cs)
+
+	//计算总数
+	cnt, err := query.Count(&model.Channel{})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -48,7 +55,7 @@ func channels(ctx *gin.Context) {
 			query = query.OrderBy(body.SortKey)
 		}
 	} else {
-		query = query.OrderBy("id").Reverse()
+		query = query.OrderBy("Id").Reverse()
 	}
 
 	err = query.Find(&cs)
@@ -163,7 +170,7 @@ func getChannelFromUri(ctx *gin.Context) (*model.Channel, error) {
 	}
 
 	var channel model.Channel
-	err := db.DB("channel").One("id", pid.Id, &channel)
+	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +184,7 @@ func channelGet(ctx *gin.Context) {
 		return
 	}
 	var channel model.Channel
-	err := db.DB("channel").One("id", pid.Id, &channel)
+	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
 		return

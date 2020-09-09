@@ -190,7 +190,7 @@ func (c *Client) receive(conn net.Conn) {
 			} else {
 				b = []byte(c.HeartBeatContent)
 			}
-			if bytes.Compare(b, buf) == 0 {
+			if bytes.Compare(b, buf[:n]) == 0 {
 				continue
 			}
 		}
@@ -284,7 +284,7 @@ func (c *Server) receive(conn net.Conn) {
 			return
 		}
 
-		serial, err := c.baseChannel.checkRegister(buf)
+		serial, err := c.baseChannel.checkRegister(buf[:n])
 		if err != nil {
 			_, _ = link.Send([]byte(err.Error()))
 			return
@@ -327,7 +327,7 @@ func (c *Server) receive(conn net.Conn) {
 
 		//处理剩余内容
 		if c.RegisterMax > 0 && n > c.RegisterMax {
-			link.onData(buf[c.RegisterMax:])
+			link.onData(buf[c.RegisterMax:n])
 		}
 	}
 
@@ -435,7 +435,7 @@ func (c *PacketServer) receive() {
 				} else {
 					b = []byte(c.HeartBeatContent)
 				}
-				if bytes.Compare(b, buf) == 0 {
+				if bytes.Compare(b, buf[:n]) == 0 {
 					continue
 				}
 			}
@@ -447,7 +447,7 @@ func (c *PacketServer) receive() {
 
 			//第一个包作为注册包
 			if c.RegisterEnable {
-				serial, err := c.baseChannel.checkRegister(buf)
+				serial, err := c.baseChannel.checkRegister(buf[:n])
 				if err != nil {
 					_, _ = link.Send([]byte(err.Error()))
 					return
@@ -489,7 +489,7 @@ func (c *PacketServer) receive() {
 
 				//处理剩余内容
 				if c.RegisterMax > 0 && n > c.RegisterMax {
-					link.onData(buf[c.RegisterMax:])
+					link.onData(buf[c.RegisterMax:n])
 				}
 			} else {
 				link.onData(buf[:n])

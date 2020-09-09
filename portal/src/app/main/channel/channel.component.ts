@@ -80,7 +80,7 @@ export class ChannelComponent implements OnInit {
       nzWidth: 500,
       nzContent: ChannelEditComponent,
       nzContentParams: {
-        channel: c || {net: 'tcp', addr: ':1843', is_server: true}
+        channel: c || {net: 'tcp', addr: ':1843', role: 'server'}
       }
     });
   }
