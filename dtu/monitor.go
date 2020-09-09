@@ -46,9 +46,9 @@ func (m *Monitor) Receive() {
 			if e != nil {
 				break
 			}
-			m.Link.Send(b)
+			_, _ = m.Link.Send(b)
 		case "ping":
-			m.Conn.WriteJSON(&monitorPack{
+			_ = m.Conn.WriteJSON(&monitorPack{
 				Type: "pong",
 			})
 		}
