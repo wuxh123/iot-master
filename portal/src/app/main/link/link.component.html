@@ -19,13 +19,13 @@
           [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>
-    <th>ID</th>
-    <th>通道ID</th>
-    <th>名称</th>
-    <th>序列号</th>
+    <th nzColumnKey="Id" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="ChannelId" [nzSortFn]="true">通道ID</th>
+    <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
+    <th nzColumnKey="Serial" [nzSortFn]="true">序列号</th>
     <th>地址</th>
-    <th nzColumnKey="status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
-    <th nzColumnKey="online_at" [nzSortFn]="true">上线时间</th>
+    <th nzColumnKey="Status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
+    <th nzColumnKey="OnlineAt" [nzSortFn]="true">上线时间</th>
     <th></th>
   </tr>
   </thead>

@@ -30,15 +30,11 @@ func Serve() {
 	app.Use(sessions.Sessions("dtu-admin", memstore.NewStore([]byte("dtu-admin-secret"))))
 
 	//授权检查，启用了SysAdmin的OAuth2，就不能再使用基本HTTP认证了
-	if conf.Config.SysAdmin.Enable {
-		//注册OAuth2相关接口
-		app.GET("oauth2")
-	} else if conf.Config.BaseAuth.Enable {
-		//开启基本HTTP认证
-		app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
-	} else {
-		//支持匿名登录
-	}
+	//if conf.Config.SysAdmin.Enable {
+	//	//注册OAuth2相关接口
+	//	RegisterOauthRoutes(app)
+	//}
+
 
 	//注册前端接口
 	api.RegisterRoutes(app.Group("/api"))
@@ -55,6 +51,9 @@ func Serve() {
 				c.Redirect(http.StatusFound, url)
 			}
 		})
+	} else if conf.Config.BaseAuth.Enable {
+		//开启基本HTTP认证
+		app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
 	}
 
 	//前端静态文件

@@ -141,7 +141,7 @@ func linkGet(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	err := db.DB("link").One("id", pid.Id, &link)
+	err := db.DB("link").One("Id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -164,7 +164,7 @@ func linkMonitor(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	err := db.DB("link").One("id", pid.Id, &link)
+	err := db.DB("link").One("Id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -176,20 +176,14 @@ func linkMonitor(ctx *gin.Context) {
 		return
 	}
 
-	ws, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
-	if err != nil {
-		replyError(ctx, err)
+	if !lnk.Online {
+		replyFail(ctx, "设备不在线")
 		return
 	}
 
-	m := &dtu.Monitor{
-		//Key:  "",
-		Conn: ws,
-		Link: lnk,
-	}
-	lnk.Monitor(m)
-	m.Receive()
-	//replyOk(ctx, nil)
+	//TODO 设置KEY，为WebSocket校验
+
+	replyOk(ctx, nil)
 }
 
 type linkSendBody struct {
@@ -212,7 +206,7 @@ func linkSend(ctx *gin.Context) {
 	}
 
 	var link model.Link
-	err = db.DB("link").One("id", pid.Id, &link)
+	err = db.DB("link").One("Id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
 		return

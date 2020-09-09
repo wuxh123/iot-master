@@ -25,12 +25,12 @@
           [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>
-    <th>ID</th>
-    <th>名称</th>
-    <th nzColumnKey="role" nzShowFilter [nzFilterFn]="true" [nzFilters]="roleFilters">角色</th>
-    <th nzColumnKey="net" nzShowFilter [nzFilterFn]="true" [nzFilters]="netFilters">网络</th>
-    <th nzColumnKey="status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
-    <th nzColumnKey="created_at" [nzSortFn]="true">创建时间</th>
+    <th nzColumnKey="Id" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
+    <th nzColumnKey="Role" nzShowFilter [nzFilterFn]="true" [nzFilters]="roleFilters">角色</th>
+    <th nzColumnKey="Net" nzShowFilter [nzFilterFn]="true" [nzFilters]="netFilters">网络</th>
+    <th nzColumnKey="Status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
+    <th nzColumnKey="CreatedAt" [nzSortFn]="true">创建时间</th>
     <th></th>
   </tr>
   </thead>

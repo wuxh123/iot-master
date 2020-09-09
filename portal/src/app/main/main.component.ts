@@ -36,32 +36,17 @@ export class MainComponent implements OnInit {
       ]
     },
     {
-      title: '插件管理',
-      icon: 'appstore',
-      open: false,
-      children: [
-        {
-          title: '已安装插件',
-          router: 'plugin'
-        },
-        {
-          title: '插件市场',
-          router: 'plugin-store'
-        }
-      ]
-    },
-    {
       title: '系统设置',
       icon: 'setting',
       open: false,
       children: [
         {
-          title: '用户管理',
-          router: 'user'
+          title: '管理插件',
+          router: 'plugin'
         },
         {
-          title: '修改密码',
-          router: 'password'
+          title: '系统配置',
+          router: 'setting'
         }
       ]
     }

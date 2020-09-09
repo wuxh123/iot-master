@@ -29,7 +29,6 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   constructor(private routeInfo: ActivatedRoute, private as: ApiService) {
     this.id = this.routeInfo.snapshot.params.id;
     this.load();
-    this.monitor();
   }
 
   ngOnInit(): void {
@@ -49,6 +48,8 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   load(): void {
     this.as.get('link/' + this.id).subscribe(res => {
       this.link = res.data;
+      // TODO 检查在线状态
+      this.monitor();
     });
   }
 
@@ -57,11 +58,12 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   }
 
   send(): void {
+    console.log('send', this.text);
     this.ws.send(JSON.stringify({type: 'send', data: this.text}));
   }
 
   monitor(): void {
-    this.ws = new WebSocket('ws://127.0.0.1:8080/api/link/' + this.id + '/monitor');
+    this.ws = new WebSocket('ws://127.0.0.1:8080/api/monitor/' + this.link.channel_id + '/' + this.id);
 
     this.ws.onopen = e => {
       console.log('Connection open ...');

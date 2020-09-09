@@ -30,15 +30,15 @@ export class ApiService {
         }
         return of({error: err.message});
       }),
-      // 统一错误处理，阻断 complete
-      // map((ret: any) => {
-      //   if (ret && ret.error) {
-      //     // 有错误统一显示并不是好的做法
-      //     this.message.create('error', ret.error);
-      //     throw new Error(ret.error);
-      //   }
-      //   return ret;
-      // })
+      // 统一错误处理
+      map((ret: any) => {
+        if (ret && ret.error) {
+          // 有错误统一显示并不是好的做法
+          this.message.create('error', ret.error);
+          // throw new Error(ret.error); //会阻断 complete
+        }
+        return ret;
+      })
     );
   }
 

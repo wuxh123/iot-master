@@ -24,25 +24,20 @@ import {MomentModule} from 'ngx-moment';
 import {UiModule} from '../ui/ui.module';
 import {ChannelComponent} from './channel/channel.component';
 import {LinkComponent} from './link/link.component';
-import {UserComponent} from './user/user.component';
-import {PasswordComponent} from './password/password.component';
 import {ChannelEditComponent} from './channel-edit/channel-edit.component';
 import {ChannelDetailComponent} from './channel-detail/channel-detail.component';
 import {LinkDetailComponent} from './link-detail/link-detail.component';
-import {UserEditComponent} from './user-edit/user-edit.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {NzSpaceModule} from 'ng-zorro-antd/space';
 import {LinkEditComponent} from './link-edit/link-edit.component';
 import {PluginComponent} from './plugin/plugin.component';
-import {PluginStoreComponent} from './plugin-store/plugin-store.component';
 
 
 @NgModule({
   declarations: [MainComponent, DashComponent,
     ChannelComponent, ChannelDetailComponent, ChannelEditComponent,
     LinkComponent, LinkDetailComponent, LinkMonitorComponent, LinkEditComponent,
-    UserComponent, UserEditComponent, PluginComponent, PluginStoreComponent,
-    PasswordComponent],
+    PluginComponent],
   imports: [
     CommonModule,
     FormsModule,

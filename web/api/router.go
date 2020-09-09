@@ -31,33 +31,32 @@ type paramId2 struct {
 }
 
 func mustLogin(c *gin.Context) {
-	authorized := false
-	if conf.Config.SysAdmin.Enable {
-		session := sessions.Default(c)
-		if user := session.Get("user"); user != nil {
-			authorized = true
-		}
-	} else if conf.Config.BaseAuth.Enable {
-		_, authorized = c.Get(gin.AuthUserKey)
-	} else {
-		authorized = true
-	}
-
-	if authorized {
+	session := sessions.Default(c)
+	if user := session.Get("user"); user != nil {
 		c.Next()
 	} else {
+		//TODO 检查OAuth2返回的code，进一步获取用户信息，放置到session中
+
 		c.JSON(http.StatusUnauthorized, gin.H{"ok": false, "error": "Unauthorized"})
 		c.Abort()
 	}
 }
 
 func RegisterRoutes(app *gin.RouterGroup) {
-	//app.POST("/login", authLogin)
-	//app.DELETE("/logout", authLogout)
-	//app.POST("/password", authPassword)
 
-	//检查 session，必须登录
-	app.Use(mustLogin)
+	if conf.Config.SysAdmin.Enable {
+		//检查 session，必须登录
+		app.Use(mustLogin)
+
+		app.GET("/monitor/:id/:id2", monitor)
+	} else if conf.Config.BaseAuth.Enable {
+		app.GET("/monitor/:id/:id2", monitor)
+
+		//检查HTTP认证
+		app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
+	} else {
+		//支持匿名访问
+	}
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	app.POST("/channels", channels)
@@ -68,20 +67,14 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/channel/:id/start", channelStart)
 	app.GET("/channel/:id/stop", channelStop)
 
-	app.GET("/channel/:id/links")
 	app.POST("/channel/:id/links")
-	app.DELETE("/channel/:id/link/:id2") //关闭连接
-	app.GET("/channel/:id/link/:id2/statistic")
-	app.GET("/channel/:id/link/:id2/pipe") //转Websocket透传
 
 	app.POST("/links", links)
 	app.DELETE("/link/:id", linkDelete)
 	app.PUT("/link/:id", linkModify)
+	//app.GET("/link/:id/monitor", linkMonitor)
 	app.GET("/link/:id", linkGet)
-	app.GET("/link/:id/monitor", linkMonitor)
 	app.POST("/link/:id/send", linkSend)
-	//app.GET("/link/:id/watch", linkWatch)
-	//app.GET("/link/:id/stop", linkStop)
 
 }
 
