@@ -31,7 +31,7 @@ func (p *Peer) Handle(msg *packet.Packet) {
 }
 
 func (p *Peer) handleTransfer(msg *packet.Packet) {
-	//_, _ = p.link.Send(msg.Data)
+	_, _ = p.link.Send(msg.Data)
 	//TODO 判断link是否为空
 	//TODO 如果link断线，缓存 数据包
 
