@@ -2,7 +2,7 @@ package dbus
 
 import (
 	"fmt"
-	"github.com/zgwit/dtu-admin/packet"
+	"git.zgwit.com/iot/dtu-admin/packet"
 )
 
 type Plugin struct {

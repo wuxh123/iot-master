@@ -2,8 +2,8 @@ package dtu
 
 import (
 	"errors"
-	"github.com/zgwit/dtu-admin/db"
-	"github.com/zgwit/dtu-admin/model"
+	"git.zgwit.com/iot/dtu-admin/db"
+	"git.zgwit.com/iot/dtu-admin/model"
 	"log"
 	"sync"
 )

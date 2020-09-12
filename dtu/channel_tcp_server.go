@@ -3,8 +3,8 @@ package dtu
 import (
 	"errors"
 	"fmt"
-	"github.com/zgwit/dtu-admin/db"
-	"github.com/zgwit/dtu-admin/model"
+	"git.zgwit.com/iot/dtu-admin/db"
+	"git.zgwit.com/iot/dtu-admin/model"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"

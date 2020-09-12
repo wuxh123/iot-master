@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/dtu"
+	"git.zgwit.com/iot/dtu-admin/dtu"
 )
 
 func monitor(ctx *gin.Context)  {

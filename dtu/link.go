@@ -2,10 +2,10 @@ package dtu
 
 import (
 	"errors"
-	"github.com/zgwit/dtu-admin/base"
-	"github.com/zgwit/dtu-admin/db"
-	"github.com/zgwit/dtu-admin/model"
-	"github.com/zgwit/dtu-admin/packet"
+	"git.zgwit.com/iot/dtu-admin/base"
+	"git.zgwit.com/iot/dtu-admin/db"
+	"git.zgwit.com/iot/dtu-admin/model"
+	"git.zgwit.com/iot/dtu-admin/packet"
 	"log"
 	"net"
 	"time"

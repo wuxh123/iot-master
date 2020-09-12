@@ -1,7 +1,7 @@
 package dbus
 
 import (
-	"github.com/zgwit/dtu-admin/packet"
+	"git.zgwit.com/iot/dtu-admin/packet"
 	"log"
 	"net"
 	"time"

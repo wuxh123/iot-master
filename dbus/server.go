@@ -2,9 +2,9 @@ package dbus
 
 import (
 	"errors"
-	"github.com/zgwit/dtu-admin/base"
-	"github.com/zgwit/dtu-admin/dtu"
-	"github.com/zgwit/dtu-admin/packet"
+	"git.zgwit.com/iot/dtu-admin/base"
+	"git.zgwit.com/iot/dtu-admin/dtu"
+	"git.zgwit.com/iot/dtu-admin/packet"
 	"log"
 	"net"
 	"strings"

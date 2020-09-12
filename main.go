@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/denisbrodbeck/machineid"
-	"github.com/zgwit/dtu-admin/conf"
-	"github.com/zgwit/dtu-admin/dbus"
-	"github.com/zgwit/dtu-admin/dtu"
-	"github.com/zgwit/dtu-admin/flag"
-	"github.com/zgwit/dtu-admin/web"
+	"git.zgwit.com/iot/dtu-admin/conf"
+	"git.zgwit.com/iot/dtu-admin/dbus"
+	"git.zgwit.com/iot/dtu-admin/dtu"
+	"git.zgwit.com/iot/dtu-admin/flag"
+	"git.zgwit.com/iot/dtu-admin/web"
 	"log"
 )
 

@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/db"
-	"github.com/zgwit/dtu-admin/dtu"
-	"github.com/zgwit/dtu-admin/model"
+	"git.zgwit.com/iot/dtu-admin/db"
+	"git.zgwit.com/iot/dtu-admin/dtu"
+	"git.zgwit.com/iot/dtu-admin/model"
 	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net/http"

@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"github.com/zgwit/dtu-admin/flag"
+	"git.zgwit.com/iot/dtu-admin/flag"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"

@@ -1,6 +1,6 @@
 package base
 
-import "github.com/zgwit/dtu-admin/packet"
+import "git.zgwit.com/iot/dtu-admin/packet"
 
 type Tunnel interface {
 	CLose() error

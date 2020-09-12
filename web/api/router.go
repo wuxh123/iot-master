@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/dtu-admin/conf"
+	"git.zgwit.com/iot/dtu-admin/conf"
 	"net/http"
 )
 
