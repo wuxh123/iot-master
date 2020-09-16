@@ -22,8 +22,12 @@ func (p *Parser) Parse(buf []byte) []*Packet {
 		}
 
 		//寻找包头
-		if buf[0] != '*' || buf[1] != '#' {
+		if buf[0] != '*' {
 			buf = buf[1:]
+			continue
+		}
+		if buf[1] != '#' {
+			buf = buf[2:]
 			continue
 		}
 
