@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {MqttService} from '../mqtt.service';
 
-import * as mqtt from 'mqtt';
 
 @Component({
   selector: 'app-main',
@@ -54,38 +54,15 @@ export class MainComponent implements OnInit {
     }
   ];
 
-  constructor() {
-    const client = mqtt.connect('ws://127.0.0.1:8080/api/mqtt');
-    client.on('connect', data => {
-      console.log('connect', data);
-      client.subscribe('add', err => {
-        console.log(err);
-        if (!err) {
-          client.publish('add', 'Hello mqtt');
-        }
-      });
-      // client.subscribe('add');
-      // client.publish('add', 'hello world');
-    });
-    client.on('message', (topic, message) => {
-      console.log('message', topic, message);
-    });
-    client.on('close', () => {
-      console.log('close');
-    });
-    client.on('offline', () => {
-      console.log('offline');
-    });
-    client.on('disconnect', (data) => {
-      console.log('disconnect');
-    });
-    client.on('error', (err) => {
-      console.log('error', err);
-    });
+  constructor(private mqtt: MqttService) {
+
 
   }
 
   ngOnInit(): void {
+    this.mqtt.subscribe('/+/+/recv').subscribe(packet => {
+      console.log('packet', packet);
+    });
   }
 
 }
