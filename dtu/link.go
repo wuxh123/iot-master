@@ -6,7 +6,6 @@ import (
 	"git.zgwit.com/iot/beeq/packet"
 	"git.zgwit.com/iot/dtu-admin/base"
 	"git.zgwit.com/iot/dtu-admin/db"
-	"git.zgwit.com/iot/dtu-admin/dbus"
 	"git.zgwit.com/iot/dtu-admin/model"
 	"net"
 	"time"
@@ -34,9 +33,9 @@ func (l *Link) onData(buf []byte) {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/%d/recv", l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/%d/%d/recv", l.ChannelId, l.Id)))
 	pub.SetPayload(buf)
-	dbus.Hive().Publish(pub)
+	Hive().Publish(pub)
 }
 
 func (l *Link) Resume() {
@@ -59,8 +58,11 @@ func (l *Link) Send(buf []byte) (int, error) {
 	n, e := l.conn.Write(buf)
 	//TODO 没发完，继续发
 
-
-	//TODO 发送至MQTT
+	//发送至MQTT
+	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
+	pub.SetTopic([]byte(fmt.Sprintf("/%d/%d/send", l.ChannelId, l.Id)))
+	pub.SetPayload(buf)
+	Hive().Publish(pub)
 
 	return n, e
 }
@@ -75,7 +77,12 @@ func (l *Link) Close() error {
 		return err
 	}
 
-	//TODO 发送至MQTT
+
+	//发送至MQTT
+	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
+	pub.SetTopic([]byte(fmt.Sprintf("/%d/%d/event", l.ChannelId, l.Id)))
+	pub.SetPayload([]byte("close"))
+	Hive().Publish(pub)
 
 	return err
 }
