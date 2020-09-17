@@ -67,12 +67,20 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/channel/:id/start", channelStart)
 	app.GET("/channel/:id/stop", channelStop)
 
-	app.POST("/channel/:id/links")
+	//app.POST("/channel/:id/links")
 
+	//连接管理
 	app.POST("/links", links)
 	app.DELETE("/link/:id", linkDelete)
 	app.PUT("/link/:id", linkModify)
 	app.GET("/link/:id", linkGet)
+
+	//插件管理
+	app.POST("/plugins", plugins)
+	app.POST("/plugin", pluginCreate)
+	app.DELETE("/plugin/:id", pluginDelete)
+	app.PUT("/plugin/:id", pluginModify)
+	app.GET("/plugin/:id", pluginGet)
 
 }
 

@@ -90,12 +90,7 @@ func linkDelete(ctx *gin.Context) {
 
 	//删除服务
 	go func() {
-		c, err := dtu.GetChannel(link.ChannelId)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		l, err := c.GetLink(link.Id)
+		l, err := dtu.GetLink(link.ChannelId, link.Id)
 		if err != nil {
 			log.Println(err)
 			return
