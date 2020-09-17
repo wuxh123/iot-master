@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 
-import * as mqtt from 'mqtt';
-import {Observable, Subject, Subscription, Unsubscribable, using, merge} from "rxjs";
-import {filter, publish, refCount} from "rxjs/operators";
+import {Observable, Subject, Subscription, Unsubscribable, using, merge} from 'rxjs';
+import {filter, publish, refCount} from 'rxjs/operators';
 
+import * as mqtt from 'mqtt';
 
 @Injectable({
   providedIn: 'root'
