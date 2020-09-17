@@ -94,11 +94,11 @@ func (c *Server) receive(conn net.Conn) {
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
 		var lnk model.Link
-		err = db.DB("link").Select(q.Eq("channel_id", c.Id), q.Eq("serial", serial)).First(&link)
-		if err != storm.ErrNotFound {
+		err = db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Serial", serial)).First(&lnk)
+		if err == storm.ErrNotFound {
 			//找不到
 		} else if err != nil {
-			_, _ = link.Send([]byte("数据库异常"))
+			_, _ = link.Send([]byte(err.Error()))
 			log.Println(err)
 			return
 		} else {

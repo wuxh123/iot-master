@@ -2,8 +2,11 @@ package dtu
 
 import (
 	"errors"
+	"fmt"
+	"git.zgwit.com/iot/beeq/packet"
 	"git.zgwit.com/iot/dtu-admin/base"
 	"git.zgwit.com/iot/dtu-admin/db"
+	"git.zgwit.com/iot/dtu-admin/dbus"
 	"git.zgwit.com/iot/dtu-admin/model"
 	"net"
 	"time"
@@ -29,7 +32,11 @@ func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
-	//TODO 发送至MQTT
+	//发送至MQTT
+	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
+	pub.SetTopic([]byte(fmt.Sprintf("/%d/recv", l.Id)))
+	pub.SetPayload(buf)
+	dbus.Hive().Publish(pub)
 }
 
 func (l *Link) Resume() {

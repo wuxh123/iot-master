@@ -110,14 +110,15 @@ func (c *PacketServer) receive() {
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
 				var lnk model.Link
 
-				err = db.DB("link").Select(q.Eq("channel_id", c.Id), q.Eq("serial", serial)).First(&link)
-				if err != storm.ErrNotFound {
+				err = db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Serial", serial)).First(&lnk)
+				if err == storm.ErrNotFound {
 					//找不到
 				} else if err != nil {
-					_, _ = link.Send([]byte("数据库异常"))
+					_, _ = link.Send([]byte(err.Error()))
 					log.Println(err)
 					return
 				} else {
+					//复用连接，更新地址，状态，等
 					l, _ := c.GetLink(lnk.Id)
 					if l != nil {
 						//如果同序号连接还在正常通讯，则关闭当前连接

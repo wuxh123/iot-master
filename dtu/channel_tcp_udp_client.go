@@ -60,10 +60,11 @@ func (c *Client) receive(conn net.Conn) {
 	c.client = client
 
 	var link model.Link
-	err := db.DB("link").Select(q.Eq("channel_id", c.Id), q.Eq("role", "client")).First(&link)
-	if err != storm.ErrNotFound {
+	err := db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Role", "client")).First(&link)
+	if err == storm.ErrNotFound {
 		//找不到
 	} else if err != nil {
+		_, _ = client.Send([]byte(err.Error()))
 		log.Println(err)
 		return
 	} else {
