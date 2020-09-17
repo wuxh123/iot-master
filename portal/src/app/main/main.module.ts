@@ -31,6 +31,12 @@ import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {NzSpaceModule} from 'ng-zorro-antd/space';
 import {LinkEditComponent} from './link-edit/link-edit.component';
 import {PluginComponent} from './plugin/plugin.component';
+// import {MqttModule} from "ngx-mqtt";
+// import {IMqttServiceOptions} from "ngx-mqtt/lib/mqtt.model";
+//
+// export const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
+//   url: 'ws://localhost:8080/api/mqtt'
+// };
 
 
 @NgModule({
@@ -66,6 +72,7 @@ import {PluginComponent} from './plugin/plugin.component';
     NzSelectModule,
     NzSpaceModule,
     NzInputNumberModule,
+    //MqttModule.forRoot(MQTT_SERVICE_OPTIONS)
   ],
   bootstrap: [MainComponent]
 })
