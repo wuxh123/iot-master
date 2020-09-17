@@ -48,9 +48,9 @@ func RegisterRoutes(app *gin.RouterGroup) {
 		//检查 session，必须登录
 		app.Use(mustLogin)
 
-		app.GET("/monitor/:id/:id2", monitor)
+		app.GET("/mqtt", mqtt)
 	} else if conf.Config.BaseAuth.Enable {
-		app.GET("/monitor/:id/:id2", monitor)
+		app.GET("/mqtt", mqtt)
 
 		//检查HTTP认证
 		app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))

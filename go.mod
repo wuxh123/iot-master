@@ -3,7 +3,7 @@ module git.zgwit.com/iot/dtu-admin
 go 1.13
 
 require (
-	git.zgwit.com/iot/beeq v0.0.1
+	git.zgwit.com/iot/beeq v0.0.2
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
