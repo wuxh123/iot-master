@@ -1,13 +1,10 @@
 package api
 
 import (
-	"encoding/hex"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"git.zgwit.com/iot/dtu-admin/db"
-	"git.zgwit.com/iot/dtu-admin/dbus"
 	"git.zgwit.com/iot/dtu-admin/dtu"
 	"git.zgwit.com/iot/dtu-admin/model"
+	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net/http"
@@ -149,90 +146,4 @@ func linkGet(ctx *gin.Context) {
 	}
 
 	replyOk(ctx, link)
-}
-
-var upGrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-func linkPeer(ctx *gin.Context) {
-	var pid paramId
-	if err := ctx.BindUri(&pid); err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	var link model.Link
-	err := db.DB("link").One("Id", pid.Id, &link)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	lnk, err := dtu.GetLink(link.ChannelId, link.Id)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	if !lnk.Online {
-		replyFail(ctx, "设备不在线")
-		return
-	}
-
-	//TODO 设置KEY
-	key := dbus.PreparePeer(lnk)
-
-	replyOk(ctx, key)
-}
-
-type linkSendBody struct {
-	IsHex bool   `form:"is_hex"`
-	Data  string `form:"data"`
-}
-
-func linkSend(ctx *gin.Context) {
-	var pid paramId
-	if err := ctx.BindUri(&pid); err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	var body linkSendBody
-	err := ctx.ShouldBind(&body)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	var link model.Link
-	err = db.DB("link").One("Id", pid.Id, &link)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	lnk, err := dtu.GetLink(link.ChannelId, link.Id)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	b := []byte(body.Data)
-	if body.IsHex {
-		b, err = hex.DecodeString(body.Data)
-		if err != nil {
-			replyError(ctx, err)
-			return
-		}
-	}
-	_, err = lnk.Send(b)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	replyOk(ctx, nil)
 }

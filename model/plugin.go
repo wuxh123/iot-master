@@ -5,7 +5,7 @@ import "time"
 type Plugin struct {
 	Id        int       `json:"id" storm:"id,increment"`
 	Name      string    `json:"name"`
-	AppKey    string    `json:"app_key" store:"index"`
-	AppSecret string    `json:"app_secret"`
+	Key       string    `json:"key" store:"unique"`
+	Secret    string    `json:"secret"`
 	CreatedAt time.Time `json:"created_at"`
 }

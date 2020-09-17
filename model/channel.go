@@ -23,7 +23,7 @@ type Channel struct {
 	HeartBeatContent  string `json:"heart_beat_content"`
 	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
 
-	PluginId int `json:"plugin_id"`
+	//PluginId int `json:"plugin_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 }

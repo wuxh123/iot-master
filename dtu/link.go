@@ -5,8 +5,6 @@ import (
 	"git.zgwit.com/iot/dtu-admin/base"
 	"git.zgwit.com/iot/dtu-admin/db"
 	"git.zgwit.com/iot/dtu-admin/model"
-	"git.zgwit.com/iot/dtu-admin/packet"
-	"log"
 	"net"
 	"time"
 )
@@ -23,14 +21,6 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	//透传链接
-	peer base.Tunnel
-
-	plugin base.Tunnel
-
-	//监视器连接，
-	monitor *Monitor
-	//monitors sync.Map // <string, websocket>
 
 	lastTime time.Time
 }
@@ -39,33 +29,7 @@ func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
-	//透传至工具（虚拟串口）
-	if l.peer != nil {
-		_ = l.peer.Send(&packet.Packet{
-			Type: packet.TypeTransfer,
-			Data: buf,
-		})
-	} else if l.plugin != nil {
-		//透传至插件
-		//TODO 协议封装 ChannelId + LinkId + buf
-		b := make([]byte, 8+len(buf))
-		b[0] = uint8(l.ChannelId << 24)
-		b[1] = uint8(l.ChannelId << 16)
-		b[2] = uint8(l.ChannelId << 8)
-		b[3] = uint8(l.ChannelId)
-		b[4] = uint8(l.Id << 24)
-		b[5] = uint8(l.Id << 16)
-		b[6] = uint8(l.Id << 8)
-		b[7] = uint8(l.Id)
-		copy(b[8:], buf)
-		//发送插件
-		_ = l.plugin.Send(&packet.Packet{
-			Type: packet.TypeTransfer,
-			Data: b,
-		})
-	}
-
-	l.reportMonitor("recv", buf)
+	//TODO 发送至MQTT
 }
 
 func (l *Link) Resume() {
@@ -88,7 +52,8 @@ func (l *Link) Send(buf []byte) (int, error) {
 	n, e := l.conn.Write(buf)
 	//TODO 没发完，继续发
 
-	l.reportMonitor("send", buf)
+
+	//TODO 发送至MQTT
 
 	return n, e
 }
@@ -102,43 +67,12 @@ func (l *Link) Close() error {
 	if err != nil {
 		return err
 	}
-	l.Online = false
-	err = db.DB("link").UpdateField(&l.Link, "online", false)
-    //TODO 数据库中，不应该保存是否在线的状态
-	l.reportMonitor("close", nil)
+
+	//TODO 发送至MQTT
 
 	return err
 }
 
-func (l *Link) Monitor(m *Monitor) error {
-	if l.monitor != nil {
-		//TODO 不能同时监听
-	}
-	l.monitor = m
-	return nil
-}
-
-func (l *Link) Peer(tunnel base.Tunnel) {
-	l.peer = tunnel
-}
-
-func (l *Link) Plugin(tunnel base.Tunnel) {
-	l.plugin = tunnel
-}
-
-// 发送给监视器
-func (l *Link) reportMonitor(typ string, data []byte) {
-	if l.monitor == nil {
-		return
-	}
-	err := l.monitor.Report(typ, data)
-	if err != nil {
-		log.Println(err)
-		//TODO 删除之
-		l.monitor.Link = nil
-		l.monitor = nil
-	}
-}
 
 func (l *Link) storeError(err error) error {
 	l.Error = err.Error()
@@ -154,7 +88,7 @@ func newLink(ch Channel, conn net.Conn) *Link {
 			Net:       c.Net,
 			Addr:      conn.RemoteAddr().String(),
 			ChannelId: c.Id,
-			PluginId:  c.PluginId,
+			//PluginId:  c.PluginId,
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},
@@ -171,7 +105,7 @@ func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 			Net:       c.Net,
 			Addr:      addr.String(),
 			ChannelId: c.Id,
-			PluginId:  c.PluginId,
+			//PluginId:  c.PluginId,
 			Online:    true,
 			OnlineAt:  time.Now(),
 		},

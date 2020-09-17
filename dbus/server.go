@@ -1,144 +1,16 @@
 package dbus
 
 import (
-	"errors"
-	"git.zgwit.com/iot/dtu-admin/base"
-	"git.zgwit.com/iot/dtu-admin/dtu"
-	"git.zgwit.com/iot/dtu-admin/packet"
-	"log"
-	"net"
-	"strings"
+	"git.zgwit.com/iot/beeq"
 )
 
-type Server struct {
-	Net      string
-	Addr     string
-	listener net.Listener
-}
-
-func (s *Server) Listen() error {
-	var err error
-	s.listener, err = net.Listen(s.Net, s.Addr)
-	if err != nil {
-		return err
-	}
-	go s.accept()
-	return nil
-}
-
-func (s *Server) Close() error {
-	if s.listener != nil {
-		return nil
-	}
-	err := s.listener.Close()
-	if err != nil {
-		return err
-	}
-	s.listener = nil
-	return nil
-}
-
-func (s *Server) accept() {
-	for s.listener != nil {
-		conn, err := s.listener.Accept()
-		if err != nil {
-			log.Println(err)
-			continue
-			//TODO 判断监听异常应该退出
-		}
-		go s.receive(conn)
-	}
-}
-
-func (s *Server) receive(conn net.Conn) {
-
-	var parser packet.Parser
-	buf := make([]byte, 1024)
-
-	//接收第一个包，作为类型校验
-	n, e := conn.Read(buf)
-	if e != nil {
-		log.Println(e)
-		return
-	}
-	packs := parser.Parse(buf[:n])
-	if len(packs) == 0 {
-		_ = conn.Close()
-		return
-	}
-	//根据第一个包创建客户
-	c, e := s.createTunnel(conn, packs[0])
-	if e != nil {
-		p := packet.Packet{
-			Type:   packet.TypeDisconnect,
-			Data:   []byte(e.Error()),
-		}
-		_, _ = conn.Write(p.Encode())
-		_ = conn.Close()
-		return
-	}
-
-	//处理第一次接收的剩余包（网络拥堵时，可能会发生）
-	for _, pack := range packs[1:] {
-		c.Handle(pack)
-	}
-
-	for {
-		n, e := conn.Read(buf)
-		if e != nil {
-			log.Println(e)
-			break
-		}
-		packs := parser.Parse(buf[:n])
-		for _, pack := range packs {
-			c.Handle(pack)
-		}
-	}
-
-	//关闭
-	_ = c.CLose()
-}
-
-func (s *Server) createTunnel(conn net.Conn, p *packet.Packet) (base.Tunnel, error) {
-
-	if p.Type != packet.TypeConnect {
-		//告诉客户端，第一个包必须是注册包
-		return nil, errors.New("first packet must be connect")
-	}
-
-	register := string(p.Data)
-	rs := strings.Split(register, ":")
-	switch rs[0] {
-	case "peer":
-		//TODO 解析 peer:key
-		if len(rs) < 2 {
-			return nil, errors.New("parameter missed")
-		}
-		key := rs[1]
-		v, ok := peerKeys.Load(key)
-		if !ok {
-			return nil, errors.New("not available or expired")
-		}
-		link := v.(*dtu.Link)
-		peer := &Peer{baseClient: baseClient{conn: conn}, link: link}
-		link.Peer(peer)
-		//TODO 回复ConnectAck，连接信息
-
-		return peer, nil
-	case "plugin":
-		//TODO 解析 plugin:key:secret
-		if len(rs) < 2 {
-			return nil, errors.New("parameter missed")
-		}
-
-	}
-	return nil, errors.New("未支持的类型")
-}
+var hive *beeq.Hive
 
 func Start(addr string) error {
-	s := &Server{
-		Net:  "tcp",
-		Addr: addr,
-	}
-	return s.Listen()
+	hive = beeq.NewHive()
+	return hive.ListenAndServe(addr)
+}
+
+func Hive() *beeq.Hive  {
+	return hive
 }
