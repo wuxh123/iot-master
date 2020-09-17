@@ -23,7 +23,7 @@ func StartDBus(addr string) error {
 	//	log.Println(bee.ClientId(), "publish", publish)
 	//	return true
 	//})
-	hive.Subscribe("/+/+/send", func(pub *packet.Publish) {
+	hive.Subscribe("/+/+/transfer", func(pub *packet.Publish) {
 		log.Println(string(pub.Topic()), string(pub.Payload()))
 
 		topics := strings.Split(string(pub.Topic()), "/")
