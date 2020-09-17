@@ -23,6 +23,7 @@
     "mqtt": "^4.2.1",
     "ng-zorro-antd": "^9.3.0",
     "ngx-moment": "^5.0.0",
+    "ngx-mqtt": "^7.0.14",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
