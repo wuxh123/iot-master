@@ -1,4 +1,10 @@
-dash
 
-TODO: 通道总数，连接总数
 
+<nz-row [nzGutter]="16">
+  <nz-col [nzSpan]="12">
+    <nz-statistic [nzValue]="(4 | number)!" nzTitle="通道数量"></nz-statistic>
+  </nz-col>
+  <nz-col [nzSpan]="12">
+    <nz-statistic [nzValue]="(1620 | number)!" nzTitle="连接数量"></nz-statistic>
+  </nz-col>
+</nz-row>

@@ -15,7 +15,7 @@ import {
   NzFormModule,
   NzIconModule,
   NzInputModule, NzInputNumberModule,
-  NzModalModule, NzPopconfirmModule, NzSelectModule, NzSwitchModule,
+  NzModalModule, NzPopconfirmModule, NzSelectModule, NzStatisticModule, NzSwitchModule,
   NzTableModule,
   NzToolTipModule
 } from 'ng-zorro-antd';
@@ -65,6 +65,7 @@ import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
     NzSelectModule,
     NzSpaceModule,
     NzInputNumberModule,
+    NzStatisticModule,
   ],
   bootstrap: [MainComponent]
 })
