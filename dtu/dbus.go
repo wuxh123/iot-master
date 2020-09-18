@@ -14,8 +14,6 @@ func StartDBus(addr string) error {
 	hive = beeq.NewHive()
 	hive.OnConnect(func(connect *packet.Connect, bee *beeq.Bee) bool {
 		//TODO 验证插件 Key Secret
-		//TODO 验证浏览器
-		//TODO 验证透传
 		log.Println(bee.ClientId(), "connect", connect)
 		return true
 	})
@@ -24,8 +22,7 @@ func StartDBus(addr string) error {
 	//	return true
 	//})
 	hive.Subscribe("/+/+/transfer", func(pub *packet.Publish) {
-		log.Println(string(pub.Topic()), string(pub.Payload()))
-
+		//log.Println(string(pub.Topic()), string(pub.Payload()))
 		topics := strings.Split(string(pub.Topic()), "/")
 		channelId, err := strconv.Atoi(topics[1])
 		if err != nil {
