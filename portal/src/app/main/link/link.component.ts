@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
 import {LinkEditComponent} from '../link-edit/link-edit.component';
-import {LinkDetailComponent} from '../link-detail/link-detail.component';
 
 @Component({
   selector: 'app-link',
@@ -76,17 +75,6 @@ export class LinkComponent implements OnInit {
       nzMaskClosable: false,
       nzWidth: 500,
       nzContent: LinkEditComponent,
-      nzContentParams: {
-        link: l
-      }
-    });
-  }
-
-  detail(l): void {
-    this.drawer.create({
-      nzTitle: '详情',
-      // nzWidth: 400,
-      nzContent: LinkDetailComponent,
       nzContentParams: {
         link: l
       }

@@ -25,25 +25,18 @@ import {UiModule} from '../ui/ui.module';
 import {ChannelComponent} from './channel/channel.component';
 import {LinkComponent} from './link/link.component';
 import {ChannelEditComponent} from './channel-edit/channel-edit.component';
-import {ChannelDetailComponent} from './channel-detail/channel-detail.component';
-import {LinkDetailComponent} from './link-detail/link-detail.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {NzSpaceModule} from 'ng-zorro-antd/space';
 import {LinkEditComponent} from './link-edit/link-edit.component';
 import {PluginComponent} from './plugin/plugin.component';
-// import {MqttModule} from "ngx-mqtt";
-// import {IMqttServiceOptions} from "ngx-mqtt/lib/mqtt.model";
-//
-// export const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
-//   url: 'ws://localhost:8080/api/mqtt'
-// };
+import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 
 
 @NgModule({
   declarations: [MainComponent, DashComponent,
-    ChannelComponent, ChannelDetailComponent, ChannelEditComponent,
-    LinkComponent, LinkDetailComponent, LinkMonitorComponent, LinkEditComponent,
-    PluginComponent],
+    ChannelComponent, ChannelEditComponent,
+    LinkComponent, LinkEditComponent, LinkMonitorComponent,
+    PluginComponent, PluginEditComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -72,7 +65,6 @@ import {PluginComponent} from './plugin/plugin.component';
     NzSelectModule,
     NzSpaceModule,
     NzInputNumberModule,
-    //MqttModule.forRoot(MQTT_SERVICE_OPTIONS)
   ],
   bootstrap: [MainComponent]
 })

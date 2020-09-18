@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ChannelEditComponent} from '../channel-edit/channel-edit.component';
 import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
-import {ChannelDetailComponent} from '../channel-detail/channel-detail.component';
 
 @Component({
   selector: 'app-channel',
@@ -81,17 +80,6 @@ export class ChannelComponent implements OnInit {
       nzContent: ChannelEditComponent,
       nzContentParams: {
         channel: c || {net: 'tcp', addr: ':1843', role: 'server'}
-      }
-    });
-  }
-
-  detail(c): void {
-    this.drawer.create({
-      nzTitle: '详情',
-      // nzWidth: 400,
-      nzContent: ChannelDetailComponent,
-      nzContentParams: {
-        channel: c
       }
     });
   }
