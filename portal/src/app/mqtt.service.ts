@@ -55,6 +55,9 @@ export class MqttService {
     return i === fs.length && i === ts.length;
   }
 
+  publish(topic: string, content: any): void {
+    this.client.publish(topic, content);
+  }
 
   subscribe(filterString: string): Observable<any> {
     if (!this.topics[filterString]) {

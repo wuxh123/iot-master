@@ -1,6 +1,7 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../api.service';
+import {MqttService} from '../../mqtt.service';
 
 @Component({
   selector: 'app-link-monitor',
@@ -16,8 +17,8 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
 
   id: number;
   link: any;
-  ws: WebSocket;
-  interval: any;
+
+  isHex = false;
 
   text = '';
   dataRecv = [];
@@ -26,30 +27,67 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   cacheSizeRecv = 500;
   cacheSizeSend = 500;
 
-  constructor(private routeInfo: ActivatedRoute, private as: ApiService) {
+  recvSub: any;
+  sendSub: any;
+
+  constructor(private routeInfo: ActivatedRoute, private as: ApiService, private mqtt: MqttService) {
     this.id = this.routeInfo.snapshot.params.id;
     this.load();
   }
 
   ngOnInit(): void {
+
   }
 
   ngOnDestroy(): void {
-    this.ws.close(1000, 'exit');
-    clearInterval(this.interval);
+    this.recvSub.unsubscribe();
+    this.sendSub.unsubscribe();
   }
 
-  startHearbeat(): void {
-    this.interval = setInterval(() => {
-      this.ws.send(JSON.stringify({type: 'ping'}));
-    }, 10000);
+  hex_to_buffer(hex: string): Buffer {
+    hex = hex.replace(/\s*/g, '');
+    const arr = [];
+    for (let i = 0; i < hex.length; i += 2) {
+      arr.push(hex.substr(i, 2));
+    }
+    const hexes = arr.map(el => parseInt(el, 16));
+    return Buffer.from(new Uint8Array(hexes));
+  }
+
+  buffer_to_hex(buf): string {
+    const arr = Array.prototype.slice.call(buf);
+    return arr.map(el => Number(el).toString(16)).join(' ');
+  }
+
+  subscribe(): void {
+    this.recvSub = this.mqtt.subscribe('/' + this.link.channel_id + '/' + this.id + '/recv').subscribe(packet => {
+      this.dataRecv.push({
+        data: this.buffer_to_hex(packet.payload),
+        time: new Date(),
+      });
+      if (this.dataRecv.length > this.cacheSizeRecv) {
+        this.dataRecv.splice(0, 1);
+      }
+      this.contentRecv.nativeElement.scrollTo(0, this.contentRecv.nativeElement.scrollHeight);
+    });
+
+    this.sendSub = this.mqtt.subscribe('/' + this.link.channel_id + '/' + this.id + '/send').subscribe(packet => {
+      this.dataSend.push({
+        data: this.buffer_to_hex(packet.payload),
+        time: new Date(),
+      });
+      if (this.dataSend.length > this.cacheSizeSend) {
+        this.dataSend.splice(0, 1);
+      }
+      this.contentSend.nativeElement.scrollTo(0, this.contentSend.nativeElement.scrollHeight);
+    });
   }
 
   load(): void {
     this.as.get('link/' + this.id).subscribe(res => {
       this.link = res.data;
-      // TODO 检查在线状态
-      this.monitor();
+
+      this.subscribe();
     });
   }
 
@@ -58,43 +96,13 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   }
 
   send(): void {
-    console.log('send', this.text);
-    this.ws.send(JSON.stringify({type: 'send', data: this.text}));
-  }
-
-  monitor(): void {
-    this.ws = new WebSocket('ws://127.0.0.1:8080/api/monitor/' + this.link.channel_id + '/' + this.id);
-
-    this.ws.onopen = e => {
-      console.log('Connection open ...');
-      // ws.send("{}");
-      this.startHearbeat();
-    };
-
-    this.ws.onmessage = e => {
-      console.log('Recv: ' + e.data);
-      const obj = JSON.parse(e.data);
-      switch (obj.type) {
-        case 'recv':
-          this.dataRecv.push(obj);
-          if (this.dataRecv.length > this.cacheSizeRecv) {
-            this.dataRecv.splice(0, this.dataRecv.length - this.cacheSizeRecv);
-          }
-          this.contentRecv.nativeElement.scrollTo(0, this.contentRecv.nativeElement.scrollHeight);
-          break;
-        case 'send':
-          this.dataSend.push(obj);
-          if (this.dataSend.length > this.cacheSizeSend) {
-            this.dataSend.splice(0, this.dataSend.length - this.cacheSizeSend);
-          }
-          this.contentSend.nativeElement.scrollTo(0, this.contentSend.nativeElement.scrollHeight);
-          break;
-      }
-    };
-
-    this.ws.onclose = e => {
-      console.log('Connection closed.');
-    };
+    //console.log('send', this.text);
+    let content: any = this.text;
+    // 转换十六进制
+    if (this.isHex) {
+      content = this.hex_to_buffer(this.text);
+    }
+    this.mqtt.publish('/' + this.link.channel_id + '/' + this.id + '/transfer', content);
   }
 
 }

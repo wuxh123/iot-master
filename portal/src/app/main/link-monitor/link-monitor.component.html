@@ -1,14 +1,16 @@
-<p>
-  TODO： 工作状态，数据收发量，速度
-</p>
 
-<div>
-  <textarea cols="30" rows="10" [(ngModel)]="text"></textarea>
-  <button nz-button (click)="send()">发送</button>
+<!--  TODO： 工作状态，数据收发量，速度-->
+
+<div class="send-area">
+  <textarea [(ngModel)]="text" style="resize: vertical"></textarea>
+  <div class="submit">
+    <label nz-checkbox [(ngModel)]="isHex">十六进制</label>
+    <button nz-button nzType="primary" (click)="send()">发送</button>
+  </div>
 </div>
 
-<div nz-row [nzGutter]="10">
-  <div nz-col nzSpan="12">
+<div nz-row [nzGutter]="10" class="monitor">
+  <div nz-col nzSpan="12" nzXs="24" nzSm="12">
     <div class="title">
       数据接收
     </div>
@@ -18,7 +20,7 @@
       </div>
     </div>
   </div>
-  <div nz-col nzSpan="12">
+  <div nz-col nzSpan="12" nzXs="24" nzSm="12">
     <div class="title">
       数据发送
     </div>
