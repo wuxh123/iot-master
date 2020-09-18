@@ -7,7 +7,7 @@ type Channel struct {
 	Name  string `json:"name"`
 	Error string `json:"error"`
 
-	Disabled bool   `json:"disabled"` //此处 禁用 直接放到顶级，Update无效
+	Disabled bool   `json:"disabled"`
 	Role     string `json:"role"`
 	Net      string `json:"net"`
 	Addr     string `json:"addr"`
