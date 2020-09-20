@@ -3,6 +3,10 @@ package dtu
 import (
 	"git.zgwit.com/iot/beeq"
 	"git.zgwit.com/iot/beeq/packet"
+	"git.zgwit.com/iot/dtu-admin/db"
+	"git.zgwit.com/iot/dtu-admin/model"
+	"github.com/zgwit/storm/v3"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"strconv"
 	"strings"
@@ -14,6 +18,12 @@ func StartDBus(addr string) error {
 	hive = beeq.NewHive()
 	hive.OnConnect(func(connect *packet.Connect, bee *beeq.Bee) bool {
 		//TODO 验证插件 Key Secret
+		var plugin model.Plugin
+		err := db.DB("plugin").Select(q.Eq("Key", connect.UserName())).First(&plugin)
+		if err == storm.ErrNotFound {
+
+		}
+
 		log.Println(bee.ClientId(), "connect", connect)
 		return true
 	})
