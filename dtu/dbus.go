@@ -17,20 +17,32 @@ var hive *beeq.Hive
 func StartDBus(addr string) error {
 	hive = beeq.NewHive()
 	hive.OnConnect(func(connect *packet.Connect, bee *beeq.Bee) bool {
-		//TODO 验证插件 Key Secret
+		// 验证插件 Key Secret
 		var plugin model.Plugin
 		err := db.DB("plugin").Select(q.Eq("Key", connect.UserName())).First(&plugin)
-		if err == storm.ErrNotFound {
-
+		if err == nil {
+			if plugin.Secret == string(connect.Password()) {
+				return true
+			} else {
+				return false
+			}
+		} else if err != storm.ErrNotFound {
+			log.Println(err)
+			return false
 		}
+
+		//TODO 验证浏览器
+
 
 		log.Println(bee.ClientId(), "connect", connect)
 		return true
 	})
+
 	//hive.OnPublish(func(publish *packet.Publish, bee *beeq.Bee) bool {
 	//	log.Println(bee.ClientId(), "publish", publish)
 	//	return true
 	//})
+
 	hive.Subscribe("/+/+/transfer", func(pub *packet.Publish) {
 		//log.Println(string(pub.Topic()), string(pub.Payload()))
 		topics := strings.Split(string(pub.Topic()), "/")
