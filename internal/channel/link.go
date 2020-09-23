@@ -1,11 +1,11 @@
-package core
+package channel
 
 import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
-	"git.zgwit.com/zgwit/iot-admin/base"
-	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/internal/base"
+	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/model"
 	"net"
 	"time"

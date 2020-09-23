@@ -1,9 +1,8 @@
 package main
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/conf"
-	"git.zgwit.com/zgwit/iot-admin/core"
 	"git.zgwit.com/zgwit/iot-admin/flag"
+	"git.zgwit.com/zgwit/iot-admin/internal"
 	"git.zgwit.com/zgwit/iot-admin/web"
 	"github.com/denisbrodbeck/machineid"
 	"log"
@@ -28,37 +27,20 @@ func main() {
 	if !flag.Parse() {
 		return
 	}
-	//加载配置
-	conf.Load()
 
 	id, err := machineid.ID()
 	if err != nil {
 		log.Println("获取ID错误：", err)
 		return
 	}
-	log.Println("Machine Id:", id)
-
-	//
-	//err = db.Open()
-	//if err != nil {
-	//	log.Println("数据库错误：", err)
-	//	return
-	//}
+	log.Println("Machine-Id:", id)
 
 	//启动总线
-	err = core.StartDBus(conf.Config.DBus.Addr)
+	err = internal.Start()
 	if err != nil {
-		log.Println("总线启动失败：", err)
+		log.Println("启动失败：", err)
 		return
 	}
-
-	//恢复之前的链接
-	err = core.Recovery()
-	if err != nil {
-		log.Println("恢复链接：", err)
-		return
-	}
-
 
 	//启动Web服务
 	web.Serve()

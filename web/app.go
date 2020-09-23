@@ -1,13 +1,13 @@
 package web
 
 import (
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
-	"github.com/gin-gonic/gin"
-	"git.zgwit.com/zgwit/iot-admin/conf"
+	"git.zgwit.com/zgwit/iot-admin/internal/conf"
 	"git.zgwit.com/zgwit/iot-admin/web/api"
 	"git.zgwit.com/zgwit/iot-admin/web/open"
 	wwwFiles "git.zgwit.com/zgwit/iot-admin/www"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/memstore"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
@@ -27,7 +27,7 @@ func Serve() {
 	open.RegisterRoutes(app.Group("/open"))
 
 	//启用session
-	app.Use(sessions.Sessions("core-admin", memstore.NewStore([]byte("core-admin-secret"))))
+	app.Use(sessions.Sessions("channel-admin", memstore.NewStore([]byte("channel-admin-secret"))))
 
 	//授权检查，启用了SysAdmin的OAuth2，就不能再使用基本HTTP认证了
 	//if conf.Config.SysAdmin.Enable {

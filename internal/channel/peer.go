@@ -1,4 +1,4 @@
-package core
+package channel
 
 import "net"
 

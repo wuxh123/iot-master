@@ -1,9 +1,9 @@
 package api
 
 import (
+	"git.zgwit.com/zgwit/iot-admin/internal/conf"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"git.zgwit.com/zgwit/iot-admin/conf"
 	"net/http"
 )
 

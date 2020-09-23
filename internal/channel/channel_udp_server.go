@@ -1,11 +1,11 @@
-package core
+package channel
 
 import (
 	"bytes"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/model"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"

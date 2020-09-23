@@ -1,8 +1,8 @@
-package core
+package channel
 
 import (
 	"fmt"
-	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/model"
 	"log"
 	"regexp"
