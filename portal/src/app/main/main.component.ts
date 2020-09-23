@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MqttService} from '../mqtt.service';
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -54,8 +55,23 @@ export class MainComponent implements OnInit {
     }
   ];
 
-  constructor(private mqtt: MqttService) {
+  @ViewChild("container", {read: ViewContainerRef}) container: ViewContainerRef;
 
+  constructor(private mqtt: MqttService, private router: Router, private resolver: ComponentFactoryResolver) {
+    router.events.subscribe((e:any) => {
+      console.log('router event', e)
+      if (this.container && this.container.createComponent
+        && e.snapshot && e.snapshot.component && e.snapshot.children.length==0) {
+
+        const factory = resolver.resolveComponentFactory(e.snapshot.component);
+        this.container.clear();
+        const ref = this.container.createComponent(factory);
+        //TODO 第一次，container还未准备好
+        //TODO 添加路由参数
+        //TODO call ref.destroy() in ngOnDestroy
+      }
+    });
+    //TODO unsubscribe
 
   }
 

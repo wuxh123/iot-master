@@ -32,7 +32,21 @@
     </nz-header>
     <nz-content>
       <div class="inner-content">
-        <router-outlet></router-outlet>
+        <nz-tabset nzLinkRouter style="height: 100px;" nzType="card">
+          <nz-tab>
+            <a nz-tab-link routerLink="dash">Default</a>
+            Default.
+          </nz-tab>
+          <nz-tab>
+            <a nz-tab-link routerLink="link">second</a>
+            second.
+          </nz-tab>
+        </nz-tabset>
+
+        <ng-template #container></ng-template>
+
+<!--        TODO 切换会刷新，多重路由使用不方便， -->
+<!--        <router-outlet></router-outlet>-->
       </div>
     </nz-content>
   </nz-layout>
