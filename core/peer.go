@@ -1,4 +1,4 @@
-package dtu
+package core
 
 import "net"
 

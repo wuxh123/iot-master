@@ -1,9 +1,9 @@
 package api
 
 import (
-	"git.zgwit.com/iot/dtu-admin/db"
-	"git.zgwit.com/iot/dtu-admin/dtu"
-	"git.zgwit.com/iot/dtu-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/core"
+	"git.zgwit.com/zgwit/iot-admin/model"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -88,7 +88,7 @@ func channelCreate(ctx *gin.Context) {
 
 	//启动服务
 	go func() {
-		_, err := dtu.StartChannel(&channel)
+		_, err := core.StartChannel(&channel)
 		if err != nil {
 			log.Println(err)
 		}
@@ -111,7 +111,7 @@ func channelDelete(ctx *gin.Context) {
 
 	//删除服务
 	go func() {
-		channel, err := dtu.GetChannel(pid.Id)
+		channel, err := core.GetChannel(pid.Id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -149,13 +149,13 @@ func channelModify(ctx *gin.Context) {
 
 	//重新启动服务
 	go func() {
-		_ = dtu.DeleteChannel(channel.Id)
+		_ = core.DeleteChannel(channel.Id)
 		//如果 disabled，则删除之
 		if channel.Disabled {
 			return
 		}
 
-		_, err := dtu.StartChannel(&channel)
+		_, err := core.StartChannel(&channel)
 		if err != nil {
 			log.Println(err)
 			return
@@ -198,7 +198,7 @@ func channelStart(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := dtu.GetChannel(pid.Id)
+	c, err := core.GetChannel(pid.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -219,7 +219,7 @@ func channelStop(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := dtu.GetChannel(pid.Id)
+	c, err := core.GetChannel(pid.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return

@@ -1,12 +1,12 @@
-package dtu
+package core
 
 import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
-	"git.zgwit.com/iot/dtu-admin/base"
-	"git.zgwit.com/iot/dtu-admin/db"
-	"git.zgwit.com/iot/dtu-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/base"
+	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/model"
 	"net"
 	"time"
 )

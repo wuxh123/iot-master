@@ -1,9 +1,9 @@
-package dtu
+package core
 
 import (
 	"errors"
-	"git.zgwit.com/iot/dtu-admin/db"
-	"git.zgwit.com/iot/dtu-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/model"
 	"log"
 	"sync"
 )

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"git.zgwit.com/iot/dtu-admin/conf"
-	"git.zgwit.com/iot/dtu-admin/dtu"
-	"git.zgwit.com/iot/dtu-admin/flag"
-	"git.zgwit.com/iot/dtu-admin/web"
+	"git.zgwit.com/zgwit/iot-admin/conf"
+	"git.zgwit.com/zgwit/iot-admin/core"
+	"git.zgwit.com/zgwit/iot-admin/flag"
+	"git.zgwit.com/zgwit/iot-admin/web"
 	"github.com/denisbrodbeck/machineid"
 	"log"
 )
@@ -46,14 +46,14 @@ func main() {
 	//}
 
 	//启动总线
-	err = dtu.StartDBus(conf.Config.DBus.Addr)
+	err = core.StartDBus(conf.Config.DBus.Addr)
 	if err != nil {
 		log.Println("总线启动失败：", err)
 		return
 	}
 
 	//恢复之前的链接
-	err = dtu.Recovery()
+	err = core.Recovery()
 	if err != nil {
 		log.Println("恢复链接：", err)
 		return
