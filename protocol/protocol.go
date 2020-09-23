@@ -1,5 +1,6 @@
 package protocol
 
+//TODO 放到模型定义中
 const (
 	DataTypeBit = iota
 	DataTypeByte
