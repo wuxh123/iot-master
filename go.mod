@@ -1,4 +1,4 @@
-module github.com/zgwit/iot-admin
+module git.zgwit.com/zgwit/iot-admin
 
 go 1.13
 
