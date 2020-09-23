@@ -1,4 +1,4 @@
-package channel
+package core
 
 import (
 	"fmt"
@@ -78,7 +78,7 @@ func (c *baseChannel) storeLink(l *Link) {
 
 func (c *baseChannel) storeError(err error) error {
 	c.Error = err.Error()
-	return db.DB("channel").UpdateField(&c.Channel, "error", c.Error)
+	return db.DB("core").UpdateField(&c.Channel, "error", c.Error)
 }
 
 func (c *baseChannel) checkRegister(buf []byte) (string, error) {

@@ -1,4 +1,4 @@
-package channel
+package core
 
 import (
 	"errors"
@@ -23,7 +23,7 @@ func Channels() []Channel {
 
 func Recovery() error {
 	var cs []types.Channel
-	err := db.DB("channel").All(&cs)
+	err := db.DB("core").All(&cs)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func Recovery() error {
 }
 
 func StartChannel(c *types.Channel) (Channel, error) {
-	//log.Println("Start channel", c)
+	//log.Println("Start core", c)
 	channel, err := NewChannel(c)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package channel
+package core
 
 import (
 	"git.zgwit.com/iot/beeq"
