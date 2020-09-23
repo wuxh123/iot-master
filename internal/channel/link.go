@@ -6,13 +6,13 @@ import (
 	"git.zgwit.com/iot/beeq/packet"
 	"git.zgwit.com/zgwit/iot-admin/internal/base"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"net"
 	"time"
 )
 
 type Link struct {
-	model.Link
+	types.Link
 
 	Rx int
 	Tx int
@@ -97,7 +97,7 @@ func (l *Link) storeError(err error) error {
 func newLink(ch Channel, conn net.Conn) *Link {
 	c := ch.GetChannel()
 	return &Link{
-		Link: model.Link{
+		Link: types.Link{
 			Role:      c.Role,
 			Net:       c.Net,
 			Addr:      conn.RemoteAddr().String(),
@@ -114,7 +114,7 @@ func newLink(ch Channel, conn net.Conn) *Link {
 func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 	c := ch.GetChannel()
 	return &Link{
-		Link: model.Link{
+		Link: types.Link{
 			Role:      c.Role,
 			Net:       c.Net,
 			Addr:      addr.String(),

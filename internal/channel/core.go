@@ -3,7 +3,7 @@ package channel
 import (
 	"errors"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"log"
 	"sync"
 )
@@ -22,7 +22,7 @@ func Channels() []Channel {
 
 
 func Recovery() error {
-	var cs []model.Channel
+	var cs []types.Channel
 	err := db.DB("channel").All(&cs)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func Recovery() error {
 	return nil
 }
 
-func StartChannel(c *model.Channel) (Channel, error) {
+func StartChannel(c *types.Channel) (Channel, error) {
 	//log.Println("Start channel", c)
 	channel, err := NewChannel(c)
 	if err != nil {

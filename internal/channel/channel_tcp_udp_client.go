@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -59,7 +59,7 @@ func (c *Client) receive(conn net.Conn) {
 	}
 	c.client = client
 
-	var link model.Link
+	var link types.Link
 	err := db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Role", "client")).First(&link)
 	if err == storm.ErrNotFound {
 		//找不到

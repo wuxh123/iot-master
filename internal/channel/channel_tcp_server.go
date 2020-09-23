@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -93,7 +93,7 @@ func (c *Server) receive(conn net.Conn) {
 		link.Serial = serial
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
-		var lnk model.Link
+		var lnk types.Link
 		err = db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Serial", serial)).First(&lnk)
 		if err == storm.ErrNotFound {
 			//找不到

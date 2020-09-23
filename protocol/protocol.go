@@ -1,14 +1,6 @@
 package protocol
 
-//TODO 放到模型定义中
-const (
-	DataTypeBit = iota
-	DataTypeByte
-	DataTypeWord
-	DataTypeInteger
-	DataTypeFloat
-	DataTypeDouble
-)
+
 
 type Protocol interface {
 	Init()

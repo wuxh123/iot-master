@@ -3,7 +3,7 @@ package api
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/channel"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -11,7 +11,7 @@ import (
 )
 
 func channels(ctx *gin.Context) {
-	cs := make([]model.Channel, 0)
+	cs := make([]types.Channel, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -38,7 +38,7 @@ func channels(ctx *gin.Context) {
 	query := db.DB("channel").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&model.Channel{})
+	cnt, err := query.Count(&types.Channel{})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -73,7 +73,7 @@ func channels(ctx *gin.Context) {
 }
 
 func channelCreate(ctx *gin.Context) {
-	var channel model.Channel
+	var channel types.Channel
 	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
@@ -102,7 +102,7 @@ func channelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("channel").DeleteStruct(&model.Link{Id: pid.Id})
+	err := db.DB("channel").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -132,7 +132,7 @@ func channelModify(ctx *gin.Context) {
 		return
 	}
 
-	var channel model.Channel
+	var channel types.Channel
 	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
@@ -163,13 +163,13 @@ func channelModify(ctx *gin.Context) {
 	}()
 }
 
-func getChannelFromUri(ctx *gin.Context) (*model.Channel, error) {
+func getChannelFromUri(ctx *gin.Context) (*types.Channel, error) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		return nil, err
 	}
 
-	var channel model.Channel
+	var channel types.Channel
 	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		return nil, err
@@ -183,7 +183,7 @@ func channelGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var channel model.Channel
+	var channel types.Channel
 	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)

@@ -2,14 +2,14 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3/q"
 	"net/http"
 )
 
 func plugins(ctx *gin.Context) {
-	cs := make([]model.Plugin, 0)
+	cs := make([]types.Plugin, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -36,7 +36,7 @@ func plugins(ctx *gin.Context) {
 	query := db.DB("plugin").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&model.Plugin{})
+	cnt, err := query.Count(&types.Plugin{})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -71,7 +71,7 @@ func plugins(ctx *gin.Context) {
 }
 
 func pluginCreate(ctx *gin.Context) {
-	var plugin model.Plugin
+	var plugin types.Plugin
 	if err := ctx.ShouldBindJSON(&plugin); err != nil {
 		replyError(ctx, err)
 		return
@@ -92,7 +92,7 @@ func pluginDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("plugin").DeleteStruct(&model.Link{Id: pid.Id})
+	err := db.DB("plugin").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -107,7 +107,7 @@ func pluginModify(ctx *gin.Context) {
 		return
 	}
 
-	var plugin model.Plugin
+	var plugin types.Plugin
 	if err := ctx.ShouldBindJSON(&plugin); err != nil {
 		replyError(ctx, err)
 		return
@@ -130,7 +130,7 @@ func pluginGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var plugin model.Plugin
+	var plugin types.Plugin
 	err := db.DB("plugin").One("Id", pid.Id, &plugin)
 	if err != nil {
 		replyError(ctx, err)

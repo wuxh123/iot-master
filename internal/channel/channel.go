@@ -3,7 +3,7 @@ package channel
 import (
 	"fmt"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/model"
+	"git.zgwit.com/zgwit/iot-admin/types"
 	"log"
 	"regexp"
 	"sync"
@@ -13,10 +13,10 @@ type Channel interface {
 	Open() error
 	Close() error
 	GetLink(id int) (*Link, error)
-	GetChannel() *model.Channel
+	GetChannel() *types.Channel
 }
 
-func NewChannel(channel *model.Channel) (Channel, error) {
+func NewChannel(channel *types.Channel) (Channel, error) {
 	if channel.Role == "client" {
 		return &Client{
 			baseChannel: baseChannel{
@@ -46,7 +46,7 @@ func NewChannel(channel *model.Channel) (Channel, error) {
 }
 
 type baseChannel struct {
-	model.Channel
+	types.Channel
 
 	clients sync.Map
 
@@ -54,7 +54,7 @@ type baseChannel struct {
 	Tx int `json:"tx"`
 }
 
-func (c *baseChannel) GetChannel() *model.Channel {
+func (c *baseChannel) GetChannel() *types.Channel {
 	return &c.Channel
 }
 
