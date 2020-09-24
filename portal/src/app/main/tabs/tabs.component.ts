@@ -51,28 +51,29 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    // TODO 要判断是 /admin/ 起始
     const path = url.replace(/^\/admin\//, '');
-    const index = this.links.toArray().findIndex((link, i) => {
-      if (this.tabs[i].route === path) {
-        return true;
-      }
-      return this.router.isActive(link.urlTree, true);
-    });
 
+    // 快速查找
+    let index = this.tabs.findIndex(tab => tab.route === path);
+    // 通过Angular路由查找
+    if (index < 0 && this.links) {
+      index = this.links.toArray().findIndex(link => this.router.isActive(link.urlTree, true));
+    }
     if (index > -1) {
       this.current = index;
-    } else {
-      // 创建新标签
-      this.current = this.tabs.length;
-      this.tabs.push({
-        name: path,
-        route: path
-      });
-      setTimeout(() => {
-        this.onTabsChange(this.tabs.length - 1);
-      }, 100);
-      // this.loadTab(0);
+      return;
     }
+
+    // 创建新标签
+    this.current = this.tabs.length;
+    this.tabs.push({
+      name: path,
+      route: path
+    });
+    setTimeout(() => {
+      this.onTabsChange(this.tabs.length - 1);
+    }, 100);
   }
 
   ngAfterViewInit(): void {
@@ -98,7 +99,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onTabClose(index): void {
     const tab = this.tabs.splice(index, 1)[0];
-    if (this.current > index) {
+    if (this.current >= index) {
       this.current--;
     }
     if (tab.component) {
