@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/internal/channel"
+	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/gin-gonic/gin"
@@ -35,7 +35,7 @@ func channels(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("channel").Select(cond...)
+	query := db.DB("core").Select(cond...)
 
 	//计算总数
 	cnt, err := query.Count(&types.Channel{})
@@ -79,7 +79,7 @@ func channelCreate(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("channel").Save(&channel)
+	err := db.DB("core").Save(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -88,7 +88,7 @@ func channelCreate(ctx *gin.Context) {
 
 	//启动服务
 	go func() {
-		_, err := channel.StartChannel(&channel)
+		_, err := core.StartChannel(&channel)
 		if err != nil {
 			log.Println(err)
 		}
@@ -102,7 +102,7 @@ func channelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("channel").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("core").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -111,7 +111,7 @@ func channelDelete(ctx *gin.Context) {
 
 	//删除服务
 	go func() {
-		channel, err := channel.GetChannel(pid.Id)
+		channel, err := core.GetChannel(pid.Id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -138,8 +138,8 @@ func channelModify(ctx *gin.Context) {
 		return
 	}
 
-	//log.Println("update", channel)
-	err := db.DB("channel").Update(&channel)
+	//log.Println("update", core)
+	err := db.DB("core").Update(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -149,13 +149,13 @@ func channelModify(ctx *gin.Context) {
 
 	//重新启动服务
 	go func() {
-		_ = channel.DeleteChannel(channel.Id)
+		_ = core.DeleteChannel(channel.Id)
 		//如果 disabled，则删除之
 		if channel.Disabled {
 			return
 		}
 
-		_, err := channel.StartChannel(&channel)
+		_, err := core.StartChannel(&channel)
 		if err != nil {
 			log.Println(err)
 			return
@@ -170,7 +170,7 @@ func getChannelFromUri(ctx *gin.Context) (*types.Channel, error) {
 	}
 
 	var channel types.Channel
-	err := db.DB("channel").One("Id", pid.Id, &channel)
+	err := db.DB("core").One("Id", pid.Id, &channel)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +184,7 @@ func channelGet(ctx *gin.Context) {
 		return
 	}
 	var channel types.Channel
-	err := db.DB("channel").One("Id", pid.Id, &channel)
+	err := db.DB("core").One("Id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -198,7 +198,7 @@ func channelStart(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := channel.GetChannel(pid.Id)
+	c, err := core.GetChannel(pid.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -219,7 +219,7 @@ func channelStop(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := channel.GetChannel(pid.Id)
+	c, err := core.GetChannel(pid.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return

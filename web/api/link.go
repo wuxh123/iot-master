@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/internal/channel"
+	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/gin-gonic/gin"
@@ -90,7 +90,7 @@ func linkDelete(ctx *gin.Context) {
 
 	//删除服务
 	go func() {
-		l, err := channel.GetLink(link.ChannelId, link.Id)
+		l, err := core.GetLink(link.ChannelId, link.Id)
 		if err != nil {
 			log.Println(err)
 			return

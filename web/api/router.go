@@ -60,14 +60,14 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	app.POST("/channels", channels)
-	app.POST("/channel", channelCreate)
-	app.DELETE("/channel/:id", channelDelete)
-	app.PUT("/channel/:id", channelModify)
-	app.GET("/channel/:id", channelGet)
-	app.GET("/channel/:id/start", channelStart)
-	app.GET("/channel/:id/stop", channelStop)
+	app.POST("/core", channelCreate)
+	app.DELETE("/core/:id", channelDelete)
+	app.PUT("/core/:id", channelModify)
+	app.GET("/core/:id", channelGet)
+	app.GET("/core/:id/start", channelStart)
+	app.GET("/core/:id/stop", channelStop)
 
-	//app.POST("/channel/:id/links")
+	//app.POST("/core/:id/links")
 
 	//连接管理
 	app.POST("/links", links)
