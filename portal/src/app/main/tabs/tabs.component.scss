@@ -2,9 +2,10 @@
 
   .title{
     display: inline-block;
-    border: 1px solid blue;
+    border: 1px solid grey;
     padding: 5px 10px;
     margin: 2px 3px;
+    background-color: white;
 
     &.active{
       border-color: red;
