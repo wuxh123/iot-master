@@ -30,10 +30,11 @@ import {NzSpaceModule} from 'ng-zorro-antd/space';
 import {LinkEditComponent} from './link-edit/link-edit.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
+import {TabsComponent} from './tabs/tabs.component';
 
 
 @NgModule({
-  declarations: [MainComponent, DashComponent,
+  declarations: [MainComponent, TabsComponent, DashComponent,
     ChannelComponent, ChannelEditComponent,
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent],
