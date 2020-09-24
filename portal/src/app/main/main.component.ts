@@ -1,6 +1,15 @@
-import {Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  ViewContainerRef
+} from '@angular/core';
 import {MqttService} from '../mqtt.service';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
+import {NzTabComponent} from 'ng-zorro-antd';
 
 
 @Component({
@@ -55,11 +64,11 @@ export class MainComponent implements OnInit {
     }
   ];
 
-  @ViewChild("container", {read: ViewContainerRef}) container: ViewContainerRef;
+  // @ViewChild("container", {read: ViewContainerRef}) container: ViewContainerRef;
 
   constructor(private mqtt: MqttService, private router: Router, private resolver: ComponentFactoryResolver) {
     router.events.subscribe((e: any) => {
-      //console.log('router event', e)
+      // console.log('router event', e)
       // if (this.container && this.container.createComponent
       //   && e.snapshot && e.snapshot.component && e.snapshot.children.length == 0) {
       //
@@ -73,21 +82,36 @@ export class MainComponent implements OnInit {
       //
       // }
     });
-    //TODO unsubscribe
+    // TODO unsubscribe
 
   }
 
-  tabs = [];
+  @ViewChildren('container', {read: ViewContainerRef}) containers: QueryList<ViewContainerRef>;
+
+  tabs: Array<any> = [
+    {
+      name: 'dash',
+      route: 'dash'
+    },
+    {
+      name: 'link',
+      route: 'link'
+    }
+  ];
 
   onTabsChange(e): void {
-    //TODO 实现标签页
+    // TODO 实现标签页
     // 1、打开对应标签，如果未加载组件，则解析路由，导入组件，已加载则忽略
     // 2、路由切换，没有自动打开对应标签，可能情况：
     //  a、标签未创建或已经关闭，此时需要自动创建新标签，打开页面
     //  b、无效路由
     //
 
-    //e.index
+    // e.index
+
+    if (this.tabs[e.index].component) {
+      return;
+    }
 
     // this.router.routerState.snapshot.root.firstChild.firstChild.firstChild...
     let route: any = this.router.routerState.snapshot.root;
@@ -96,9 +120,8 @@ export class MainComponent implements OnInit {
     }
     const factory = this.resolver.resolveComponentFactory(route.component);
 
-    this.container.clear();
-    const ref = this.container.createComponent(factory);
-
+    this.containers.toArray()[e.index].clear();
+    this.tabs[e.index].component = this.containers.toArray()[e.index].createComponent(factory);
   }
 
   ngOnInit(): void {

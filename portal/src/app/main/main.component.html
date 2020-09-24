@@ -31,23 +31,19 @@
       </div>
     </nz-header>
     <nz-content>
-      <div class="inner-content">
-        <nz-tabset nzLinkRouter style="height: 100px;" nzType="card" (nzSelectChange)="onTabsChange($event)">
-          <nz-tab>
-            <a nz-tab-link routerLink="dash">Default</a>
-            Default.
-          </nz-tab>
-          <nz-tab>
-            <a nz-tab-link routerLink="link">second</a>
-            second.
-          </nz-tab>
-        </nz-tabset>
 
-        <ng-template #container></ng-template>
+      <nz-tabset #tabset nzLinkRouter nzType="card" (nzSelectChange)="onTabsChange($event)">
+        <nz-tab *ngFor="let tab of tabs">
+          <a nz-tab-link [routerLink]="tab.route">{{tab.name}}</a>
+          <ng-template #container></ng-template>
+        </nz-tab>
+      </nz-tabset>
 
-<!--        TODO 切换会刷新，多重路由使用不方便， -->
-<!--        <router-outlet></router-outlet>-->
-      </div>
+<!--      <div class="inner-content">-->
+<!--        <ng-template #container></ng-template>-->
+<!--&lt;!&ndash;        TODO 切换会刷新，多重路由使用不方便， &ndash;&gt;-->
+<!--&lt;!&ndash;        <router-outlet></router-outlet>&ndash;&gt;-->
+<!--      </div>-->
     </nz-content>
   </nz-layout>
 </nz-layout>
