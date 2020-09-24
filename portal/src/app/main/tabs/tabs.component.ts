@@ -50,13 +50,19 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.links) {
       return;
     }
-    const index = this.links.toArray().findIndex(link => this.router.isActive(link.urlTree, true));
+
+    const path = url.replace(/^\/admin\//, '');
+    const index = this.links.toArray().findIndex((link, i) => {
+      if (this.tabs[i].route === path) {
+        return true;
+      }
+      return this.router.isActive(link.urlTree, true);
+    });
+
     if (index > -1) {
       this.current = index;
     } else {
       // 创建新标签
-      const path = url.replace(/^\/admin\//, '');
-
       this.current = this.tabs.length;
       this.tabs.push({
         name: path,
@@ -110,12 +116,15 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
     while (route.firstChild) {
       route = route.firstChild;
     }
-    const factory = this.resolver.resolveComponentFactory(route.component);
-    const injector = new TabsInjector(this.event, this.location.injector);
+    // TODO 如果route.component为空，则找不到内容
+    if (route.component) {
+      const factory = this.resolver.resolveComponentFactory(route.component);
+      const injector = new TabsInjector(this.event, this.location.injector);
 
-    const container = this.containers.toArray()[index];
-    container.clear();
-    this.tabs[index].component = container.createComponent(factory, this.location.length, injector);
+      const container = this.containers.toArray()[index];
+      container.clear();
+      this.tabs[index].component = container.createComponent(factory, this.location.length, injector);
+    }
   }
 
 }
