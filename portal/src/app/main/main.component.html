@@ -32,7 +32,7 @@
     </nz-header>
     <nz-content>
       <div class="inner-content">
-        <nz-tabset nzLinkRouter style="height: 100px;" nzType="card">
+        <nz-tabset nzLinkRouter style="height: 100px;" nzType="card" (nzSelectChange)="onTabsChange($event)">
           <nz-tab>
             <a nz-tab-link routerLink="dash">Default</a>
             Default.
