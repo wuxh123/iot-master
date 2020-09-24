@@ -2,13 +2,34 @@
 
   .title{
     display: inline-block;
-    border: 1px solid grey;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
     padding: 5px 10px;
-    margin: 2px 3px;
-    background-color: white;
+    margin: 2px;
+    background-color: #fafafa;
+    font-size: 14px;
+    //color: rgba(0, 0, 0, 0.65);
+
+    a{
+      color: rgba(0, 0, 0, 0.65);
+      text-decoration: none;
+    }
+
+    i {
+      margin-left: 4px;
+      transform: scale(0.8);
+      &:hover{
+        transform: scale(1.2);
+      }
+    }
 
     &.active{
-      border-color: red;
+      color: white;
+      a {
+        color: white;
+      }
+      //border-color: #ffc2c2;
+      background-color: #1890ff;
     }
   }
   .content{
