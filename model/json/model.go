@@ -41,15 +41,17 @@ type Batch struct {
 type Simpling struct {
 	Cron string
 	Type string //read batch
-	Path string
+	Path string //path or batch name
 }
 
 type Job struct {
+	Name   string //唯一
 	Cron   string
 	Script string
 }
 
 type Strategy struct {
-	Variables []string
+	Name      string //唯一
 	Script    string //javascript 表达式
+	Variables []string
 }
