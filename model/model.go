@@ -3,6 +3,7 @@ package model
 import (
 	"git.zgwit.com/zgwit/iot-admin/model/json"
 	"github.com/robertkrimen/otto"
+	"strings"
 	"sync"
 )
 import "errors"
@@ -26,26 +27,24 @@ const (
 	DataTypeFloat64
 	DataTypeFloat128
 )
+const _typeNames = ",bit,byte,uint8,uin16,uin32,uint64,int8,int16,int32,int64,float32,float64,float128"
+var typeNames []string
+
+func init() {
+	typeNames = strings.Split(_typeNames, ",")
+}
 
 func (dt DataType) ToString() string {
-	switch dt {
-	case DataTypeBit:
-		return "bit"
-	default:
-		return "unknown"
-	}
+	return typeNames[dt]
 }
 
 func ParseDataType(tp string) (DataType, error) {
-	switch tp {
-	case "bit":
-		return DataTypeBit, nil
-	case "byte":
-		return DataTypeByte, nil
-		//TODO 填充类型
-	default:
-		return DataTypeNone, errors.New("未知类型")
+	for i, t := range typeNames {
+		if t == tp {
+			return DataType(i), nil
+		}
 	}
+	return DataTypeNone, errors.New("未知类型")
 }
 
 type Variable struct {
