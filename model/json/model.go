@@ -30,6 +30,7 @@ type Batch struct {
 	Link string
 	Type string
 	Addr string
+	Size int
 
 	Results []struct {
 		Offset int
@@ -37,16 +38,18 @@ type Batch struct {
 	}
 }
 
-type Job struct {
+type Simpling struct {
 	Cron string
-	Type string //read write javascript
-	Path string //变量 或 脚本
+	Type string //read batch
+	Path string
+}
+
+type Job struct {
+	Cron   string
+	Script string
 }
 
 type Strategy struct {
-	Cond       string //javascript 表达式
-	Operations []struct {
-		Path  string
-		Value string
-	}
+	Variables []string
+	Script    string //javascript 表达式
 }
