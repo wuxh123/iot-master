@@ -9,8 +9,8 @@ type Variable struct {
 	Addr     string
 	Type     DataType
 	Value    interface{}
-	Default  interface{}
 	Writable bool //可写，用于输出（如开关）
+
 	Children map[string]Variable
 }
 
