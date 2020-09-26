@@ -2,17 +2,20 @@ package model
 
 import (
 	"github.com/robertkrimen/otto"
-	"sync"
 )
 
 type Variable struct {
+	Name     string //唯一
 	Addr     string
 	Type     DataType
 	Value    interface{}
-	children sync.Map
+	Default  interface{}
+	Writable bool //可写，用于输出（如开关）
+	Children map[string]Variable
 }
 
 type Simpling struct {
+	Name string //唯一
 	Cron string
 	Type string //read batch
 	Path string //path or batch name
@@ -21,28 +24,24 @@ type Simpling struct {
 type Job struct {
 	Name   string //唯一
 	Cron   string
-	Script string
+	Script string //javascript 表达式
 }
 
 type Strategy struct {
-	Name      string //唯一
-	Script    string //javascript 表达式
-	Variables []string
+	Name   string //唯一
+	Script string //javascript 表达式
 }
 
 type Model struct {
 	vm *otto.Otto
 
-	variables sync.Map
-
-	jobs       []Job
+	variables  []Variable
 	strategies []Strategy
+	jobs       []Job
 }
 
 func NewModel() *Model {
 	return &Model{
-		vm:         otto.New(),
-		jobs:       make([]Job, 0),
-		strategies: make([]Strategy, 0),
+		vm: otto.New(),
 	}
 }
