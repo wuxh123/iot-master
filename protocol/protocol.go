@@ -17,9 +17,9 @@ type Linker interface {
 }
 
 type AdapterListener interface {
-	onRead(addr string, typ types.DataType, buf []byte)
-	onWrite(addr string, typ types.DataType, size int)
-	onError(err error)
+	onAdapterRead(addr string, typ types.DataType, buf []byte)
+	onAdapterWrite(addr string, typ types.DataType, size int)
+	onAdapterError(err error)
 }
 
 type Adapter interface {
