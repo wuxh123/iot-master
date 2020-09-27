@@ -1,16 +1,16 @@
-package model
+package types
 
 type _base struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type _link struct {
+type ModelLink struct {
 	_base
 	Protocol string `json:"protocol"`
 }
 
-type _variable struct {
+type ModelVariable struct {
 	_base
 	Link     string `json:"link"`
 	Type     string `json:"type"`
@@ -21,10 +21,15 @@ type _variable struct {
 	//TODO 采样：无、定时、轮询
 	Cron string `json:"cron"`
 
-	Children []_variable `json:"children"`
+	Children []ModelVariable `json:"children"`
 }
 
-type _batch struct {
+type ModelBatchResult struct {
+	Offset   int    `json:"offset"`
+	Variable string `json:"variable"` //ModelVariable path
+}
+
+type ModelBatch struct {
 	_base
 	Link string `json:"link"`
 	Type string `json:"type"`
@@ -32,29 +37,29 @@ type _batch struct {
 	Size int    `json:"size"`
 	Cron string `json:"cron"`
 
-	Results []struct {
-		Offset   int    `json:"offset"`
-		Variable string `json:"variable"` //Variable path
-	} `json:"results"`
+	Results []ModelBatchResult `json:"results"`
 }
 
-type _job struct {
+type ModelJob struct {
 	_base
 	Cron   string `json:"cron"`
 	Script string `json:"script"` //javascript
 }
 
-type _strategy struct {
+type ModelStrategy struct {
 	_base
 	Script string `json:"script"` //javascript
 }
 
-type _model struct {
+type Model struct {
 	_base
 
-	Links      []_link     `json:"links"`
-	Variables  []_variable `json:"variables"`
-	Batches    []_batch    `json:"batches"`
-	Jobs       []_job      `json:"jobs"`
-	Strategies []_strategy `json:"strategies"`
+	Version string `json:"version"`
+	H5      string `json:"h5"`
+
+	Links      []ModelLink     `json:"links"`
+	Variables  []ModelVariable `json:"variables"`
+	Batches    []ModelBatch    `json:"batches"`
+	Jobs       []ModelJob      `json:"jobs"`
+	Strategies []ModelStrategy `json:"strategies"`
 }
