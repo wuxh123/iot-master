@@ -2,27 +2,44 @@ package protocol
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/types"
-	"net"
 	"sync"
 )
 
-type Listener interface {
+type LinkerListener interface {
+	onLinkerData(buf []byte)
+	onLinkerError(err error)
+	onLinkerClose()
+}
+
+type Linker interface {
+	Listen(listener LinkerListener) error
+	Write(buf []byte)
+}
+
+type AdapterListener interface {
 	onRead(addr string, typ types.DataType, buf []byte)
 	onWrite(addr string, typ types.DataType, size int)
 	onError(err error)
 }
 
-type Protocol interface {
-	//TODO 其他参数
-	Init(listener Listener)
+type Adapter interface {
+	Listen(listener AdapterListener)
+
 	Name() string
+	Version() string
 
 	Read(addr string, typ types.DataType, size int) (err error)
 	Write(addr string, typ types.DataType, buf []byte) (err error)
 }
 
-var protocols sync.Map
+//TODO 改为普通map
+var adapters sync.Map
 
-func RegisterProtocol(name string, factory func(conn net.Conn) Protocol)  {
+func Adapters() sync.Map {
+	return adapters
+}
 
+//TODO 添加参数
+func RegisterProtocol(name string, factory func(linker Linker) Adapter) {
+	adapters.Store(name, factory)
 }
