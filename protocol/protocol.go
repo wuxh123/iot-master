@@ -7,9 +7,9 @@ import (
 )
 
 type AdapterListener interface {
-	onAdapterRead(addr string, typ types.DataType, buf []byte)
-	onAdapterWrite(addr string, typ types.DataType, size int)
-	onAdapterError(err error)
+	OnAdapterRead(addr string, typ types.DataType, buf []byte)
+	OnAdapterWrite(addr string, typ types.DataType, size int)
+	OnAdapterError(err error)
 }
 
 type Adapter interface {
