@@ -2,13 +2,12 @@ package protocol
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/interfaces"
-	"git.zgwit.com/zgwit/iot-admin/types"
 	"sync"
 )
 
 type AdapterListener interface {
-	OnAdapterRead(addr string, typ types.DataType, buf []byte)
-	OnAdapterWrite(addr string, typ types.DataType, size int)
+	OnAdapterRead(addr string, buf []byte)
+	OnAdapterWrite(addr string, size int)
 	OnAdapterError(err error)
 }
 
@@ -18,8 +17,8 @@ type Adapter interface {
 	Name() string
 	Version() string
 
-	Read(addr string, typ types.DataType, size int) (err error)
-	Write(addr string, typ types.DataType, buf []byte) (err error)
+	Read(addr string, size int) error
+	Write(addr string, buf []byte) error
 }
 
 //TODO 改为普通map
