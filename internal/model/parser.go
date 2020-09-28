@@ -1,21 +1,18 @@
-package types
+package model
 
 type _base struct {
-	Id          int    `json:"id" storm:"id,increment"`
-	ModelId     int    `json:"model_id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type ModelTunnel struct {
-	_base    `storm:"inline"`
-	LinkId   int    `json:"link_id"`
+type ModelLink struct {
+	_base
 	Protocol string `json:"protocol"`
 }
 
 type ModelVariable struct {
-	_base    `storm:"inline"`
-	TunnelId int    `json:"tunnel_id"`
+	_base
+	Link     string `json:"link"`
 	Type     string `json:"type"`
 	Addr     string `json:"addr"`
 	Default  string `json:"default"`
@@ -33,31 +30,46 @@ type ModelBatchResult struct {
 }
 
 type ModelBatch struct {
-	_base    `storm:"inline"`
-	TunnelId int    `json:"tunnel_id"`
-	Type     string `json:"type"`
-	Addr     string `json:"addr"`
-	Size     int    `json:"size"`
-	Cron     string `json:"cron"`
+	_base
+	Link string `json:"link"`
+	Type string `json:"type"`
+	Addr string `json:"addr"`
+	Size int    `json:"size"`
+	Cron string `json:"cron"`
 
 	Results []ModelBatchResult `json:"results"`
 }
 
 type ModelJob struct {
-	_base  `storm:"inline"`
+	_base
 	Cron   string `json:"cron"`
 	Script string `json:"script"` //javascript
 }
 
 type ModelStrategy struct {
-	_base  `storm:"inline"`
+	_base
 	Script string `json:"script"` //javascript
 }
 
 type Model struct {
-	Id          int    `json:"id" storm:"id,increment"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Version     string `json:"version"`
-	H5          string `json:"h5"`
+	_base
+
+	Version string `json:"version"`
+	H5      string `json:"h5"`
+
+	Links      []ModelLink     `json:"links"`
+	Variables  []ModelVariable `json:"variables"`
+	Batches    []ModelBatch    `json:"batches"`
+	Jobs       []ModelJob      `json:"jobs"`
+	Strategies []ModelStrategy `json:"strategies"`
+}
+
+func Import(json string) error {
+	//TODO parser model, import
+	return nil
+}
+
+func Export(id int) string {
+	//TODO ge
+	return ""
 }
