@@ -100,7 +100,7 @@ func (c *PacketServer) receive() {
 			if c.RegisterEnable {
 				serial, err := c.baseChannel.checkRegister(buf[:n])
 				if err != nil {
-					_, _ = link.Send([]byte(err.Error()))
+					_ = link.Write([]byte(err.Error()))
 					return
 				}
 
@@ -114,7 +114,7 @@ func (c *PacketServer) receive() {
 				if err == storm.ErrNotFound {
 					//找不到
 				} else if err != nil {
-					_, _ = link.Send([]byte(err.Error()))
+					_ = link.Write([]byte(err.Error()))
 					log.Println(err)
 					return
 				} else {
@@ -123,7 +123,7 @@ func (c *PacketServer) receive() {
 					if l != nil {
 						//如果同序号连接还在正常通讯，则关闭当前连接
 						if l.conn != nil {
-							_, _ = link.Send([]byte(fmt.Sprintf("duplicate serial %s", serial)))
+							_ = link.Write([]byte(fmt.Sprintf("duplicate serial %s", serial)))
 							return
 						}
 

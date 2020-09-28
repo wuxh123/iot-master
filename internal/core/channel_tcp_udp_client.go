@@ -64,7 +64,7 @@ func (c *Client) receive(conn net.Conn) {
 	if err == storm.ErrNotFound {
 		//找不到
 	} else if err != nil {
-		_, _ = client.Send([]byte(err.Error()))
+		_, _ = client.Write([]byte(err.Error()))
 		log.Println(err)
 		return
 	} else {

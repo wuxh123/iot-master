@@ -63,7 +63,7 @@ func StartDBus(addr string) error {
 			log.Println(err)
 			return
 		}
-		_, err = link.Send(pub.Payload())
+		_, err = link.Write(pub.Payload())
 		if err != nil {
 			log.Println(err)
 			return

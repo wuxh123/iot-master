@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
+	"git.zgwit.com/zgwit/iot-admin/interfaces"
 	"git.zgwit.com/zgwit/iot-admin/internal/base"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/types"
@@ -25,46 +26,60 @@ type Link struct {
 
 
 	lastTime time.Time
+
+	listener interfaces.LinkerListener
 }
+
+func (l *Link) Listen (listener interfaces.LinkerListener) {
+	l.listener = listener
+}
+
 
 func (l *Link) onData(buf []byte) {
 	l.Rx += len(buf)
 	l.lastTime = time.Now()
 
+	//TODO 透传
+
+	//监听
+	if l.listener != nil {
+		l.listener.OnLinkerData(buf)
+	}
+
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/%d/%d/recv", l.ChannelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.ChannelId, l.Id)))
 	pub.SetPayload(buf)
 	Hive().Publish(pub)
 }
 
 func (l *Link) Resume() {
 	for _, b := range l.cache {
-		_, _ = l.Send(b)
+		_ = l.Write(b)
 	}
 	l.cache = make([][]byte, 0)
 }
 
-func (l *Link) Send(buf []byte) (int, error) {
+func (l *Link) Write(buf []byte) error {
 	//检查状态，如果关闭，则缓存
 	if l.conn == nil {
 		l.cache = append(l.cache, buf)
-		return 0, errors.New("链接已关闭")
+		return errors.New("链接已关闭")
 	}
 
 	l.Tx += len(buf)
 	l.lastTime = time.Now()
 
-	n, e := l.conn.Write(buf)
+	_, e := l.conn.Write(buf)
 	//TODO 没发完，继续发
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/%d/%d/send", l.ChannelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.ChannelId, l.Id)))
 	pub.SetPayload(buf)
 	Hive().Publish(pub)
 
-	return n, e
+	return e
 }
 
 func (l *Link) Close() error {
@@ -77,10 +92,14 @@ func (l *Link) Close() error {
 		return err
 	}
 
+	//监听关闭
+	if l.listener != nil {
+		l.listener.OnLinkerClose()
+	}
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/%d/%d/event", l.ChannelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.ChannelId, l.Id)))
 	pub.SetPayload([]byte("close"))
 	Hive().Publish(pub)
 
