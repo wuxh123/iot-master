@@ -5,6 +5,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/gin-gonic/gin"
+	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net/http"
@@ -40,7 +41,7 @@ func links(ctx *gin.Context) {
 
 	//计算总数
 	cnt, err := query.Count(&types.Link{})
-	if err != nil {
+	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
 	}
@@ -60,7 +61,7 @@ func links(ctx *gin.Context) {
 	}
 
 	err = query.Find(&ls)
-	if err != nil {
+	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
 	}

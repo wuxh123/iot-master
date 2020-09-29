@@ -4,6 +4,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/types"
 	"github.com/gin-gonic/gin"
+	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"net/http"
 	"time"
@@ -397,7 +398,7 @@ func models(ctx *gin.Context) {
 
 	//计算总数
 	cnt, err := query.Count(&types.Model{})
-	if err != nil {
+	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
 	}
@@ -417,7 +418,7 @@ func models(ctx *gin.Context) {
 	}
 
 	err = query.Find(&cs)
-	if err != nil {
+	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
 	}
