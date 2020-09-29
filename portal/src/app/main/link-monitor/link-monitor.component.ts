@@ -11,7 +11,6 @@ import {MqttService} from '../../mqtt.service';
 export class LinkMonitorComponent implements OnInit, OnDestroy {
   title = '连接监控';
 
-
   @ViewChild('contentRecv')
   contentRecv: ElementRef;
 
@@ -63,7 +62,7 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   }
 
   subscribe(): void {
-    this.recvSub = this.mqtt.subscribe('/' + this.link.channel_id + '/' + this.id + '/recv').subscribe(packet => {
+    this.recvSub = this.mqtt.subscribe('/link/' + this.link.channel_id + '/' + this.id + '/recv').subscribe(packet => {
       this.dataRecv.push({
         data: this.buffer_to_hex(packet.payload),
         time: new Date(),
@@ -74,7 +73,7 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
       this.contentRecv.nativeElement.scrollTo(0, this.contentRecv.nativeElement.scrollHeight);
     });
 
-    this.sendSub = this.mqtt.subscribe('/' + this.link.channel_id + '/' + this.id + '/send').subscribe(packet => {
+    this.sendSub = this.mqtt.subscribe('/link/' + this.link.channel_id + '/' + this.id + '/send').subscribe(packet => {
       this.dataSend.push({
         data: this.buffer_to_hex(packet.payload),
         time: new Date(),
@@ -105,7 +104,7 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
     if (this.isHex) {
       content = this.hex_to_buffer(this.text);
     }
-    this.mqtt.publish('/' + this.link.channel_id + '/' + this.id + '/transfer', content);
+    this.mqtt.publish('/link/' + this.link.channel_id + '/' + this.id + '/transfer', content);
   }
 
 }

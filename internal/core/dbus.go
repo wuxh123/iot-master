@@ -43,15 +43,15 @@ func StartDBus(addr string) error {
 	//	return true
 	//})
 
-	hive.Subscribe("/+/+/transfer", func(pub *packet.Publish) {
+	hive.Subscribe("/link/+/+/transfer", func(pub *packet.Publish) {
 		//log.Println(string(pub.Topic()), string(pub.Payload()))
 		topics := strings.Split(string(pub.Topic()), "/")
-		channelId, err := strconv.Atoi(topics[1])
+		channelId, err := strconv.Atoi(topics[2])
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		linkId, err := strconv.Atoi(topics[2])
+		linkId, err := strconv.Atoi(topics[3])
 		if err != nil {
 			log.Println(err)
 			return
