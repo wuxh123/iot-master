@@ -26,10 +26,9 @@
   <thead>
   <tr>
     <th nzColumnKey="Id" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="ModelId" [nzSortFn]="true">模型ID</th>
     <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
-    <th nzColumnKey="Key" [nzSortFn]="true">密钥</th>
-    <th nzColumnKey="Secret" [nzSortFn]="true">密码</th>
-    <th nzColumnKey="Status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
+    <th nzColumnKey="Script" [nzSortFn]="true">脚本</th>
     <th nzColumnKey="CreatedAt" [nzSortFn]="true">创建时间</th>
     <th></th>
   </tr>
@@ -37,12 +36,9 @@
   <tbody>
   <tr *ngFor="let data of tbl.data">
     <td>{{ data.id }}</td>
+    <td>{{ data.model_id }}</td>
     <td>{{ data.name }}</td>
-    <td>{{ data.key }}</td>
-    <td>{{data.secret}}</td>
-    <td>
-      {{data.disabled ? '禁用' : ''}}
-    </td>
+    <td>{{ data.script }}</td>
     <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a (click)="edit(data)" title="编辑">

@@ -40,32 +40,32 @@ export class MainComponent implements OnInit {
       ]
     },
     {
-      title: '模型管理',
+      title: '设备模型',
       icon: 'cluster',
       open: false,
       children: [
         {
-          title: '模型',
+          title: '模型管理',
           router: 'model'
         },
         {
-          title: '链路',
+          title: '协议适配',
           router: 'tunnel'
         },
         {
-          title: '变量',
+          title: '变量管理',
           router: 'variable'
         },
         {
-          title: '批量',
+          title: '批量采集',
           router: 'batch'
         },
         {
-          title: '任务',
+          title: '定时任务',
           router: 'job'
         },
         {
-          title: '策略',
+          title: '自动策略',
           router: 'strategy'
         }
       ]

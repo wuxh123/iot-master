@@ -26,10 +26,13 @@
   <thead>
   <tr>
     <th nzColumnKey="Id" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="ModelId" [nzSortFn]="true">模型ID</th>
+    <th nzColumnKey="LinkId" [nzSortFn]="true">连接ID</th>
     <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
-    <th nzColumnKey="Key" [nzSortFn]="true">密钥</th>
-    <th nzColumnKey="Secret" [nzSortFn]="true">密码</th>
-    <th nzColumnKey="Status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
+    <th nzColumnKey="Protocol" [nzSortFn]="true">协议</th>
+    <th nzColumnKey="ProtocolOpts" [nzSortFn]="true">参数</th>
+    <th nzColumnKey="PollingEnable" [nzSortFn]="true">轮询</th>
+    <th nzColumnKey="PollingInterval" [nzSortFn]="true">轮询间隔</th>
     <th nzColumnKey="CreatedAt" [nzSortFn]="true">创建时间</th>
     <th></th>
   </tr>
@@ -37,12 +40,13 @@
   <tbody>
   <tr *ngFor="let data of tbl.data">
     <td>{{ data.id }}</td>
+    <td>{{ data.model_id }}</td>
+    <td>{{ data.link_id }}</td>
     <td>{{ data.name }}</td>
-    <td>{{ data.key }}</td>
-    <td>{{data.secret}}</td>
-    <td>
-      {{data.disabled ? '禁用' : ''}}
-    </td>
+    <td>{{ data.protocol }}</td>
+    <td>{{ data.protocol_opts }}</td>
+    <td>{{ data.polling_enable }}</td>
+    <td>{{data.polling_interval}}</td>
     <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a (click)="edit(data)" title="编辑">
