@@ -1,10 +1,18 @@
 <nz-layout class="app-layout">
   <nz-sider class="menu-sidebar"
             nzCollapsible
-            nzWidth="160px"
+            nzWidth="180px"
             nzBreakpoint="md"
             [(nzCollapsed)]="isCollapsed"
             [nzTrigger]="null">
+
+    <div class="sidebar-logo">
+      <a href="https://github.com/zgwit/iot-admin" target="_blank">
+        <img src="assets/logo.svg" alt="logo">
+        <h1>IoT Admin</h1>
+      </a>
+    </div>
+
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
       <li nz-submenu *ngFor="let menu of menus" [nzTitle]="menu.title" [nzIcon]="menu.icon" [nzOpen]="menu.open">
         <ul>
@@ -25,8 +33,6 @@
                [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
             ></i>
         </span>
-
-        IoT管理系统
 
       </div>
     </nz-header>
