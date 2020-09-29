@@ -31,8 +31,8 @@
     <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
     <th nzColumnKey="Protocol" [nzSortFn]="true">协议</th>
     <th nzColumnKey="ProtocolOpts" [nzSortFn]="true">参数</th>
-    <th nzColumnKey="PollingEnable" [nzSortFn]="true">轮询</th>
-    <th nzColumnKey="PollingInterval" [nzSortFn]="true">轮询间隔</th>
+<!--    <th nzColumnKey="PollingEnable" [nzSortFn]="true">轮询</th>-->
+<!--    <th nzColumnKey="PollingInterval" [nzSortFn]="true">轮询间隔</th>-->
     <th nzColumnKey="CreatedAt" [nzSortFn]="true">创建时间</th>
     <th></th>
   </tr>
@@ -45,8 +45,8 @@
     <td>{{ data.name }}</td>
     <td>{{ data.protocol }}</td>
     <td>{{ data.protocol_opts }}</td>
-    <td>{{ data.polling_enable }}</td>
-    <td>{{data.polling_interval}}</td>
+<!--    <td>{{ data.polling_enable }}</td>-->
+<!--    <td>{{data.polling_interval}}</td>-->
     <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a (click)="edit(data)" title="编辑">
