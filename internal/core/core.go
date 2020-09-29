@@ -23,7 +23,7 @@ func Channels() []Channel {
 
 func Recovery() error {
 	var cs []types.Channel
-	err := db.DB("core").All(&cs)
+	err := db.DB("channel").All(&cs)
 	if err != nil {
 		return err
 	}

@@ -36,7 +36,7 @@ func channels(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("core").Select(cond...)
+	query := db.DB("channel").Select(cond...)
 
 	//计算总数
 	cnt, err := query.Count(&types.Channel{})
@@ -80,7 +80,7 @@ func channelCreate(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("core").Save(&channel)
+	err := db.DB("channel").Save(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -103,7 +103,7 @@ func channelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("core").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("channel").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -140,7 +140,7 @@ func channelModify(ctx *gin.Context) {
 	}
 
 	//log.Println("update", core)
-	err := db.DB("core").Update(&channel)
+	err := db.DB("channel").Update(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -171,7 +171,7 @@ func getChannelFromUri(ctx *gin.Context) (*types.Channel, error) {
 	}
 
 	var channel types.Channel
-	err := db.DB("core").One("Id", pid.Id, &channel)
+	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func channelGet(ctx *gin.Context) {
 		return
 	}
 	var channel types.Channel
-	err := db.DB("core").One("Id", pid.Id, &channel)
+	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
