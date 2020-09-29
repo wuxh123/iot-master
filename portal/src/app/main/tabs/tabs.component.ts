@@ -99,7 +99,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onTabClose(index): void {
     const tab = this.tabs.splice(index, 1)[0];
-    if (this.current >= index) {
+    if (this.current >= index && this.current > 0) {
       this.current--;
     }
     if (tab.component) {
@@ -109,6 +109,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadTab(index): void {
     if (this.tabs[index].component) {
+      //TODO setTitle
       return;
     }
 
@@ -125,6 +126,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
       const container = this.containers.toArray()[index];
       container.clear();
       this.tabs[index].component = container.createComponent(factory, this.location.length, injector);
+      //TODO setTitle
     }
   }
 

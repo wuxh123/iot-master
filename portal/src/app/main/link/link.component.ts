@@ -9,6 +9,8 @@ import {LinkEditComponent} from '../link-edit/link-edit.component';
   styleUrls: ['./link.component.scss']
 })
 export class LinkComponent implements OnInit {
+  title = '连接管理';
+
   links: [];
   total = 0;
   pageIndex = 1;

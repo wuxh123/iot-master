@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./job.component.scss']
 })
 export class JobComponent implements OnInit {
+  title = '定时任务';
 
   jobs: [];
   total = 0;

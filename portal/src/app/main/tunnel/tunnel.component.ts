@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./tunnel.component.scss']
 })
 export class TunnelComponent implements OnInit {
+  title = '协议适配';
 
   tunnels: [];
   total = 0;

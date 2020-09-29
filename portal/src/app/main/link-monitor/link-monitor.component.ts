@@ -9,6 +9,9 @@ import {MqttService} from '../../mqtt.service';
   styleUrls: ['./link-monitor.component.scss']
 })
 export class LinkMonitorComponent implements OnInit, OnDestroy {
+  title = '连接监控';
+
+
   @ViewChild('contentRecv')
   contentRecv: ElementRef;
 

@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./variable.component.scss']
 })
 export class VariableComponent implements OnInit {
+  title = '变量管理';
 
   variables: [];
   total = 0;

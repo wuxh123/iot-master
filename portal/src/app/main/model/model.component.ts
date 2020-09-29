@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./model.component.scss']
 })
 export class ModelComponent implements OnInit {
+  title = '模型管理';
 
   models: [];
   total = 0;

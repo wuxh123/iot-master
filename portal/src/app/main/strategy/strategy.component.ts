@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./strategy.component.scss']
 })
 export class StrategyComponent implements OnInit {
+  title = '自动策略';
 
   strategies: [];
   total = 0;

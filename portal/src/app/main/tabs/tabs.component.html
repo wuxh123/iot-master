@@ -11,7 +11,9 @@
        [class.active]="i==current"
        (click)="onTabsChange(i)"
   >
-    <a [routerLink]="tab.route">{{tab.name || tab.url}}</a>
+    <a [routerLink]="tab.route">
+      {{tab.component && tab.component.instance.title || tab.name || tab.url}}
+    </a>
     <i nz-icon nzType="close" nzTheme="outline" (click)="onTabClose(i)"></i>
   </div>
   <ng-container *ngFor="let tab of tabs; let i=index">

@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./plugin.component.scss']
 })
 export class PluginComponent implements OnInit {
+  title = '插件管理';
 
   plugins: [];
   total = 0;

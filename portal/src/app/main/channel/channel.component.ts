@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./channel.component.scss']
 })
 export class ChannelComponent implements OnInit {
+  title = '通道管理';
 
   channels: [];
   total = 0;

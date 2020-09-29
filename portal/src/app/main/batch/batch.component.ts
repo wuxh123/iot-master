@@ -9,6 +9,7 @@ import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
   styleUrls: ['./batch.component.scss']
 })
 export class BatchComponent implements OnInit {
+  title = '批量采集';
 
   batches: [];
   total = 0;
