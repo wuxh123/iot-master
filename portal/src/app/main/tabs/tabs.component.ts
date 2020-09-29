@@ -98,12 +98,24 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onTabClose(index): void {
-    const tab = this.tabs.splice(index, 1)[0];
-    if (this.current >= index && this.current > 0) {
-      this.current--;
+    if (this.tabs.length === 1) {
+      //TODO 打开默认页
+      return;
     }
+
+    const tab = this.tabs.splice(index, 1)[0];
     if (tab.component) {
       tab.component.destroy();
+    }
+    if (this.current > index) {
+      this.current--;
+    } else if (this.current === index) {
+      if (this.current >= this.tabs.length) {
+        this.current = this.tabs.length - 1;
+      }
+      // 用修改路由的方式触发
+      this.router.navigate(['/admin/' + this.tabs[this.current].route]);
+      return;
     }
   }
 

@@ -14,7 +14,7 @@
     <a [routerLink]="tab.route">
       {{tab.component && tab.component.instance.title || tab.name || tab.url}}
     </a>
-    <i nz-icon nzType="close" nzTheme="outline" (click)="onTabClose(i)"></i>
+    <i nz-icon nzType="close" nzTheme="outline" (click)="onTabClose(i)" *ngIf="tabs.length>1"></i>
   </div>
   <ng-container *ngFor="let tab of tabs; let i=index">
     <div class="content" [hidden]="i!=current">
