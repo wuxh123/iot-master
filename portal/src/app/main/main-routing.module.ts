@@ -6,6 +6,12 @@ import {LinkComponent} from './link/link.component';
 import {ChannelComponent} from './channel/channel.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
+import {ModelComponent} from './model/model.component';
+import {TunnelComponent} from './tunnel/tunnel.component';
+import {VariableComponent} from './variable/variable.component';
+import {BatchComponent} from './batch/batch.component';
+import {JobComponent} from './job/job.component';
+import {StrategyComponent} from './strategy/strategy.component';
 
 const routes: Routes = [
   {
@@ -18,6 +24,12 @@ const routes: Routes = [
       {path: 'link', component: LinkComponent},
       {path: 'link-monitor/:id', component: LinkMonitorComponent},
       {path: 'plugin', component: PluginComponent},
+      {path: 'model', component: ModelComponent},
+      {path: 'tunnel', component: TunnelComponent},
+      {path: 'variable', component: VariableComponent},
+      {path: 'batch', component: BatchComponent},
+      {path: 'job', component: JobComponent},
+      {path: 'strategy', component: StrategyComponent},
       {path: '**', redirectTo: 'dash'},
     ]
   },

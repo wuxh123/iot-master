@@ -1,0 +1,54 @@
+<nz-space>
+  <nz-space-item>
+    <button nz-button (click)="load()" [nzLoading]="loading">
+      <i nz-icon nzType="reload"></i>
+      刷新
+    </button>
+  </nz-space-item>
+  <nz-space-item>
+    <button nz-button (click)="edit()">
+      <i nz-icon nzType="plus"></i>
+      创建
+    </button>
+  </nz-space-item>
+  <nz-space-item>
+    <nz-input-group nzSearch nzCompact [nzAddOnAfter]="suffixButton">
+      <input type="text" nz-input [(ngModel)]="keyword" placeholder="名称、地址"/>
+    </nz-input-group>
+
+    <ng-template #suffixButton>
+      <button nz-button nzSearch (click)="search()">搜索</button>
+    </ng-template>
+  </nz-space-item>
+</nz-space>
+<nz-table #tbl [nzData]="strategies" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
+          [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
+  <thead>
+  <tr>
+    <th nzColumnKey="Id" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
+    <th nzColumnKey="Key" [nzSortFn]="true">密钥</th>
+    <th nzColumnKey="Secret" [nzSortFn]="true">密码</th>
+    <th nzColumnKey="Status" nzShowFilter [nzFilterFn]="true" [nzFilters]="statusFilters">状态</th>
+    <th nzColumnKey="CreatedAt" [nzSortFn]="true">创建时间</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of tbl.data">
+    <td>{{ data.id }}</td>
+    <td>{{ data.name }}</td>
+    <td>{{ data.key }}</td>
+    <td>{{data.secret}}</td>
+    <td>
+      {{data.disabled ? '禁用' : ''}}
+    </td>
+    <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>
+      <a (click)="edit(data)" title="编辑">
+        <i nz-icon nzType="edit"></i>
+      </a>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>
