@@ -3,15 +3,15 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"net/http"
 )
 
-func tunnels(ctx *gin.Context) {
-	cs := make([]types.ModelTunnel, 0)
+func batches(ctx *gin.Context) {
+	cs := make([]types.ModelBatch, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -35,10 +35,10 @@ func tunnels(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("model").From("tunnel").Select(cond...)
+	query := db.DB("model").From("batch").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelTunnel{})
+	cnt, err := query.Count(&types.ModelBatch{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -72,29 +72,29 @@ func tunnels(ctx *gin.Context) {
 	})
 }
 
-func tunnelCreate(ctx *gin.Context) {
-	var tunnel types.ModelTunnel
-	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
+func batchCreate(ctx *gin.Context) {
+	var batch types.ModelBatch
+	if err := ctx.ShouldBindJSON(&batch); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("tunnel").Save(&tunnel)
+	err := db.DB("model").From("batch").Save(&batch)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, tunnel)
+	replyOk(ctx, batch)
 }
 
-func tunnelDelete(ctx *gin.Context) {
+func batchDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("tunnel").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("batch").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -102,42 +102,42 @@ func tunnelDelete(ctx *gin.Context) {
 	replyOk(ctx, nil)
 }
 
-func tunnelModify(ctx *gin.Context) {
+func batchModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var tunnel types.ModelTunnel
-	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
+	var batch types.ModelBatch
+	if err := ctx.ShouldBindJSON(&batch); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//log.Println("update", tunnel)
-	err := db.DB("model").From("tunnel").Update(&tunnel)
+	//log.Println("update", batch)
+	err := db.DB("model").From("batch").Update(&batch)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, tunnel)
+	replyOk(ctx, batch)
 }
 
 
-func tunnelGet(ctx *gin.Context) {
+func batchGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-	var tunnel types.ModelTunnel
-	err := db.DB("model").From("tunnel").One("Id", pid.Id, &tunnel)
+	var batch types.ModelBatch
+	err := db.DB("model").From("batch").One("Id", pid.Id, &batch)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, tunnel)
+	replyOk(ctx, batch)
 }
 

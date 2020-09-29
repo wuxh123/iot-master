@@ -3,15 +3,15 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"net/http"
 )
 
-func batches(ctx *gin.Context) {
-	cs := make([]types.ModelBatch, 0)
+func variables(ctx *gin.Context) {
+	cs := make([]types.ModelVariable, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -35,10 +35,10 @@ func batches(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("model").From("batch").Select(cond...)
+	query := db.DB("model").From("variable").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelBatch{})
+	cnt, err := query.Count(&types.ModelVariable{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -72,29 +72,29 @@ func batches(ctx *gin.Context) {
 	})
 }
 
-func batchCreate(ctx *gin.Context) {
-	var batch types.ModelBatch
-	if err := ctx.ShouldBindJSON(&batch); err != nil {
+func variableCreate(ctx *gin.Context) {
+	var variable types.ModelVariable
+	if err := ctx.ShouldBindJSON(&variable); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("batch").Save(&batch)
+	err := db.DB("model").From("variable").Save(&variable)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, batch)
+	replyOk(ctx, variable)
 }
 
-func batchDelete(ctx *gin.Context) {
+func variableDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("batch").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("variable").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -102,42 +102,42 @@ func batchDelete(ctx *gin.Context) {
 	replyOk(ctx, nil)
 }
 
-func batchModify(ctx *gin.Context) {
+func variableModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var batch types.ModelBatch
-	if err := ctx.ShouldBindJSON(&batch); err != nil {
+	var variable types.ModelVariable
+	if err := ctx.ShouldBindJSON(&variable); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//log.Println("update", batch)
-	err := db.DB("model").From("batch").Update(&batch)
+	//log.Println("update", variable)
+	err := db.DB("model").From("variable").Update(&variable)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, batch)
+	replyOk(ctx, variable)
 }
 
 
-func batchGet(ctx *gin.Context) {
+func variableGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-	var batch types.ModelBatch
-	err := db.DB("model").From("batch").One("Id", pid.Id, &batch)
+	var variable types.ModelVariable
+	err := db.DB("model").From("variable").One("Id", pid.Id, &variable)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, batch)
+	replyOk(ctx, variable)
 }
 

@@ -3,15 +3,15 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"net/http"
 )
 
-func variables(ctx *gin.Context) {
-	cs := make([]types.ModelVariable, 0)
+func jobs(ctx *gin.Context) {
+	cs := make([]types.ModelJob, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -35,10 +35,10 @@ func variables(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("model").From("variable").Select(cond...)
+	query := db.DB("model").From("job").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelVariable{})
+	cnt, err := query.Count(&types.ModelJob{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -72,29 +72,29 @@ func variables(ctx *gin.Context) {
 	})
 }
 
-func variableCreate(ctx *gin.Context) {
-	var variable types.ModelVariable
-	if err := ctx.ShouldBindJSON(&variable); err != nil {
+func jobCreate(ctx *gin.Context) {
+	var job types.ModelJob
+	if err := ctx.ShouldBindJSON(&job); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("variable").Save(&variable)
+	err := db.DB("model").From("job").Save(&job)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, variable)
+	replyOk(ctx, job)
 }
 
-func variableDelete(ctx *gin.Context) {
+func jobDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("variable").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("job").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -102,42 +102,42 @@ func variableDelete(ctx *gin.Context) {
 	replyOk(ctx, nil)
 }
 
-func variableModify(ctx *gin.Context) {
+func jobModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var variable types.ModelVariable
-	if err := ctx.ShouldBindJSON(&variable); err != nil {
+	var job types.ModelJob
+	if err := ctx.ShouldBindJSON(&job); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//log.Println("update", variable)
-	err := db.DB("model").From("variable").Update(&variable)
+	//log.Println("update", job)
+	err := db.DB("model").From("job").Update(&job)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, variable)
+	replyOk(ctx, job)
 }
 
 
-func variableGet(ctx *gin.Context) {
+func jobGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-	var variable types.ModelVariable
-	err := db.DB("model").From("variable").One("Id", pid.Id, &variable)
+	var job types.ModelJob
+	err := db.DB("model").From("job").One("Id", pid.Id, &job)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, variable)
+	replyOk(ctx, job)
 }
 

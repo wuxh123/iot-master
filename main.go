@@ -3,7 +3,7 @@ package main
 import (
 	"git.zgwit.com/zgwit/iot-admin/flag"
 	"git.zgwit.com/zgwit/iot-admin/internal"
-	"git.zgwit.com/zgwit/iot-admin/web"
+	"git.zgwit.com/zgwit/iot-admin/internal/web"
 	"github.com/denisbrodbeck/machineid"
 	"log"
 )

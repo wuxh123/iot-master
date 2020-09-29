@@ -7,7 +7,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/interfaces"
 	"git.zgwit.com/zgwit/iot-admin/internal/base"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"net"
 	"time"
 )

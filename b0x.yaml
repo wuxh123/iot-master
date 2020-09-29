@@ -1,6 +1,6 @@
 pkg: wwwFiles
 
-dest: "./www"
+dest: "./internal/web/www"
 
 fmt: true
 

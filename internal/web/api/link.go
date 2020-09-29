@@ -1,17 +1,18 @@
 package api
 
-
 import (
+	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
+	"log"
 	"net/http"
 )
 
-func jobs(ctx *gin.Context) {
-	cs := make([]types.ModelJob, 0)
+func links(ctx *gin.Context) {
+	var ls []types.Link
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -31,14 +32,15 @@ func jobs(ctx *gin.Context) {
 	if body.Keyword != "" {
 		cond = append(cond, q.Or(
 			q.Re("Name", body.Keyword),
-			q.Re("Key", body.Keyword),
+			q.Re("Serial", body.Keyword),
+			q.Re("Addr", body.Keyword),
 		))
 	}
 
-	query := db.DB("model").From("job").Select(cond...)
+	query := db.DB("link").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelJob{})
+	cnt, err := query.Count(&types.Link{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -58,7 +60,7 @@ func jobs(ctx *gin.Context) {
 		query = query.OrderBy("Id").Reverse()
 	}
 
-	err = query.Find(&cs)
+	err = query.Find(&ls)
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -67,77 +69,77 @@ func jobs(ctx *gin.Context) {
 	//replyOk(ctx, cs)
 	ctx.JSON(http.StatusOK, gin.H{
 		"ok":    true,
-		"data":  cs,
+		"data":  ls,
 		"total": cnt,
 	})
 }
 
-func jobCreate(ctx *gin.Context) {
-	var job types.ModelJob
-	if err := ctx.ShouldBindJSON(&job); err != nil {
-		replyError(ctx, err)
-		return
-	}
-
-	err := db.DB("model").From("job").Save(&job)
-	if err != nil {
-		replyError(ctx, err)
-		return
-	}
-	replyOk(ctx, job)
-}
-
-func jobDelete(ctx *gin.Context) {
+func linkDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("job").DeleteStruct(&types.Link{Id: pid.Id})
+	var link types.Link
+	err := db.DB("link").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 	replyOk(ctx, nil)
+
+	//删除服务
+	go func() {
+		l, err := core.GetLink(link.ChannelId, link.Id)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		_ = l.Close()
+		//TODO 强制删除连接
+	}()
+
 }
 
-func jobModify(ctx *gin.Context) {
+func linkModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var job types.ModelJob
-	if err := ctx.ShouldBindJSON(&job); err != nil {
+	var link types.Link
+	if err := ctx.ShouldBindJSON(&link); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//log.Println("update", job)
-	err := db.DB("model").From("job").Update(&job)
+	err := db.DB("link").Update(&link)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, job)
+	replyOk(ctx, link)
+
+	//TODO 重新启动服务
+
 }
 
-
-func jobGet(ctx *gin.Context) {
+func linkGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-	var job types.ModelJob
-	err := db.DB("model").From("job").One("Id", pid.Id, &job)
+
+	var link types.Link
+	err := db.DB("link").One("Id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, job)
-}
 
+	replyOk(ctx, link)
+}

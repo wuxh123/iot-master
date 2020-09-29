@@ -1,16 +1,17 @@
 package api
 
+
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"net/http"
 )
 
-func plugins(ctx *gin.Context) {
-	cs := make([]types.Plugin, 0)
+func tunnels(ctx *gin.Context) {
+	cs := make([]types.ModelTunnel, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -34,10 +35,10 @@ func plugins(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("plugin").Select(cond...)
+	query := db.DB("model").From("tunnel").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.Plugin{})
+	cnt, err := query.Count(&types.ModelTunnel{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -71,29 +72,29 @@ func plugins(ctx *gin.Context) {
 	})
 }
 
-func pluginCreate(ctx *gin.Context) {
-	var plugin types.Plugin
-	if err := ctx.ShouldBindJSON(&plugin); err != nil {
+func tunnelCreate(ctx *gin.Context) {
+	var tunnel types.ModelTunnel
+	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("plugin").Save(&plugin)
+	err := db.DB("model").From("tunnel").Save(&tunnel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, plugin)
+	replyOk(ctx, tunnel)
 }
 
-func pluginDelete(ctx *gin.Context) {
+func tunnelDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("plugin").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("tunnel").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -101,41 +102,42 @@ func pluginDelete(ctx *gin.Context) {
 	replyOk(ctx, nil)
 }
 
-func pluginModify(ctx *gin.Context) {
+func tunnelModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var plugin types.Plugin
-	if err := ctx.ShouldBindJSON(&plugin); err != nil {
+	var tunnel types.ModelTunnel
+	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//log.Println("update", plugin)
-	err := db.DB("plugin").Update(&plugin)
+	//log.Println("update", tunnel)
+	err := db.DB("model").From("tunnel").Update(&tunnel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, plugin)
+	replyOk(ctx, tunnel)
 }
 
 
-func pluginGet(ctx *gin.Context) {
+func tunnelGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-	var plugin types.Plugin
-	err := db.DB("plugin").One("Id", pid.Id, &plugin)
+	var tunnel types.ModelTunnel
+	err := db.DB("model").From("tunnel").One("Id", pid.Id, &tunnel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, plugin)
+	replyOk(ctx, tunnel)
 }
+

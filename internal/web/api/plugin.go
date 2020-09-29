@@ -1,18 +1,16 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/types"
+	"git.zgwit.com/zgwit/iot-admin/internal/types"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
-	"log"
 	"net/http"
 )
 
-func links(ctx *gin.Context) {
-	var ls []types.Link
+func plugins(ctx *gin.Context) {
+	cs := make([]types.Plugin, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -32,15 +30,14 @@ func links(ctx *gin.Context) {
 	if body.Keyword != "" {
 		cond = append(cond, q.Or(
 			q.Re("Name", body.Keyword),
-			q.Re("Serial", body.Keyword),
-			q.Re("Addr", body.Keyword),
+			q.Re("Key", body.Keyword),
 		))
 	}
 
-	query := db.DB("link").Select(cond...)
+	query := db.DB("plugin").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.Link{})
+	cnt, err := query.Count(&types.Plugin{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -60,7 +57,7 @@ func links(ctx *gin.Context) {
 		query = query.OrderBy("Id").Reverse()
 	}
 
-	err = query.Find(&ls)
+	err = query.Find(&cs)
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -69,77 +66,76 @@ func links(ctx *gin.Context) {
 	//replyOk(ctx, cs)
 	ctx.JSON(http.StatusOK, gin.H{
 		"ok":    true,
-		"data":  ls,
+		"data":  cs,
 		"total": cnt,
 	})
 }
 
-func linkDelete(ctx *gin.Context) {
+func pluginCreate(ctx *gin.Context) {
+	var plugin types.Plugin
+	if err := ctx.ShouldBindJSON(&plugin); err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	err := db.DB("plugin").Save(&plugin)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+	replyOk(ctx, plugin)
+}
+
+func pluginDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var link types.Link
-	err := db.DB("link").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("plugin").DeleteStruct(&types.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 	replyOk(ctx, nil)
-
-	//删除服务
-	go func() {
-		l, err := core.GetLink(link.ChannelId, link.Id)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		_ = l.Close()
-		//TODO 强制删除连接
-	}()
-
 }
 
-func linkModify(ctx *gin.Context) {
+func pluginModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var link types.Link
-	if err := ctx.ShouldBindJSON(&link); err != nil {
+	var plugin types.Plugin
+	if err := ctx.ShouldBindJSON(&plugin); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("link").Update(&link)
+	//log.Println("update", plugin)
+	err := db.DB("plugin").Update(&plugin)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, link)
-
-	//TODO 重新启动服务
-
+	replyOk(ctx, plugin)
 }
 
-func linkGet(ctx *gin.Context) {
+
+func pluginGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-
-	var link types.Link
-	err := db.DB("link").One("Id", pid.Id, &link)
+	var plugin types.Plugin
+	err := db.DB("plugin").One("Id", pid.Id, &plugin)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-
-	replyOk(ctx, link)
+	replyOk(ctx, plugin)
 }
