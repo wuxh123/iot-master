@@ -16,7 +16,8 @@ type ModelTunnel struct {
 	Protocol        string `json:"protocol"`
 	ProtocolOpts    string `json:"protocol_opts"`
 	PollingEnable   bool   `json:"polling_enable"`   //轮询
-	PollingInterval int    `json:"polling_interval"` //轮询间隔
+	PollingInterval int    `json:"polling_interval"` //轮询间隔 ms
+	PollingCycle    int    `json:"polling_cycle"`    //轮询周期 s
 }
 
 type ModelVariable struct {
@@ -71,6 +72,5 @@ type Model struct {
 	Description string    `json:"description"`
 	Version     string    `json:"version"`
 	H5          string    `json:"h5"`
-	Polling     bool      `json:"polling"` //轮询
 	CreatedAt   time.Time `json:"created_at"`
 }

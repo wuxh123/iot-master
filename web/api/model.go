@@ -20,7 +20,8 @@ type ModelTunnel struct {
 	Protocol        string `json:"protocol"`
 	ProtocolOpts    string `json:"protocol_opts"`
 	PollingEnable   bool   `json:"polling_enable"`   //轮询
-	PollingInterval int    `json:"polling_interval"` //轮询间隔
+	PollingInterval int    `json:"polling_interval"` //轮询间隔 ms
+	PollingCycle    int    `json:"polling_cycle"`    //轮询周期 s
 }
 
 type ModelVariable struct {
@@ -93,7 +94,6 @@ func modelImport(ctx *gin.Context) {
 		Description: model.Description,
 		Version:     model.Version,
 		H5:          model.H5,
-		Polling:     model.Polling,
 		CreatedAt:   time.Now(),
 	}
 
@@ -119,6 +119,7 @@ func modelImport(ctx *gin.Context) {
 			ProtocolOpts:    t.ProtocolOpts,
 			PollingEnable:   t.PollingEnable,
 			PollingInterval: t.PollingInterval,
+			PollingCycle:    t.PollingCycle,
 		}
 		err = tunnelDB.Save(&tunnel)
 		if err != nil {
@@ -242,7 +243,6 @@ func modelExport(ctx *gin.Context) {
 		Description: model.Description,
 		Version:     model.Version,
 		H5:          model.H5,
-		Polling:     model.Polling,
 		Tunnels:     make([]ModelTunnel, 0),
 		Variables:   make([]ModelVariable, 0),
 		Batches:     make([]ModelBatch, 0),
@@ -269,6 +269,7 @@ func modelExport(ctx *gin.Context) {
 			ProtocolOpts:    v.ProtocolOpts,
 			PollingEnable:   v.PollingEnable,
 			PollingInterval: v.PollingInterval,
+			PollingCycle:    v.PollingCycle,
 		}
 		m.Tunnels = append(m.Tunnels, tunnel)
 		tunnelIds[v.Id] = v.Name
@@ -367,7 +368,6 @@ func modelExport(ctx *gin.Context) {
 
 	replyOk(ctx, m)
 }
-
 
 func models(ctx *gin.Context) {
 	cs := make([]types.Model, 0)
@@ -484,7 +484,6 @@ func modelModify(ctx *gin.Context) {
 	replyOk(ctx, model)
 }
 
-
 func modelGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
@@ -499,5 +498,3 @@ func modelGet(ctx *gin.Context) {
 	}
 	replyOk(ctx, model)
 }
-
-
