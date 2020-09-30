@@ -1,13 +1,21 @@
 package core
 
-import "net"
+import (
+	"fmt"
+	"golang.org/x/net/websocket"
+)
 
 type Peer struct {
-	conn net.Conn
+	conn *websocket.Conn
 	link *Link
 }
 
-func NewPeer(conn net.Conn, link *Link) *Peer {
+type PeerPacket struct {
+	cmd     string
+	payload []byte
+}
+
+func NewPeer(conn *websocket.Conn, link *Link) *Peer {
 	peer := &Peer{
 		conn: conn,
 		link: link,
@@ -16,21 +24,28 @@ func NewPeer(conn net.Conn, link *Link) *Peer {
 	return peer
 }
 
-func (p *Peer) receive() {
-	buf := make([]byte, 1024)
+func (p *Peer) Receive() {
 	for {
-		n, e := p.conn.Read(buf)
-		if e != nil {
+		var pack PeerPacket
+		if err := websocket.JSON.Receive(p.conn, &pack); err != nil {
+			fmt.Println(err)
 			break
 		}
-		_ = p.link.Write(buf[:n])
-		//TODO 使用协议
+
+		switch pack.cmd {
+		case "transfer":
+			_ = p.link.Write(pack.payload)
+		}
 	}
 	_ = p.Close()
 }
 
 func (p *Peer) Send(buf []byte) error {
-	return nil
+	pack := &PeerPacket{
+		cmd:     "transfer",
+		payload: buf,
+	}
+	return websocket.Message.Send(p.conn, pack)
 }
 
 func (p *Peer) Close() error {

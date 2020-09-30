@@ -26,6 +26,8 @@ func Serve() {
 
 	//MQTT
 	app.GET("/mqtt", mqtt)
+	//透传
+	app.GET("/peer", peer)
 
 	//开放接口
 	open.RegisterRoutes(app.Group("/open"))
