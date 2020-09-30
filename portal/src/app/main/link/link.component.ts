@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
 import {LinkEditComponent} from '../link-edit/link-edit.component';
+import {NzTableQueryParams} from 'ng-zorro-antd';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-link',
@@ -24,7 +25,7 @@ export class LinkComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private drawer: NzDrawerService) {
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -71,16 +72,8 @@ export class LinkComponent implements OnInit {
     // });
   }
 
-  edit(l): void {
-    this.drawer.create({
-      nzTitle: '编辑',
-      nzMaskClosable: false,
-      nzWidth: 500,
-      nzContent: LinkEditComponent,
-      nzContentParams: {
-        link: l
-      }
-    });
+  edit(c): void {
+    this.router.navigate(['/admin/link-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

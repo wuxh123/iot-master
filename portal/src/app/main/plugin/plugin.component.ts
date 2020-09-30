@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../api.service';
 import {PluginEditComponent} from '../plugin-edit/plugin-edit.component';
-import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
+import {NzTableQueryParams} from 'ng-zorro-antd';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-plugin',
@@ -24,7 +25,7 @@ export class PluginComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private drawer: NzDrawerService) {
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -56,16 +57,12 @@ export class PluginComponent implements OnInit {
     });
   }
 
-  edit(c?): void {
-    this.drawer.create({
-      nzTitle: c ? '编辑' : '创建',
-      nzMaskClosable: false,
-      nzWidth: 500,
-      nzContent: PluginEditComponent,
-      nzContentParams: {
-        plugin: c || {}
-      }
-    });
+  create(): void {
+    this.router.navigate(['/admin/plugin-create']);
+  }
+
+  edit(c): void {
+    this.router.navigate(['/admin/plugin-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

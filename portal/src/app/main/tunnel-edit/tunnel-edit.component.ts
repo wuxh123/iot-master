@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzDrawerRef} from 'ng-zorro-antd';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-tunnel-edit',
@@ -8,33 +8,36 @@ import {NzDrawerRef} from 'ng-zorro-antd';
   styleUrls: ['./tunnel-edit.component.scss']
 })
 export class TunnelEditComponent implements OnInit {
+  target = 'tunnel';
+  title = '链路创建';
+  id = 0;
 
-  @Input() tunnel: any = {};
+  data: any = {};
 
-
-  constructor(private as: ApiService, private drawerRef: NzDrawerRef<string>) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    if (this.tunnel.id) {
-      this.as.get('tunnel/' + this.tunnel.id).subscribe(res => {
-        this.tunnel = res.data;
+    this.id = this.routeInfo.snapshot.params.id || 0;
+    if (this.id > 0) {
+      this.as.get(this.target + '/' + this.id).subscribe(res => {
+        this.data = res.data;
       });
     }
   }
 
   submit(): void {
-    if (this.tunnel.id) {
-      this.as.put('tunnel/' + this.tunnel.id, this.tunnel).subscribe(res => {
+    if (this.data.id) {
+      this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     } else {
-      this.as.post('tunnel', this.tunnel).subscribe(res => {
+      this.as.post(this.target, this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     }
   }

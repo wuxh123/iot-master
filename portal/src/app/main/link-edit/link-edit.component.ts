@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzDrawerRef} from 'ng-zorro-antd';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-link-edit',
@@ -8,34 +8,29 @@ import {NzDrawerRef} from 'ng-zorro-antd';
   styleUrls: ['./link-edit.component.scss']
 })
 export class LinkEditComponent implements OnInit {
+  target = 'link';
+  title = '链路编辑';
+  id = 0;
 
-  @Input() link: any = {};
+  data: any = {};
 
-
-  constructor(private as: ApiService, private drawerRef: NzDrawerRef<string>) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    if (this.link.id) {
-      this.as.get('link/' + this.link.id).subscribe(res => {
-        this.link = res.data;
+    this.id = this.routeInfo.snapshot.params.id || 0;
+    if (this.id > 0) {
+      this.as.get(this.target + '/' + this.id).subscribe(res => {
+        this.data = res.data;
       });
     }
   }
 
   submit(): void {
-    if (this.link.id) {
-      this.as.put('link/' + this.link.id, this.link).subscribe(res => {
+      this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
-    } else {
-      this.as.post('link', this.link).subscribe(res => {
-        console.log(res);
-        // TODO 保存成功
-        this.drawerRef.close(res.data);
-      });
-    }
   }
 }

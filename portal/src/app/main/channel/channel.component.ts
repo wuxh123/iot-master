@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ChannelEditComponent} from '../channel-edit/channel-edit.component';
-import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
+import {NzTableQueryParams} from 'ng-zorro-antd';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-channel',
@@ -26,7 +27,7 @@ export class ChannelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private drawer: NzDrawerService) {
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -73,16 +74,12 @@ export class ChannelComponent implements OnInit {
     // });
   }
 
-  edit(c?): void {
-    this.drawer.create({
-      nzTitle: c ? '编辑' : '创建',
-      nzMaskClosable: false,
-      nzWidth: 500,
-      nzContent: ChannelEditComponent,
-      nzContentParams: {
-        channel: c || {net: 'tcp', addr: ':1843', role: 'server'}
-      }
-    });
+  create(): void {
+    this.router.navigate(['/admin/channel-create']);
+  }
+
+  edit(c): void {
+    this.router.navigate(['/admin/channel-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

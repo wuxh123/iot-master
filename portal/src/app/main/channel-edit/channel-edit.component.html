@@ -3,7 +3,7 @@
     名称
   </div>
   <div nz-col nzSpan="20">
-    <input nz-input [(ngModel)]="channel.name" placeholder="名称"/>
+    <input nz-input [(ngModel)]="data.name" placeholder="名称"/>
   </div>
 </div>
 
@@ -13,15 +13,15 @@
   </div>
   <div nz-col nzSpan="20">
     <nz-input-group style="display: flex">
-      <nz-select [(ngModel)]="channel.role">
+      <nz-select [(ngModel)]="data.role">
         <nz-option nzLabel="服务端" nzValue="server"></nz-option>
         <nz-option nzLabel="客户端" nzValue="client"></nz-option>
       </nz-select>
-      <nz-select [(ngModel)]="channel.net" style="width:80px;">
+      <nz-select [(ngModel)]="data.net" style="width:80px;">
         <nz-option nzLabel="TCP" nzValue="tcp"></nz-option>
         <nz-option nzLabel="UDP" nzValue="udp"></nz-option>
       </nz-select>
-      <input nz-input [(ngModel)]="channel.addr" placeholder=":1843" style="flex: 1;">
+      <input nz-input [(ngModel)]="data.addr" placeholder=":1843" style="flex: 1;">
     </nz-input-group>
   </div>
 </div>
@@ -31,29 +31,29 @@
     禁用
   </div>
   <div nz-col nzSpan="20">
-    <nz-switch [(ngModel)]="channel.disabled"></nz-switch>
+    <nz-switch [(ngModel)]="data.disabled"></nz-switch>
   </div>
 </div>
 
-<div *ngIf="channel.role=='server'">
+<div *ngIf="data.role=='server'">
 
   <div class="item" nz-row nzAlign="middle">
     <div nz-col nzSpan="4">
       注册包
     </div>
     <div nz-col nzSpan="20">
-      <nz-switch [(ngModel)]="channel.register_enable"></nz-switch>
+      <nz-switch [(ngModel)]="data.register_enable"></nz-switch>
     </div>
   </div>
 
-  <div *ngIf="channel.register_enable">
+  <div *ngIf="data.register_enable">
 
     <div class="item" nz-row nzAlign="middle">
       <div nz-col nzSpan="6" nzOffset="2">
         正则表达式
       </div>
       <div nz-col nzSpan="16">
-        <input nz-input [(ngModel)]="channel.register_regex"/>
+        <input nz-input [(ngModel)]="data.register_regex"/>
       </div>
     </div>
 
@@ -62,7 +62,7 @@
         最短
       </div>
       <div nz-col nzSpan="16">
-        <nz-input-number [(ngModel)]="channel.register_min" [nzMin]="0" [nzMax]="60"
+        <nz-input-number [(ngModel)]="data.register_min" [nzMin]="0" [nzMax]="60"
                          [nzStep]="1"></nz-input-number>
       </div>
     </div>
@@ -72,7 +72,7 @@
         最长
       </div>
       <div nz-col nzSpan="16">
-        <nz-input-number [(ngModel)]="channel.register_max" [nzMin]="0" [nzMax]="60"
+        <nz-input-number [(ngModel)]="data.register_max" [nzMin]="0" [nzMax]="60"
                          [nzStep]="1"></nz-input-number>
       </div>
     </div>
@@ -87,17 +87,17 @@
     心跳包
   </div>
   <div nz-col nzSpan="20">
-    <nz-switch [(ngModel)]="channel.heart_beat_enable"></nz-switch>
+    <nz-switch [(ngModel)]="data.heart_beat_enable"></nz-switch>
   </div>
 </div>
 
-<div *ngIf="channel.heart_beat_enable">
+<div *ngIf="data.heart_beat_enable">
   <div class="item" nz-row nzAlign="middle">
     <div nz-col nzSpan="6" nzOffset="2">
       间隔（秒）
     </div>
     <div nz-col nzSpan="16">
-      <nz-input-number [(ngModel)]="channel.heart_beat_interval" [nzMin]="5" [nzMax]="60"
+      <nz-input-number [(ngModel)]="data.heart_beat_interval" [nzMin]="5" [nzMax]="60"
                        [nzStep]="1"></nz-input-number>
     </div>
   </div>
@@ -107,7 +107,7 @@
       内容
     </div>
     <div nz-col nzSpan="16">
-      <input nz-input [(ngModel)]="channel.heart_beat_content"/>
+      <input nz-input [(ngModel)]="data.heart_beat_content"/>
     </div>
   </div>
 
@@ -117,7 +117,7 @@
       十六进制
     </div>
     <div nz-col nzSpan="16">
-      <nz-switch [(ngModel)]="channel.heart_beat_is_hex"></nz-switch>
+      <nz-switch [(ngModel)]="data.heart_beat_is_hex"></nz-switch>
     </div>
   </div>
 

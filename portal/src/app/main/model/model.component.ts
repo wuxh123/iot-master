@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ModelEditComponent} from '../model-edit/model-edit.component';
 import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
@@ -25,7 +25,7 @@ export class ModelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private drawer: NzDrawerService, private router: Router) {
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -60,7 +60,7 @@ export class ModelComponent implements OnInit {
   create(): void {
     this.router.navigate(['/admin/model-create']);
   }
-  
+
   edit(c): void {
     this.router.navigate(['/admin/model-edit/' + c.id]);
   }

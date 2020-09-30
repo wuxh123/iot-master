@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzDrawerRef} from 'ng-zorro-antd';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-strategy-edit',
@@ -8,33 +8,36 @@ import {NzDrawerRef} from 'ng-zorro-antd';
   styleUrls: ['./strategy-edit.component.scss']
 })
 export class StrategyEditComponent implements OnInit {
+  target = 'strategy';
+  title = '策略创建';
+  id = 0;
 
-  @Input() strategy: any = {};
+  data: any = {};
 
-
-  constructor(private as: ApiService, private drawerRef: NzDrawerRef<string>) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    if (this.strategy.id) {
-      this.as.get('strategy/' + this.strategy.id).subscribe(res => {
-        this.strategy = res.data;
+    this.id = this.routeInfo.snapshot.params.id || 0;
+    if (this.id > 0) {
+      this.as.get(this.target + '/' + this.id).subscribe(res => {
+        this.data = res.data;
       });
     }
   }
 
   submit(): void {
-    if (this.strategy.id) {
-      this.as.put('strategy/' + this.strategy.id, this.strategy).subscribe(res => {
+    if (this.data.id) {
+      this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     } else {
-      this.as.post('strategy', this.strategy).subscribe(res => {
+      this.as.post(this.target, this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     }
   }

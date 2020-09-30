@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzDrawerRef} from 'ng-zorro-antd';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-job-edit',
@@ -8,33 +8,36 @@ import {NzDrawerRef} from 'ng-zorro-antd';
   styleUrls: ['./job-edit.component.scss']
 })
 export class JobEditComponent implements OnInit {
+  target = 'job';
+  title = '任务创建';
+  id = 0;
 
-  @Input() job: any = {};
+  data: any = {};
 
-
-  constructor(private as: ApiService, private drawerRef: NzDrawerRef<string>) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    if (this.job.id) {
-      this.as.get('job/' + this.job.id).subscribe(res => {
-        this.job = res.data;
+    this.id = this.routeInfo.snapshot.params.id || 0;
+    if (this.id > 0) {
+      this.as.get(this.target + '/' + this.id).subscribe(res => {
+        this.data = res.data;
       });
     }
   }
 
   submit(): void {
-    if (this.job.id) {
-      this.as.put('job/' + this.job.id, this.job).subscribe(res => {
+    if (this.data.id) {
+      this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     } else {
-      this.as.post('job', this.job).subscribe(res => {
+      this.as.post(this.target, this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     }
   }

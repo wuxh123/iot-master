@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../api.service';
 import {JobEditComponent} from '../job-edit/job-edit.component';
-import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
+import {NzTableQueryParams} from 'ng-zorro-antd';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-job',
@@ -24,7 +25,7 @@ export class JobComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private drawer: NzDrawerService) {
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -56,16 +57,12 @@ export class JobComponent implements OnInit {
     });
   }
 
-  edit(c?): void {
-    this.drawer.create({
-      nzTitle: c ? '编辑' : '创建',
-      nzMaskClosable: false,
-      nzWidth: 500,
-      nzContent: JobEditComponent,
-      nzContentParams: {
-        job: c || {}
-      }
-    });
+  create(): void {
+    this.router.navigate(['/admin/job-create']);
+  }
+
+  edit(c): void {
+    this.router.navigate(['/admin/job-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
