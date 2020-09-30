@@ -1,4 +1,4 @@
-package api
+package web
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/core"

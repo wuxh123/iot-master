@@ -24,6 +24,10 @@ func Serve() {
 	//Swagger文档，需要先执行swag init生成文档
 	//app.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	//MQTT
+	app.GET("/mqtt", mqtt)
+
+	//开放接口
 	open.RegisterRoutes(app.Group("/open"))
 
 	//启用session

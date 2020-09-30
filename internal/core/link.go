@@ -15,28 +15,38 @@ import (
 type Link struct {
 	types.LinkExt
 
+	//指向通道
+	channel Channel
+
 	//设备连接
 	conn net.Conn
 
 	//发送缓存
 	cache [][]byte
 
+	peer *Peer
 
 	lastTime time.Time
 
 	listener interfaces.LinkerListener
 }
 
-func (l *Link) Listen (listener interfaces.LinkerListener) {
+func (l *Link) Listen(listener interfaces.LinkerListener) {
 	l.listener = listener
 }
 
-
 func (l *Link) onData(buf []byte) {
-	l.Rx += len(buf)
+	ln := len(buf)
+	l.Rx += ln
+	l.channel.GetChannel().Rx += ln
+
 	l.lastTime = time.Now()
 
-	//TODO 透传
+	//透传
+	if l.peer != nil {
+		_ = l.peer.Send(buf)
+		return
+	}
 
 	//监听
 	if l.listener != nil {
@@ -64,11 +74,14 @@ func (l *Link) Write(buf []byte) error {
 		return errors.New("链接已关闭")
 	}
 
-	l.Tx += len(buf)
+	ln := len(buf)
+	l.Tx += ln
+	l.channel.GetChannel().Tx += ln
+
 	l.lastTime = time.Now()
 
 	_, e := l.conn.Write(buf)
-	//TODO 没发完，继续发
+	//TODO 如果没发完，继续发
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
@@ -103,7 +116,6 @@ func (l *Link) Close() error {
 	return err
 }
 
-
 func (l *Link) storeError(err error) error {
 	l.Error = err.Error()
 	//_, err = db.Engine.ID(l.Id).Cols("error").Update(&l.Link)
@@ -119,10 +131,11 @@ func newLink(ch Channel, conn net.Conn) *Link {
 				Addr:      conn.RemoteAddr().String(),
 				ChannelId: c.Id,
 			},
-			Online:    true,
+			Online: true,
 		},
-		conn:  conn,
-		cache: make([][]byte, 0),
+		channel: ch,
+		conn:    conn,
+		cache:   make([][]byte, 0),
 	}
 }
 
@@ -135,9 +148,10 @@ func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 				Addr:      addr.String(),
 				ChannelId: c.Id,
 			},
-			Online:    true,
+			Online: true,
 		},
-		conn:  base.NewPackConn(conn, addr),
-		cache: make([][]byte, 0),
+		channel: ch,
+		conn:    base.NewPackConn(conn, addr),
+		cache:   make([][]byte, 0),
 	}
 }

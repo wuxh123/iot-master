@@ -13,7 +13,7 @@ type Channel interface {
 	Open() error
 	Close() error
 	GetLink(id int) (*Link, error)
-	GetChannel() *types.Channel
+	GetChannel() *types.ChannelExt
 }
 
 func NewChannel(channel *types.Channel) (Channel, error) {
@@ -60,8 +60,8 @@ type baseChannel struct {
 	clients sync.Map
 }
 
-func (c *baseChannel) GetChannel() *types.Channel {
-	return &c.Channel
+func (c *baseChannel) GetChannel() *types.ChannelExt {
+	return &c.ChannelExt
 }
 
 func (c *baseChannel) storeLink(l *Link) {

@@ -15,7 +15,7 @@ export class MqttService {
   topics: { [key: string]: Observable<any> } = {};
 
   constructor() {
-    const client = this.client = mqtt.connect('ws://127.0.0.1:8080/api/mqtt');
+    const client = this.client = mqtt.connect('ws://127.0.0.1:8080/mqtt');
     client.on('connect', data => {
       console.log('mqtt connect', data);
     });
