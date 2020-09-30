@@ -65,7 +65,13 @@ func (c *Server) accept() {
 			log.Println("accept fail:", err)
 			continue
 		}
-		go c.receive(conn)
+
+		//开启注册了，支持多连接，否则，只支持一个链接
+		if c.RegisterEnable {
+			go c.receive(conn)
+		} else {
+			c.receive(conn)
+		}
 	}
 }
 
