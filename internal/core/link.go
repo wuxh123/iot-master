@@ -13,10 +13,7 @@ import (
 )
 
 type Link struct {
-	types.Link
-
-	Rx int
-	Tx int
+	types.LinkExt
 
 	//设备连接
 	conn net.Conn
@@ -116,14 +113,13 @@ func (l *Link) storeError(err error) error {
 func newLink(ch Channel, conn net.Conn) *Link {
 	c := ch.GetChannel()
 	return &Link{
-		Link: types.Link{
-			Role:      c.Role,
-			Net:       c.Net,
-			Addr:      conn.RemoteAddr().String(),
-			ChannelId: c.Id,
-			//PluginId:  c.PluginId,
+		LinkExt: types.LinkExt{
+			Link: types.Link{
+				Net:       c.Net,
+				Addr:      conn.RemoteAddr().String(),
+				ChannelId: c.Id,
+			},
 			Online:    true,
-			OnlineAt:  time.Now(),
 		},
 		conn:  conn,
 		cache: make([][]byte, 0),
@@ -133,14 +129,13 @@ func newLink(ch Channel, conn net.Conn) *Link {
 func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
 	c := ch.GetChannel()
 	return &Link{
-		Link: types.Link{
-			Role:      c.Role,
-			Net:       c.Net,
-			Addr:      addr.String(),
-			ChannelId: c.Id,
-			//PluginId:  c.PluginId,
+		LinkExt: types.LinkExt{
+			Link: types.Link{
+				Net:       c.Net,
+				Addr:      addr.String(),
+				ChannelId: c.Id,
+			},
 			Online:    true,
-			OnlineAt:  time.Now(),
 		},
 		conn:  base.NewPackConn(conn, addr),
 		cache: make([][]byte, 0),

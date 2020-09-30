@@ -20,7 +20,10 @@ func NewChannel(channel *types.Channel) (Channel, error) {
 	if channel.Role == "client" {
 		return &Client{
 			baseChannel: baseChannel{
-				Channel: *channel,
+				ChannelExt: types.ChannelExt{
+					Channel:   *channel,
+					Online:    true,
+				},
 			},
 		}, nil
 	} else if channel.Role == "server" {
@@ -28,13 +31,19 @@ func NewChannel(channel *types.Channel) (Channel, error) {
 		case "tcp", "tcp4", "tcp6", "unix":
 			return &Server{
 				baseChannel: baseChannel{
-					Channel: *channel,
+					ChannelExt: types.ChannelExt{
+						Channel:   *channel,
+						Online:    true,
+					},
 				},
 			}, nil
 		case "udp", "udp4", "udp6", "unixgram":
 			return &PacketServer{
 				baseChannel: baseChannel{
-					Channel: *channel,
+					ChannelExt: types.ChannelExt{
+						Channel:   *channel,
+						Online:    true,
+					},
 				},
 			}, nil
 		default:
@@ -46,12 +55,9 @@ func NewChannel(channel *types.Channel) (Channel, error) {
 }
 
 type baseChannel struct {
-	types.Channel
+	types.ChannelExt
 
 	clients sync.Map
-
-	Rx int `json:"rx"`
-	Tx int `json:"tx"`
 }
 
 func (c *baseChannel) GetChannel() *types.Channel {
