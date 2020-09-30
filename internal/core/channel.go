@@ -21,8 +21,8 @@ func NewChannel(channel *types.Channel) (Channel, error) {
 		return &Client{
 			baseChannel: baseChannel{
 				ChannelExt: types.ChannelExt{
-					Channel:   *channel,
-					Online:    true,
+					Channel: *channel,
+					Online:  true,
 				},
 			},
 		}, nil
@@ -32,8 +32,8 @@ func NewChannel(channel *types.Channel) (Channel, error) {
 			return &Server{
 				baseChannel: baseChannel{
 					ChannelExt: types.ChannelExt{
-						Channel:   *channel,
-						Online:    true,
+						Channel: *channel,
+						Online:  true,
 					},
 				},
 			}, nil
@@ -41,8 +41,8 @@ func NewChannel(channel *types.Channel) (Channel, error) {
 			return &PacketServer{
 				baseChannel: baseChannel{
 					ChannelExt: types.ChannelExt{
-						Channel:   *channel,
-						Online:    true,
+						Channel: *channel,
+						Online:  true,
 					},
 				},
 			}, nil

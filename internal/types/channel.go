@@ -57,5 +57,5 @@ type LinkExt struct {
 	Link `storm:"inline"`
 	Statistic
 
-	Online  bool `json:"online"`
+	Online bool `json:"online"`
 }

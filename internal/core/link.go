@@ -1,6 +1,8 @@
 package core
 
 import (
+	"bytes"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
@@ -8,6 +10,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/internal/base"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"log"
 	"net"
 	"time"
 )
@@ -36,6 +39,25 @@ func (l *Link) Listen(listener interfaces.LinkerListener) {
 }
 
 func (l *Link) onData(buf []byte) {
+	//过滤心跳
+	c := l.channel.GetChannel()
+	if c.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(c.HeartBeatInterval) {
+		var b []byte
+		if c.HeartBeatIsHex {
+			var e error
+			b, e = hex.DecodeString(c.HeartBeatContent)
+			if e != nil {
+				log.Println(e)
+			}
+		} else {
+			b = []byte(c.HeartBeatContent)
+		}
+		if bytes.Compare(b, buf) == 0 {
+			return
+		}
+	}
+
+	//计数
 	ln := len(buf)
 	l.Rx += ln
 	l.channel.GetChannel().Rx += ln

@@ -1,8 +1,6 @@
 package core
 
 import (
-	"bytes"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
@@ -12,7 +10,6 @@ import (
 	"log"
 	"net"
 	"sync"
-	"time"
 )
 
 type PacketServer struct {
@@ -73,23 +70,6 @@ func (c *PacketServer) receive() {
 		v, ok := c.packetIndexes.Load(key)
 		if ok {
 			link = v.(*Link)
-
-			//过滤心跳包
-			if c.HeartBeatEnable && time.Now().Sub(link.lastTime) > time.Second*time.Duration(c.HeartBeatInterval) {
-				var b []byte
-				if c.HeartBeatIsHex {
-					var e error
-					b, e = hex.DecodeString(c.HeartBeatContent)
-					if e != nil {
-						log.Println(e)
-					}
-				} else {
-					b = []byte(c.HeartBeatContent)
-				}
-				if bytes.Compare(b, buf[:n]) == 0 {
-					continue
-				}
-			}
 
 			//处理数据
 			link.onData(buf[:n])
