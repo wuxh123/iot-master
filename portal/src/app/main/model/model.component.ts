@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ModelEditComponent} from '../model-edit/model-edit.component';
 import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-model',
@@ -24,7 +25,7 @@ export class ModelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private drawer: NzDrawerService) {
+  constructor(private as: ApiService, private drawer: NzDrawerService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -56,16 +57,12 @@ export class ModelComponent implements OnInit {
     });
   }
 
-  edit(c?): void {
-    this.drawer.create({
-      nzTitle: c ? '编辑' : '创建',
-      nzMaskClosable: false,
-      nzWidth: 500,
-      nzContent: ModelEditComponent,
-      nzContentParams: {
-        model: c || {}
-      }
-    });
+  create(): void {
+    this.router.navigate(['/admin/model-create']);
+  }
+  
+  edit(c): void {
+    this.router.navigate(['/admin/model-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

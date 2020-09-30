@@ -99,7 +99,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onTabClose(index): void {
     if (this.tabs.length === 1) {
-      //TODO 打开默认页
+      // TODO 打开默认页
       return;
     }
 
@@ -121,7 +121,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadTab(index): void {
     if (this.tabs[index].component) {
-      //TODO setTitle
+      // TODO setTitle
       return;
     }
 
@@ -138,7 +138,11 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
       const container = this.containers.toArray()[index];
       container.clear();
       this.tabs[index].component = container.createComponent(factory, this.location.length, injector);
-      //TODO setTitle
+      // TODO setTitle
+
+      this.tabs[index].component.instance.closeTab = () => {
+        this.onTabClose(index);
+      };
     }
   }
 

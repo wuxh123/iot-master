@@ -3,34 +3,34 @@
     名称
   </div>
   <div nz-col nzSpan="20">
-    <input nz-input [(ngModel)]="model.name" placeholder="名称"/>
+    <input nz-input [(ngModel)]="data.name" placeholder="名称"/>
   </div>
 </div>
 
 <div class="item" nz-row nzAlign="middle">
   <div nz-col nzSpan="4">
-    密钥
+    说明
   </div>
   <div nz-col nzSpan="20">
-    <input nz-input [(ngModel)]="model.key" placeholder="密钥"/>
+    <textarea nz-input [(ngModel)]="data.description" placeholder="说明"></textarea>
   </div>
 </div>
 
 <div class="item" nz-row nzAlign="middle">
   <div nz-col nzSpan="4">
-    密码
+    版本
   </div>
   <div nz-col nzSpan="20">
-    <input nz-input [(ngModel)]="model.secret" placeholder="密码"/>
+    <input nz-input [(ngModel)]="data.version" placeholder="版本号"/>
   </div>
 </div>
 
 <div class="item" nz-row nzAlign="middle">
   <div nz-col nzSpan="4">
-    禁用
+    H5
   </div>
   <div nz-col nzSpan="20">
-    <nz-switch [(ngModel)]="model.disabled"></nz-switch>
+    <input nz-input [(ngModel)]="data.h5" placeholder="h5"/>
   </div>
 </div>
 

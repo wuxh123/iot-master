@@ -12,6 +12,7 @@ import {VariableComponent} from './variable/variable.component';
 import {BatchComponent} from './batch/batch.component';
 import {JobComponent} from './job/job.component';
 import {StrategyComponent} from './strategy/strategy.component';
+import {ModelEditComponent} from "./model-edit/model-edit.component";
 
 const routes: Routes = [
   {
@@ -25,6 +26,8 @@ const routes: Routes = [
       {path: 'link-monitor/:id', component: LinkMonitorComponent},
       {path: 'plugin', component: PluginComponent},
       {path: 'model', component: ModelComponent},
+      {path: 'model-create', component: ModelEditComponent},
+      {path: 'model-edit/:id', component: ModelEditComponent},
       {path: 'tunnel', component: TunnelComponent},
       {path: 'variable', component: VariableComponent},
       {path: 'batch', component: BatchComponent},

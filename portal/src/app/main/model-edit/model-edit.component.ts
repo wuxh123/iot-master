@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzDrawerRef} from 'ng-zorro-antd';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-model-edit',
@@ -8,33 +8,36 @@ import {NzDrawerRef} from 'ng-zorro-antd';
   styleUrls: ['./model-edit.component.scss']
 })
 export class ModelEditComponent implements OnInit {
+  title = '模型创建';
+  id = 0;
 
-  @Input() model: any = {};
+  data: any = {};
 
-
-  constructor(private as: ApiService, private drawerRef: NzDrawerRef<string>) {
+  constructor(private as: ApiService, private router: Router, private routeInfo: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    if (this.model.id) {
-      this.as.get('model/' + this.model.id).subscribe(res => {
-        this.model = res.data;
+
+    this.id = this.routeInfo.snapshot.params.id || 0;
+    if (this.id > 0) {
+      this.as.get('model/' + this.id).subscribe(res => {
+        this.data = res.data;
       });
     }
   }
 
   submit(): void {
-    if (this.model.id) {
-      this.as.put('model/' + this.model.id, this.model).subscribe(res => {
+    if (this.data.id) {
+      this.as.put('model/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     } else {
-      this.as.post('model', this.model).subscribe(res => {
+      this.as.post('model', this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this.drawerRef.close(res.data);
+        this['closeTab']();
       });
     }
   }
