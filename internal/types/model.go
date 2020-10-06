@@ -25,6 +25,7 @@ type ModelVariable struct {
 	TunnelId  int    `json:"tunnel_id"`
 	Type      string `json:"type"`
 	Addr      string `json:"addr"`
+	Alias     string `json:"alias"` //别名，用于编程
 	Default   string `json:"default"`
 	Writable  bool   `json:"writable"` //可写，用于输出（如开关）
 
