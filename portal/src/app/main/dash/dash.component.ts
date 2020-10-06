@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-dash',
@@ -7,9 +8,9 @@ import {ApiService} from '../../api.service';
   styleUrls: ['./dash.component.scss']
 })
 export class DashComponent implements OnInit {
-  title = '仪表盘';
 
-  constructor(private as: ApiService) {
+  constructor(private as: ApiService, private tab: TabRef) {
+    tab.name = '仪表盘';
   }
 
   ngOnInit(): void {

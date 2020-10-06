@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {PluginEditComponent} from '../plugin-edit/plugin-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-plugin',
@@ -10,7 +11,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./plugin.component.scss']
 })
 export class PluginComponent implements OnInit {
-  title = '插件管理';
 
   plugins: [];
   total = 0;
@@ -25,7 +25,8 @@ export class PluginComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '插件管理';
   }
 
   ngOnInit(): void {

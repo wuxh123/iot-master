@@ -2,6 +2,7 @@ import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../../api.service';
 import {MqttService} from '../../mqtt.service';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-link-monitor',
@@ -9,7 +10,6 @@ import {MqttService} from '../../mqtt.service';
   styleUrls: ['./link-monitor.component.scss']
 })
 export class LinkMonitorComponent implements OnInit, OnDestroy {
-  title = '连接监控';
 
   @ViewChild('contentRecv')
   contentRecv: ElementRef;
@@ -32,7 +32,8 @@ export class LinkMonitorComponent implements OnInit, OnDestroy {
   recvSub: any;
   sendSub: any;
 
-  constructor(private routeInfo: ActivatedRoute, private as: ApiService, private mqtt: MqttService) {
+  constructor(private routeInfo: ActivatedRoute, private as: ApiService, private tab: TabRef, private mqtt: MqttService) {
+    tab.name = '连接监控';
     this.id = this.routeInfo.snapshot.params.id;
     this.load();
   }

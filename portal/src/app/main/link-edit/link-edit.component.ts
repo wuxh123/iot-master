@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-link-edit',
@@ -9,12 +10,12 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class LinkEditComponent implements OnInit {
   target = 'link';
-  title = '链路编辑';
   id = 0;
 
   data: any = {};
 
-  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
+    tab.name = '链路编辑';
   }
 
   ngOnInit(): void {
@@ -30,7 +31,7 @@ export class LinkEditComponent implements OnInit {
       this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this['closeTab']();
+        this.tab.Close();
       });
   }
 }

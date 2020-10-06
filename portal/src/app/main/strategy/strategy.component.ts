@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {StrategyEditComponent} from '../strategy-edit/strategy-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-strategy',
@@ -10,7 +11,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./strategy.component.scss']
 })
 export class StrategyComponent implements OnInit {
-  title = '自动策略';
 
   strategies: [];
   total = 0;
@@ -25,7 +25,8 @@ export class StrategyComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '自动策略';
   }
 
   ngOnInit(): void {

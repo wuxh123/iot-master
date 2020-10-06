@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {VariableEditComponent} from '../variable-edit/variable-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-variable',
@@ -10,8 +11,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./variable.component.scss']
 })
 export class VariableComponent implements OnInit {
-  title = '变量管理';
-
   variables: [];
   total = 0;
   pageIndex = 1;
@@ -25,7 +24,9 @@ export class VariableComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '变量管理';
+
   }
 
   ngOnInit(): void {

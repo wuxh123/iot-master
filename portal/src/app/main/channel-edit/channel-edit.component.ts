@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-channel-edit',
@@ -9,12 +10,12 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class ChannelEditComponent implements OnInit {
   target = 'channel';
-  title = '批量采集创建';
   id = 0;
 
   data: any = {is_server: true, type: 'tcp', addr: ':1843'};
 
-  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
+    tab.name = '批量采集创建';
   }
 
   ngOnInit(): void {
@@ -31,13 +32,13 @@ export class ChannelEditComponent implements OnInit {
       this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this['closeTab']();
+        this.tab.Close();
       });
     } else {
       this.as.post(this.target, this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this['closeTab']();
+        this.tab.Close();
       });
     }
   }

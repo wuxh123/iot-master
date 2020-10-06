@@ -1,16 +1,14 @@
 import {
-  AfterContentChecked,
-  AfterContentInit, AfterViewInit,
+  AfterViewInit,
   Component,
-  ComponentFactoryResolver,
+  ComponentFactoryResolver, ComponentRef,
   Injector, OnDestroy,
   OnInit,
-  QueryList, ViewChild,
-  ViewChildren,
+  QueryList, ViewChildren,
   ViewContainerRef
 } from '@angular/core';
-import {ActivatedRoute, ActivationEnd, NavigationEnd, Router, RouterLink, RouterLinkWithHref} from '@angular/router';
-import {Observable, Subscription} from "rxjs";
+import {ActivatedRoute, ActivationEnd, NavigationEnd, Router, RouterLinkWithHref} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-tabs',
@@ -24,7 +22,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   current = 0;
 
-  tabs: Array<any> = [];
+  tabs: Array<TabRef> = [];
 
   event: any;
   sub: Subscription;
@@ -38,9 +36,6 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       if (e instanceof NavigationEnd) {
-        //   //TODO 第一次，container还未准备好
-        //   //TODO 添加路由参数
-        //   //TODO call ref.destroy() in ngOnDestroy
         this.checkRouter(e.url);
       }
     });
@@ -67,10 +62,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // 创建新标签
     this.current = this.tabs.length;
-    this.tabs.push({
-      name: path,
-      route: path
-    });
+    this.tabs.push(new TabRef(path, path, this));
     setTimeout(() => {
       this.onTabsChange(this.tabs.length - 1);
     }, 100);
@@ -133,7 +125,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
     // TODO 如果route.component为空，则找不到内容
     if (route.component) {
       const factory = this.resolver.resolveComponentFactory(route.component);
-      const injector = new TabsInjector(this.event, this.location.injector);
+      const injector = new TabsInjector(this.event, this.location.injector, this.tabs[index]);
 
       const container = this.containers.toArray()[index];
       container.clear();
@@ -148,13 +140,34 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
 }
 
+export class TabRef {
+  name: string;
+  route: string;
+  component: ComponentRef<any>;
+  tabs: TabsComponent;
+
+  constructor(name, route, tabs) {
+    this.name = name;
+    this.route = route;
+    this.tabs = tabs;
+  }
+
+  Close(): void {
+    const index = this.tabs.tabs.findIndex(v => v === this);
+    this.tabs.onTabClose(index);
+  }
+}
+
 class TabsInjector implements Injector {
-  constructor(private route: ActivatedRoute, private parent: Injector) {
+  constructor(private route: ActivatedRoute, private parent: Injector, private ref: TabRef) {
   }
 
   get(token: any, notFoundValue?: any): any {
     if (token === ActivatedRoute) {
       return this.route;
+    }
+    if (token === TabRef) {
+      return this.ref;
     }
     return this.parent.get(token, notFoundValue);
   }

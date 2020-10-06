@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {LinkEditComponent} from '../link-edit/link-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
   selector: 'app-link',
@@ -10,8 +10,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./link.component.scss']
 })
 export class LinkComponent implements OnInit {
-  title = '连接管理';
-
   links: [];
   total = 0;
   pageIndex = 1;
@@ -25,7 +23,8 @@ export class LinkComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '连接管理';
   }
 
   ngOnInit(): void {

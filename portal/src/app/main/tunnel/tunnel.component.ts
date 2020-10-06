@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {TunnelEditComponent} from '../tunnel-edit/tunnel-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-tunnel',
@@ -10,7 +11,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./tunnel.component.scss']
 })
 export class TunnelComponent implements OnInit {
-  title = '协议适配';
 
   tunnels: [];
   total = 0;
@@ -25,7 +25,8 @@ export class TunnelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '协议适配';
   }
 
   ngOnInit(): void {

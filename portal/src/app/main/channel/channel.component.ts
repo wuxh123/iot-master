@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {ChannelEditComponent} from '../channel-edit/channel-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-channel',
@@ -10,7 +11,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./channel.component.scss']
 })
 export class ChannelComponent implements OnInit {
-  title = '通道管理';
 
   channels: [];
   total = 0;
@@ -27,7 +27,8 @@ export class ChannelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '通道管理';
   }
 
   ngOnInit(): void {

@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-plugin-edit',
@@ -9,12 +10,12 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class PluginEditComponent implements OnInit {
   target = 'plugin';
-  title = '插件创建';
   id = 0;
 
   data: any = {};
 
-  constructor(private as: ApiService, private routeInfo: ActivatedRoute) {
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
+    tab.name = '插件创建';
   }
 
   ngOnInit(): void {
@@ -31,13 +32,13 @@ export class PluginEditComponent implements OnInit {
       this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this['closeTab']();
+        this.tab.Close();
       });
     } else {
       this.as.post(this.target, this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this['closeTab']();
+        this.tab.Close();
       });
     }
   }

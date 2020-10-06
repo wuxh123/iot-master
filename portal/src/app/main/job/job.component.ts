@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {JobEditComponent} from '../job-edit/job-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-job',
@@ -10,7 +11,6 @@ import {Router} from '@angular/router';
   styleUrls: ['./job.component.scss']
 })
 export class JobComponent implements OnInit {
-  title = '定时任务';
 
   jobs: [];
   total = 0;
@@ -25,7 +25,8 @@ export class JobComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '定时任务';
   }
 
   ngOnInit(): void {

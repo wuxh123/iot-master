@@ -12,7 +12,7 @@
        (click)="onTabsChange(i)"
   >
     <a [routerLink]="tab.route">
-      {{tab.component && tab.component.instance.title || tab.name || tab.url}}
+      {{tab.name || tab.route}}
     </a>
     <i nz-icon nzType="close" nzTheme="outline" (click)="onTabClose(i)" *ngIf="tabs.length>1"></i>
   </div>

@@ -3,6 +3,7 @@ import {ApiService} from '../../api.service';
 import {ModelEditComponent} from '../model-edit/model-edit.component';
 import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
   selector: 'app-model',
@@ -10,7 +11,6 @@ import {Router} from "@angular/router";
   styleUrls: ['./model.component.scss']
 })
 export class ModelComponent implements OnInit {
-  title = '模型管理';
 
   models: [];
   total = 0;
@@ -25,7 +25,8 @@ export class ModelComponent implements OnInit {
   statusFilters = [{text: '启动', value: 1}];
 
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+    tab.name = '模型管理';
   }
 
   ngOnInit(): void {
