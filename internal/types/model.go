@@ -22,12 +22,15 @@ type ModelTunnel struct {
 
 type ModelVariable struct {
 	ModelBase `storm:"inline"`
-	TunnelId  int    `json:"tunnel_id"`
-	Type      string `json:"type"`
-	Addr      string `json:"addr"`
-	Alias     string `json:"alias"` //别名，用于编程
-	Default   string `json:"default"`
-	Writable  bool   `json:"writable"` //可写，用于输出（如开关）
+	TunnelId  int     `json:"tunnel_id"`
+	Type      string  `json:"type"`
+	Addr      string  `json:"addr"`
+	Alias     string  `json:"alias"` //别名，用于编程
+	Unit      string  `json:"unit"`  //单位
+	//应该不缩放，保留原始值？？？？
+	Scale     float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
+	Default   string  `json:"default"`
+	Writable  bool    `json:"writable"` //可写，用于输出（如开关）
 
 	//采样：无、定时、轮询
 	Cron          string `json:"cron"`
