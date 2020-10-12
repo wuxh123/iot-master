@@ -5,10 +5,11 @@ import "time"
 type Model struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
+	Disabled    bool      `json:"disabled"`
 	Description string    `json:"description"`
 	Version     string    `json:"version"`
-	H5          string    `json:"h5"`
-	CreatedAt   time.Time `json:"created_at"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }
 
 type ModelBase struct {
@@ -16,16 +17,34 @@ type ModelBase struct {
 	ModelId     int64     `json:"model_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }
 
 type ModelTunnel struct {
-	ModelBase       `xorm:"extends"`
-	Protocol        string `json:"protocol"`
-	ProtocolOpts    string `json:"protocol_opts"`
-	PollingEnable   bool   `json:"polling_enable"`   //轮询
-	PollingInterval int    `json:"polling_interval"` //轮询间隔 ms
-	PollingCycle    int    `json:"polling_cycle"`    //轮询周期 s
+	ModelBase `xorm:"extends"`
+
+	Role    string `json:"role"`
+	Net     string `json:"net"`
+	Addr    string `json:"addr"`
+	Timeout int    `json:"timeout"`
+
+	RegisterEnable bool   `json:"register_enable"`
+	RegisterRegex  string `json:"register_regex"`
+	RegisterMin    int    `json:"register_min"`
+	RegisterMax    int    `json:"register_max"`
+
+	HeartBeatEnable   bool   `json:"heart_beat_enable"`
+	HeartBeatInterval int    `json:"heart_beat_interval"`
+	HeartBeatContent  string `json:"heart_beat_content"`
+	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
+
+	Protocol     string `json:"protocol"`
+	ProtocolOpts string `json:"protocol_opts"`
+
+	PollingEnable   bool `json:"polling_enable"`   //轮询
+	PollingInterval int  `json:"polling_interval"` //轮询间隔 ms
+	PollingCycle    int  `json:"polling_cycle"`    //轮询周期 s
 }
 
 type ModelVariable struct {
