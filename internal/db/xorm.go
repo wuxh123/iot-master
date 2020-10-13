@@ -1,7 +1,7 @@
 package db
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/cool/conf"
+	"git.zgwit.com/zgwit/iot-admin/internal/conf"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	_ "github.com/go-sql-driver/mysql"
 	"xorm.io/xorm"

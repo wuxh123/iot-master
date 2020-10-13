@@ -3,76 +3,75 @@ package core
 import (
 	"errors"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"sync"
 )
 
-
 var channels sync.Map
 
-func Channels() []Channel {
-	cs := make([]Channel, 0)
+func Tunnels() []Tunnel {
+	cs := make([]Tunnel, 0)
 	channels.Range(func(key, value interface{}) bool {
-		cs = append(cs, value.(Channel))
+		cs = append(cs, value.(Tunnel))
 		return true
 	})
 	return cs
 }
 
-
 func Recovery() error {
-	var cs []types.Channel
-	err := db.DB("channel").All(&cs)
+	//TODO 改为 加载模型，创建通道
+	var cs []models.ModelTunnel
+	err := db.Engine.Find(&cs)
 	if err != nil {
 		return err
 	}
 
 	for _, c := range cs {
-		if !c.Disabled {
-			_, err = StartChannel(&c)
-			if err != nil {
-				log.Println(err)
-			}
+		//if !c.Disabled {
+		_, err = StartTunnel(&c)
+		if err != nil {
+			log.Println(err)
 		}
+		//}
 	}
 
 	return nil
 }
 
-func StartChannel(c *types.Channel) (Channel, error) {
+func StartTunnel(c *models.ModelTunnel) (Tunnel, error) {
 	//log.Println("Start core", c)
-	channel, err := NewChannel(c)
+	tunnel, err := NewTunnel(c)
 	if err != nil {
 		return nil, err
 	}
-	err = channel.Open()
+	err = tunnel.Open()
 	if err != nil {
 		return nil, err
 	}
-	channels.Store(c.Id, channel)
-	return channel, err
+	channels.Store(c.Id, tunnel)
+	return tunnel, err
 }
 
-func DeleteChannel(id int) error  {
+func DeleteTunnel(id int) error {
 	v, ok := channels.Load(id)
 	if !ok {
 		return errors.New("通道不存在")
 	}
 	channels.Delete(id)
-	return v.(Channel).Close()
+	return v.(Tunnel).Close()
 }
 
-func GetChannel(id int) (Channel, error) {
+func GetTunnel(id int64) (Tunnel, error) {
 	v, ok := channels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
 	}
-	return v.(Channel), nil
+	return v.(Tunnel), nil
 }
 
-func GetLink(channelId, linkId int) (*Link, error)  {
-	channel, err := GetChannel(channelId)
+func GetLink(channelId, linkId int64) (*Link, error) {
+	channel, err := GetTunnel(channelId)
 	if err != nil {
 		return nil, err
 	}

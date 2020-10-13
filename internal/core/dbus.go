@@ -4,9 +4,7 @@ import (
 	"git.zgwit.com/iot/beeq"
 	"git.zgwit.com/iot/beeq/packet"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"strconv"
 	"strings"
@@ -18,15 +16,15 @@ func StartDBus(addr string) error {
 	hive = beeq.NewHive()
 	hive.OnConnect(func(connect *packet.Connect, bee *beeq.Bee) bool {
 		// 验证插件 Key Secret
-		var plugin types.Plugin
-		err := db.DB("plugin").Select(q.Eq("Key", connect.UserName())).First(&plugin)
-		if err == nil {
+		var plugin models.Plugin
+		has, err := db.Engine.Where("key", connect.UserName()).Get(&plugin)
+		if !has {
 			if plugin.Secret == string(connect.Password()) {
 				return true
 			} else {
 				return false
 			}
-		} else if err != storm.ErrNotFound {
+		} else if err != nil {
 			log.Println(err)
 			return false
 		}
@@ -58,7 +56,7 @@ func StartDBus(addr string) error {
 		}
 
 		//发送到 link
-		link, err := GetLink(channelId, linkId)
+		link, err := GetLink(int64(channelId), int64(linkId))
 		if err != nil {
 			log.Println(err)
 			return

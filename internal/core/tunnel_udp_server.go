@@ -4,21 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"net"
 	"sync"
 )
 
 type PacketServer struct {
-	baseChannel
+	baseTunnel
 
 	//处理UDP Server
 	packetConn    net.PacketConn
 	packetIndexes sync.Map //<Link>
 
+	clients sync.Map
 }
 
 func (c *PacketServer) Open() error {
@@ -26,7 +25,7 @@ func (c *PacketServer) Open() error {
 	c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
 
 	if err != nil {
-		_ = c.storeError(err)
+		//_ = c.storeError(err)
 		return err
 	}
 	go c.receive()
@@ -34,7 +33,6 @@ func (c *PacketServer) Open() error {
 }
 
 func (c *PacketServer) Close() error {
-
 	if c.packetConn != nil {
 		err := c.packetConn.Close()
 		if err != nil {
@@ -43,10 +41,11 @@ func (c *PacketServer) Close() error {
 		c.packetConn = nil
 	}
 	c.clients = sync.Map{}
+	c.packetIndexes = sync.Map{}
 	return nil
 }
 
-func (c *PacketServer) GetLink(id int) (*Link, error) {
+func (c *PacketServer) GetLink(id int64) (*Link, error) {
 	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
@@ -78,7 +77,7 @@ func (c *PacketServer) receive() {
 
 			//第一个包作为注册包
 			if c.RegisterEnable {
-				serial, err := c.baseChannel.checkRegister(buf[:n])
+				serial, err := c.baseTunnel.checkRegister(buf[:n])
 				if err != nil {
 					_ = link.Write([]byte(err.Error()))
 					return
@@ -88,10 +87,11 @@ func (c *PacketServer) receive() {
 				link.Serial = serial
 
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
-				var lnk types.Link
+				var lnk models.Link
 
-				err = db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Serial", serial)).First(&lnk)
-				if err == storm.ErrNotFound {
+				has, err := db.Engine.Where("tunnel_id", c.Id).And("serial", serial).Get(&lnk)
+				//err = db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Serial", serial)).First(&lnk)
+				if !has {
 					//找不到
 				} else if err != nil {
 					_ = link.Write([]byte(err.Error()))
@@ -108,15 +108,15 @@ func (c *PacketServer) receive() {
 						}
 
 						//复制有用的历史数据
-						link.Rx = l.Rx
-						link.Tx = l.Tx
+						//link.Rx = l.Rx
+						//link.Tx = l.Tx
 
 						//复制watcher
 						link.Resume()
 					}
 
 					link.Id = lnk.Id
-					link.Name = lnk.Name
+					//link.Name = lnk.Name
 				}
 
 				//处理剩余内容
@@ -128,7 +128,8 @@ func (c *PacketServer) receive() {
 			}
 
 			//保存链接
-			c.storeLink(link)
+			//c.storeLink(link)
+			c.clients.Store(link.Id, link)
 
 			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, link)
@@ -137,4 +138,3 @@ func (c *PacketServer) receive() {
 		}
 	}
 }
-

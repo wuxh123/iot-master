@@ -3,7 +3,7 @@ package core
 import (
 	"errors"
 	"fmt"
-	"git.zgwit.com/zgwit/iot-admin/cool/db"
+	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"net"

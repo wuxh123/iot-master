@@ -79,7 +79,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/plugin/:id", pluginGet)
 
 	//模型管理
-	app.POST("/models", models)
+	app.POST("/models", modelList)
 	app.POST("/model", modelCreate)
 	app.DELETE("/model/:id", modelDelete)
 	app.PUT("/model/:id", modelModify)
@@ -95,10 +95,10 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/model/:id/export", modelExport)
 
 	app.POST("/tunnels", tunnels)
-	app.POST("/tunnel", tunnelCreate)
-	app.DELETE("/tunnel/:id", tunnelDelete)
-	app.PUT("/tunnel/:id", tunnelModify)
-	app.GET("/tunnel/:id", tunnelGet)
+	app.POST("/core", tunnelCreate)
+	app.DELETE("/core/:id", tunnelDelete)
+	app.PUT("/core/:id", tunnelModify)
+	app.GET("/core/:id", tunnelGet)
 
 	app.POST("/variables", variables)
 	app.POST("/variable", variableCreate)

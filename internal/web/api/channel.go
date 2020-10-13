@@ -3,7 +3,7 @@ package api
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -12,7 +12,7 @@ import (
 )
 
 func channels(ctx *gin.Context) {
-	cs := make([]types.Channel, 0)
+	cs := make([]models.Tunnel, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -39,7 +39,7 @@ func channels(ctx *gin.Context) {
 	query := db.DB("channel").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.Channel{})
+	cnt, err := query.Count(&models.Tunnel{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -74,7 +74,7 @@ func channels(ctx *gin.Context) {
 }
 
 func channelCreate(ctx *gin.Context) {
-	var channel types.Channel
+	var channel models.Tunnel
 	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
@@ -89,7 +89,7 @@ func channelCreate(ctx *gin.Context) {
 
 	//启动服务
 	go func() {
-		_, err := core.StartChannel(&channel)
+		_, err := core.StartTunnel(&channel)
 		if err != nil {
 			log.Println(err)
 		}
@@ -103,7 +103,7 @@ func channelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("channel").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("channel").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -112,7 +112,7 @@ func channelDelete(ctx *gin.Context) {
 
 	//删除服务
 	go func() {
-		channel, err := core.GetChannel(pid.Id)
+		channel, err := core.GetTunnel(pid.Id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -133,7 +133,7 @@ func channelModify(ctx *gin.Context) {
 		return
 	}
 
-	var channel types.Channel
+	var channel models.Tunnel
 	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
@@ -150,13 +150,13 @@ func channelModify(ctx *gin.Context) {
 
 	//重新启动服务
 	go func() {
-		_ = core.DeleteChannel(channel.Id)
+		_ = core.DeleteTunnel(channel.Id)
 		//如果 disabled，则删除之
 		if channel.Disabled {
 			return
 		}
 
-		_, err := core.StartChannel(&channel)
+		_, err := core.StartTunnel(&channel)
 		if err != nil {
 			log.Println(err)
 			return
@@ -164,13 +164,13 @@ func channelModify(ctx *gin.Context) {
 	}()
 }
 
-func getChannelFromUri(ctx *gin.Context) (*types.Channel, error) {
+func getTunnelFromUri(ctx *gin.Context) (*models.Tunnel, error) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		return nil, err
 	}
 
-	var channel types.Channel
+	var channel models.Tunnel
 	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		return nil, err
@@ -184,7 +184,7 @@ func channelGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var channel types.Channel
+	var channel models.Tunnel
 	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
@@ -199,7 +199,7 @@ func channelStart(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := core.GetChannel(pid.Id)
+	c, err := core.GetTunnel(pid.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -220,7 +220,7 @@ func channelStop(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	c, err := core.GetChannel(pid.Id)
+	c, err := core.GetTunnel(pid.Id)
 	if err != nil {
 		replyError(ctx, err)
 		return

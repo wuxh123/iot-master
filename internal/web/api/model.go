@@ -2,7 +2,7 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -26,7 +26,7 @@ type ModelTunnel struct {
 
 type ModelVariable struct {
 	ModelBase
-	Tunnel   string `json:"tunnel"`
+	Tunnel   string `json:"core"`
 	Type     string `json:"type"`
 	Addr     string `json:"addr"`
 	Default  string `json:"default"`
@@ -40,7 +40,7 @@ type ModelVariable struct {
 
 type ModelBatch struct {
 	ModelBase
-	Tunnel string `json:"tunnel"`
+	Tunnel string `json:"core"`
 	Type   string `json:"type"`
 	Addr   string `json:"addr"`
 	Size   int    `json:"size"`
@@ -51,7 +51,7 @@ type ModelBatch struct {
 	PollingTimes  int    `json:"polling_times"`
 
 	//结果解析
-	Results []types.ModelBatchResult `json:"results"`
+	Results []models.ModelBatchResult `json:"results"`
 }
 
 type ModelJob struct {
@@ -89,7 +89,7 @@ func modelImport(ctx *gin.Context) {
 	}
 
 	//TODO 导入模型
-	m := types.Model{
+	m := models.Model{
 		Name:        model.Name,
 		Description: model.Description,
 		Version:     model.Version,
@@ -106,10 +106,10 @@ func modelImport(ctx *gin.Context) {
 
 	//创建通道
 	tunnelIds := make(map[string]int)
-	tunnelDB := modelDB.From("tunnel")
+	tunnelDB := modelDB.From("core")
 	for _, t := range model.Tunnels {
-		tunnel := types.ModelTunnel{
-			ModelBase: types.ModelBase{
+		tunnel := models.ModelTunnel{
+			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        t.Name,
 				Description: t.Description,
@@ -132,8 +132,8 @@ func modelImport(ctx *gin.Context) {
 	//创建变量
 	variableDB := modelDB.From("variable")
 	for _, v := range model.Variables {
-		variable := types.ModelVariable{
-			ModelBase: types.ModelBase{
+		variable := models.ModelVariable{
+			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
@@ -158,8 +158,8 @@ func modelImport(ctx *gin.Context) {
 	//创建批量
 	batchDB := modelDB.From("batch")
 	for _, v := range model.Batches {
-		batch := types.ModelBatch{
-			ModelBase: types.ModelBase{
+		batch := models.ModelBatch{
+			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
@@ -184,8 +184,8 @@ func modelImport(ctx *gin.Context) {
 	//创建任务
 	jobDB := modelDB.From("job")
 	for _, v := range model.Jobs {
-		job := types.ModelJob{
-			ModelBase: types.ModelBase{
+		job := models.ModelJob{
+			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
@@ -204,8 +204,8 @@ func modelImport(ctx *gin.Context) {
 	//创建策略
 	strategyDB := modelDB.From("strategy")
 	for _, v := range model.Strategies {
-		job := types.ModelStrategy{
-			ModelBase: types.ModelBase{
+		job := models.ModelStrategy{
+			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
@@ -230,7 +230,7 @@ func modelExport(ctx *gin.Context) {
 		return
 	}
 
-	var model types.Model
+	var model models.Model
 	modelDB := db.DB("model")
 	err := modelDB.One("Id", pid.Id, &model)
 	if err != nil {
@@ -252,8 +252,8 @@ func modelExport(ctx *gin.Context) {
 
 	//读取通道
 	tunnelIds := make(map[int]string)
-	tunnelDB := modelDB.From("tunnel")
-	var tunnels []types.ModelTunnel
+	tunnelDB := modelDB.From("core")
+	var tunnels []models.ModelTunnel
 	err = tunnelDB.Find("ModelId", model.Id, &tunnels)
 	if err != nil {
 		replyError(ctx, err)
@@ -277,7 +277,7 @@ func modelExport(ctx *gin.Context) {
 
 	//读取变量
 	variableDB := modelDB.From("variable")
-	var variables []types.ModelVariable
+	var variables []models.ModelVariable
 	err = variableDB.Find("ModelId", model.Id, &variables)
 	if err != nil {
 		replyError(ctx, err)
@@ -303,7 +303,7 @@ func modelExport(ctx *gin.Context) {
 
 	//读取批量
 	batchDB := modelDB.From("batch")
-	var batches []types.ModelBatch
+	var batches []models.ModelBatch
 	err = batchDB.Find("ModelId", model.Id, &batches)
 	if err != nil {
 		replyError(ctx, err)
@@ -329,7 +329,7 @@ func modelExport(ctx *gin.Context) {
 
 	//读取任务
 	jobDB := modelDB.From("job")
-	var jobs []types.ModelJob
+	var jobs []models.ModelJob
 	err = jobDB.Find("ModelId", model.Id, &jobs)
 	if err != nil {
 		replyError(ctx, err)
@@ -349,7 +349,7 @@ func modelExport(ctx *gin.Context) {
 
 	//读取策略
 	strategyDB := modelDB.From("strategy")
-	var strategies []types.ModelStrategy
+	var strategies []models.ModelStrategy
 	err = strategyDB.Find("ModelId", model.Id, &strategies)
 	if err != nil {
 		replyError(ctx, err)
@@ -369,8 +369,8 @@ func modelExport(ctx *gin.Context) {
 	replyOk(ctx, m)
 }
 
-func models(ctx *gin.Context) {
-	cs := make([]types.Model, 0)
+func modelList(ctx *gin.Context) {
+	cs := make([]models.Model, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -397,7 +397,7 @@ func models(ctx *gin.Context) {
 	query := db.DB("model").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.Model{})
+	cnt, err := query.Count(&models.Model{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -432,7 +432,7 @@ func models(ctx *gin.Context) {
 }
 
 func modelCreate(ctx *gin.Context) {
-	var model types.Model
+	var model models.Model
 	if err := ctx.ShouldBindJSON(&model); err != nil {
 		replyError(ctx, err)
 		return
@@ -453,7 +453,7 @@ func modelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("model").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -468,7 +468,7 @@ func modelModify(ctx *gin.Context) {
 		return
 	}
 
-	var model types.Model
+	var model models.Model
 	if err := ctx.ShouldBindJSON(&model); err != nil {
 		replyError(ctx, err)
 		return
@@ -490,7 +490,7 @@ func modelGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var model types.Model
+	var model models.Model
 	err := db.DB("model").One("Id", pid.Id, &model)
 	if err != nil {
 		replyError(ctx, err)

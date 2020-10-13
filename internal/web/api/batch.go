@@ -1,17 +1,14 @@
 package api
 
-
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
 	"net/http"
 )
 
 func batches(ctx *gin.Context) {
-	cs := make([]types.ModelBatch, 0)
+	cs := make([]models.ModelBatch, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -20,46 +17,33 @@ func batches(ctx *gin.Context) {
 		return
 	}
 
-	cond := make([]q.Matcher, 0)
-	//过滤条件
+	op := db.Engine.Where("type=?", 0)
 	for _, filter := range body.Filters {
 		if len(filter.Value) > 0 {
-			cond = append(cond, q.In(filter.Key, filter.Value))
+			if len(filter.Value) == 1 {
+				op.And(filter.Key+"=?", filter.Value[0])
+			} else {
+				op.In(filter.Key, filter.Value)
+			}
 		}
 	}
-	//关键字
 	if body.Keyword != "" {
-		cond = append(cond, q.Or(
-			q.Re("Name", body.Keyword),
-			q.Re("Key", body.Keyword),
-		))
+		kw := "%" + body.Keyword + "%"
+		op.And("user like ? or text like ? or file like ?", kw, kw, kw)
 	}
 
-	query := db.DB("model").From("batch").Select(cond...)
-
-	//计算总数
-	cnt, err := query.Count(&types.ModelBatch{})
-	if err != nil && err != storm.ErrNotFound {
-		replyError(ctx, err)
-		return
-	}
-
-	//分页
-	query = query.Skip(body.Offset).Limit(body.Length)
-
-	//排序
+	op.Limit(body.Length, body.Offset)
 	if body.SortKey != "" {
 		if body.SortOrder == "desc" {
-			query = query.OrderBy(body.SortKey).Reverse()
+			op.Desc(body.SortKey)
 		} else {
-			query = query.OrderBy(body.SortKey)
+			op.Asc(body.SortKey)
 		}
 	} else {
-		query = query.OrderBy("Id").Reverse()
+		op.Desc("id")
 	}
-
-	err = query.Find(&cs)
-	if err != nil && err != storm.ErrNotFound {
+	cnt, err := op.FindAndCount(&cs)
+	if err != nil {
 		replyError(ctx, err)
 		return
 	}
@@ -73,13 +57,13 @@ func batches(ctx *gin.Context) {
 }
 
 func batchCreate(ctx *gin.Context) {
-	var batch types.ModelBatch
+	var batch models.ModelBatch
 	if err := ctx.ShouldBindJSON(&batch); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("batch").Save(&batch)
+	_, err := db.Engine.Insert(&batch)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -94,7 +78,7 @@ func batchDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("model").From("batch").DeleteStruct(&types.Link{Id: pid.Id})
+	_, err := db.Engine.ID(pid.Id).Delete(&models.ModelBatch{})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -109,14 +93,15 @@ func batchModify(ctx *gin.Context) {
 		return
 	}
 
-	var batch types.ModelBatch
+	var batch models.ModelBatch
 	if err := ctx.ShouldBindJSON(&batch); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
 	//log.Println("update", batch)
-	err := db.DB("model").From("batch").Update(&batch)
+	//TODO 补充列
+	_, err := db.Engine.ID(pid.Id).Cols("type", "addr", "size").Update(&models.ModelBatch{})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -124,7 +109,6 @@ func batchModify(ctx *gin.Context) {
 
 	replyOk(ctx, batch)
 }
-
 
 func batchGet(ctx *gin.Context) {
 	var pid paramId
@@ -132,12 +116,14 @@ func batchGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var batch types.ModelBatch
-	err := db.DB("model").From("batch").One("Id", pid.Id, &batch)
-	if err != nil {
+	var batch models.ModelBatch
+	has, err := db.Engine.ID(pid.Id).Get(&batch)
+	if !has {
+		replyFail(ctx, "记录不存在")
+		return
+	} else if err != nil {
 		replyError(ctx, err)
 		return
 	}
 	replyOk(ctx, batch)
 }
-

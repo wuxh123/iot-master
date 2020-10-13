@@ -3,7 +3,7 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -11,7 +11,7 @@ import (
 )
 
 func strategies(ctx *gin.Context) {
-	cs := make([]types.ModelStrategy, 0)
+	cs := make([]models.ModelStrategy, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -38,7 +38,7 @@ func strategies(ctx *gin.Context) {
 	query := db.DB("model").From("strategy").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelStrategy{})
+	cnt, err := query.Count(&models.ModelStrategy{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -73,7 +73,7 @@ func strategies(ctx *gin.Context) {
 }
 
 func strategyCreate(ctx *gin.Context) {
-	var strategy types.ModelStrategy
+	var strategy models.ModelStrategy
 	if err := ctx.ShouldBindJSON(&strategy); err != nil {
 		replyError(ctx, err)
 		return
@@ -94,7 +94,7 @@ func strategyDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("model").From("strategy").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("strategy").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -109,7 +109,7 @@ func strategyModify(ctx *gin.Context) {
 		return
 	}
 
-	var strategy types.ModelStrategy
+	var strategy models.ModelStrategy
 	if err := ctx.ShouldBindJSON(&strategy); err != nil {
 		replyError(ctx, err)
 		return
@@ -132,7 +132,7 @@ func strategyGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var strategy types.ModelStrategy
+	var strategy models.ModelStrategy
 	err := db.DB("model").From("strategy").One("Id", pid.Id, &strategy)
 	if err != nil {
 		replyError(ctx, err)

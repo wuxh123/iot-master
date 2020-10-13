@@ -6,20 +6,27 @@ import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
-	"git.zgwit.com/zgwit/iot-admin/interfaces"
 	"git.zgwit.com/zgwit/iot-admin/internal/base"
-	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"net"
 	"time"
 )
 
+//连接
+type ILink interface {
+	Write(buf []byte) error
+	Close() error
+
+	Attach(link ILink) error
+	Detach() error
+}
+
 type Link struct {
-	types.LinkExt
+	models.Link
 
 	//指向通道
-	channel Channel
+	tunnel Tunnel
 
 	//设备连接
 	conn net.Conn
@@ -27,20 +34,14 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	peer *Peer
+	peer ILink
 
 	lastTime time.Time
-
-	listener interfaces.LinkerListener
-}
-
-func (l *Link) Listen(listener interfaces.LinkerListener) {
-	l.listener = listener
 }
 
 func (l *Link) onData(buf []byte) {
 	//过滤心跳
-	c := l.channel.GetChannel()
+	c := l.tunnel.GetTunnel()
 	if c.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(c.HeartBeatInterval) {
 		var b []byte
 		if c.HeartBeatIsHex {
@@ -58,28 +59,23 @@ func (l *Link) onData(buf []byte) {
 	}
 
 	//计数
-	ln := len(buf)
-	l.Rx += ln
-	l.channel.GetChannel().Rx += ln
+	//ln := len(buf)
+	//l.Rx += ln
+	//l.tunnel.GetTunnel().Rx += ln
 
 	l.lastTime = time.Now()
 
 	//透传
 	if l.peer != nil {
-		_ = l.peer.Send(buf)
+		_ = l.peer.Write(buf)
 		return
-	}
-
-	//监听
-	if l.listener != nil {
-		l.listener.OnLinkerData(buf)
 	}
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.ChannelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.TunnelId, l.Id)))
 	pub.SetPayload(buf)
-	Hive().Publish(pub)
+	hive.Publish(pub)
 }
 
 func (l *Link) Resume() {
@@ -96,9 +92,9 @@ func (l *Link) Write(buf []byte) error {
 		return errors.New("链接已关闭")
 	}
 
-	ln := len(buf)
-	l.Tx += ln
-	l.channel.GetChannel().Tx += ln
+	//ln := len(buf)
+	//l.Tx += ln
+	//l.tunnel.GetTunnel().Tx += ln
 
 	l.lastTime = time.Now()
 
@@ -107,7 +103,7 @@ func (l *Link) Write(buf []byte) error {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.ChannelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.TunnelId, l.Id)))
 	pub.SetPayload(buf)
 	Hive().Publish(pub)
 
@@ -124,56 +120,59 @@ func (l *Link) Close() error {
 		return err
 	}
 
-	//监听关闭
-	if l.listener != nil {
-		l.listener.OnLinkerClose()
+	if l.peer != nil {
+		_ = l.peer.Detach()
 	}
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.ChannelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.TunnelId, l.Id)))
 	pub.SetPayload([]byte("close"))
 	Hive().Publish(pub)
 
 	return err
 }
 
-func (l *Link) storeError(err error) error {
-	l.Error = err.Error()
-	//_, err = db.Engine.ID(l.Id).Cols("error").Update(&l.Link)
-	return db.DB("link").UpdateField(&l.Link, "error", l.Error)
+func (l *Link) Attach(link ILink) error {
+	//TODO check peer
+	l.peer = link
+	return nil
+}
+func (l *Link) Detach() error {
+	//TODO check peer
+	_ = l.peer.Detach()
+	l.peer = nil
+	return nil
 }
 
-func newLink(ch Channel, conn net.Conn) *Link {
-	c := ch.GetChannel()
+func newLink(ch Tunnel, conn net.Conn) *Link {
+	c := ch.GetTunnel()
 	return &Link{
-		LinkExt: types.LinkExt{
-			Link: types.Link{
-				Net:       c.Net,
-				Addr:      conn.RemoteAddr().String(),
-				ChannelId: c.Id,
-			},
-			Online: true,
+		Link: models.Link{
+			Id:       0,
+			TunnelId: c.Id,
+			ModelId:  c.ModelId,
+			//ModelTunnelId: c.ModelId,
+			Active: true,
 		},
-		channel: ch,
-		conn:    conn,
-		cache:   make([][]byte, 0),
+		tunnel: ch,
+		conn:   conn,
+		cache:  make([][]byte, 0),
 	}
 }
 
-func newPacketLink(ch Channel, conn net.PacketConn, addr net.Addr) *Link {
-	c := ch.GetChannel()
+func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
+	c := ch.GetTunnel()
 	return &Link{
-		LinkExt: types.LinkExt{
-			Link: types.Link{
-				Net:       c.Net,
-				Addr:      addr.String(),
-				ChannelId: c.Id,
-			},
-			Online: true,
+		Link: models.Link{
+			Id:       0,
+			TunnelId: c.Id,
+			ModelId:  c.ModelId,
+			//ModelTunnelId: c.ModelId,
+			Active: true,
 		},
-		channel: ch,
-		conn:    base.NewPackConn(conn, addr),
-		cache:   make([][]byte, 0),
+		tunnel: ch,
+		conn:   base.NewPackConn(conn, addr),
+		cache:  make([][]byte, 0),
 	}
 }

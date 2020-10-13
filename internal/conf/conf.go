@@ -1,24 +1,25 @@
 package conf
 
 import (
+	"git.zgwit.com/zgwit/iot-admin/internal/base"
 	"git.zgwit.com/zgwit/iot-admin/flag"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
 )
 
-type _data struct {
-	Desc  string `yaml:"desc"`
-	Path  string `yaml:"path"`
-	Debug bool   `yaml:"debug"`
+type _database struct {
+	Desc    string `json:"desc" yaml:"desc"`
+	Type    string `json:"type" yaml:"type"`
+	Url     string `json:"url" yaml:"url"`
+	ShowSQL bool   `json:"showSQL" yaml:"showSQL"`
 }
 
 type _web struct {
-	Desc      string `yaml:"desc"`
-	Addr      string `yaml:"addr"`
-	Cors      bool   `yaml:"cors"`
-	Debug     bool   `yaml:"debug"`
-	Anonymous bool   `yaml:"anonymous"` //匿名登录
+	Desc string `yaml:"desc"`
+	Addr string `yaml:"addr"`
+	//Cors      bool   `yaml:"cors"`
+	Debug bool `yaml:"debug"`
 }
 
 type _users map[string]string
@@ -43,7 +44,7 @@ type _dbus struct {
 }
 
 type _config struct {
-	Data     _data     `yaml:"data"`
+	Database _database `yaml:"database"`
 	Web      _web      `yaml:"web"`
 	BaseAuth _baseAuth `yaml:"basicAuth"`
 	SysAdmin _sysAdmin `yaml:"sysAdmin"`
@@ -51,25 +52,27 @@ type _config struct {
 }
 
 var Config = _config{
-	Data: _data{
-		Desc: "数据配置",
-		Path: "data",
+	Database: _database{
+		Desc:    "数据库配置",
+		Type:    "mysql",
+		Url:     "root:root@tcp(127.0.0.1:3306)/iot?charset=utf8",
+		ShowSQL: false,
 	},
 	Web: _web{
-		Desc:      "Web服务配置",
-		Addr:      ":8080",
-		Anonymous: true,
+		Desc: "Web服务配置",
+		Addr: ":8080",
 	},
 	BaseAuth: _baseAuth{
 		Desc:   "HTTP简单认证，仅用于超级管理员",
 		Enable: true,
 		Users: _users{
-			"admin": "123456",
+			//"admin": "123456",
 		},
 	},
 	SysAdmin: _sysAdmin{
-		Desc: "Sys Admin地址",
-		Addr: "http://127.0.0.1:8080",
+		Desc:   "Sys Admin地址",
+		Enable: false,
+		Addr:   "http://127.0.0.1:8080",
 	},
 	DBus: _dbus{
 		Desc: "数据总线",
@@ -92,6 +95,11 @@ func Load() error {
 			return err
 		}
 		defer y.Close()
+
+		//生成管理员账号 和 随机密码
+		password := base.RandomString(6)
+		log.Println("username:admin, password:", password)
+		Config.BaseAuth.Users["admin"] = password
 
 		d := yaml.NewDecoder(y)
 		return d.Decode(&Config)

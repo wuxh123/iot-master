@@ -3,7 +3,7 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -11,7 +11,7 @@ import (
 )
 
 func variables(ctx *gin.Context) {
-	cs := make([]types.ModelVariable, 0)
+	cs := make([]models.ModelVariable, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -38,7 +38,7 @@ func variables(ctx *gin.Context) {
 	query := db.DB("model").From("variable").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelVariable{})
+	cnt, err := query.Count(&models.ModelVariable{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -73,7 +73,7 @@ func variables(ctx *gin.Context) {
 }
 
 func variableCreate(ctx *gin.Context) {
-	var variable types.ModelVariable
+	var variable models.ModelVariable
 	if err := ctx.ShouldBindJSON(&variable); err != nil {
 		replyError(ctx, err)
 		return
@@ -94,7 +94,7 @@ func variableDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("model").From("variable").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("variable").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -109,7 +109,7 @@ func variableModify(ctx *gin.Context) {
 		return
 	}
 
-	var variable types.ModelVariable
+	var variable models.ModelVariable
 	if err := ctx.ShouldBindJSON(&variable); err != nil {
 		replyError(ctx, err)
 		return
@@ -132,7 +132,7 @@ func variableGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var variable types.ModelVariable
+	var variable models.ModelVariable
 	err := db.DB("model").From("variable").One("Id", pid.Id, &variable)
 	if err != nil {
 		replyError(ctx, err)

@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/interfaces"
 	"sync"
 )
 
@@ -29,6 +28,6 @@ func Adapters() sync.Map {
 }
 
 //TODO 添加参数
-func RegisterProtocol(name string, factory func(linker interfaces.Linker) Adapter) {
+func RegisterProtocol(name string, factory func() Adapter) {
 	adapters.Store(name, factory)
 }

@@ -3,7 +3,7 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -11,7 +11,7 @@ import (
 )
 
 func tunnels(ctx *gin.Context) {
-	cs := make([]types.ModelTunnel, 0)
+	cs := make([]models.ModelTunnel, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -35,10 +35,10 @@ func tunnels(ctx *gin.Context) {
 		))
 	}
 
-	query := db.DB("model").From("tunnel").Select(cond...)
+	query := db.DB("model").From("core").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelTunnel{})
+	cnt, err := query.Count(&models.ModelTunnel{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -73,13 +73,13 @@ func tunnels(ctx *gin.Context) {
 }
 
 func tunnelCreate(ctx *gin.Context) {
-	var tunnel types.ModelTunnel
+	var tunnel models.ModelTunnel
 	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("tunnel").Save(&tunnel)
+	err := db.DB("model").From("core").Save(&tunnel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -94,7 +94,7 @@ func tunnelDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("model").From("tunnel").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("core").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -109,14 +109,14 @@ func tunnelModify(ctx *gin.Context) {
 		return
 	}
 
-	var tunnel types.ModelTunnel
+	var tunnel models.ModelTunnel
 	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	//log.Println("update", tunnel)
-	err := db.DB("model").From("tunnel").Update(&tunnel)
+	//log.Println("update", core)
+	err := db.DB("model").From("core").Update(&tunnel)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -132,8 +132,8 @@ func tunnelGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var tunnel types.ModelTunnel
-	err := db.DB("model").From("tunnel").One("Id", pid.Id, &tunnel)
+	var tunnel models.ModelTunnel
+	err := db.DB("model").From("core").One("Id", pid.Id, &tunnel)
 	if err != nil {
 		replyError(ctx, err)
 		return

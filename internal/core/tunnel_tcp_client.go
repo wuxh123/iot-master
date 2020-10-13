@@ -1,7 +1,7 @@
 package core
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/cool/db"
+	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"net"
@@ -38,7 +38,7 @@ func (c *TcpClient) Close() error {
 	return nil
 }
 
-func (c *TcpClient) GetLink(id int) (*Link, error) {
+func (c *TcpClient) GetLink(id int64) (*Link, error) {
 	return c.link, nil
 }
 

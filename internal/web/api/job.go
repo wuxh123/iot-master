@@ -3,7 +3,7 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -11,7 +11,7 @@ import (
 )
 
 func jobs(ctx *gin.Context) {
-	cs := make([]types.ModelJob, 0)
+	cs := make([]models.ModelJob, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -38,7 +38,7 @@ func jobs(ctx *gin.Context) {
 	query := db.DB("model").From("job").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.ModelJob{})
+	cnt, err := query.Count(&models.ModelJob{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -73,7 +73,7 @@ func jobs(ctx *gin.Context) {
 }
 
 func jobCreate(ctx *gin.Context) {
-	var job types.ModelJob
+	var job models.ModelJob
 	if err := ctx.ShouldBindJSON(&job); err != nil {
 		replyError(ctx, err)
 		return
@@ -94,7 +94,7 @@ func jobDelete(ctx *gin.Context) {
 		return
 	}
 
-	err := db.DB("model").From("job").DeleteStruct(&types.Link{Id: pid.Id})
+	err := db.DB("model").From("job").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -109,7 +109,7 @@ func jobModify(ctx *gin.Context) {
 		return
 	}
 
-	var job types.ModelJob
+	var job models.ModelJob
 	if err := ctx.ShouldBindJSON(&job); err != nil {
 		replyError(ctx, err)
 		return
@@ -132,7 +132,7 @@ func jobGet(ctx *gin.Context) {
 		replyError(ctx, err)
 		return
 	}
-	var job types.ModelJob
+	var job models.ModelJob
 	err := db.DB("model").From("job").One("Id", pid.Id, &job)
 	if err != nil {
 		replyError(ctx, err)

@@ -3,7 +3,7 @@ package api
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
-	"git.zgwit.com/zgwit/iot-admin/internal/types"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -12,7 +12,7 @@ import (
 )
 
 func links(ctx *gin.Context) {
-	var ls []types.Link
+	var ls []models.Link
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -40,7 +40,7 @@ func links(ctx *gin.Context) {
 	query := db.DB("link").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&types.Link{})
+	cnt, err := query.Count(&models.Link{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -81,8 +81,8 @@ func linkDelete(ctx *gin.Context) {
 		return
 	}
 
-	var link types.Link
-	err := db.DB("link").DeleteStruct(&types.Link{Id: pid.Id})
+	var link models.Link
+	err := db.DB("link").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -91,7 +91,7 @@ func linkDelete(ctx *gin.Context) {
 
 	//删除服务
 	go func() {
-		l, err := core.GetLink(link.ChannelId, link.Id)
+		l, err := core.GetLink(link.TunnelId, link.Id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -109,7 +109,7 @@ func linkModify(ctx *gin.Context) {
 		return
 	}
 
-	var link types.Link
+	var link models.Link
 	if err := ctx.ShouldBindJSON(&link); err != nil {
 		replyError(ctx, err)
 		return
@@ -134,7 +134,7 @@ func linkGet(ctx *gin.Context) {
 		return
 	}
 
-	var link types.Link
+	var link models.Link
 	err := db.DB("link").One("Id", pid.Id, &link)
 	if err != nil {
 		replyError(ctx, err)
