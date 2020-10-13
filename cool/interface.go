@@ -1,8 +1,11 @@
 package cool
 
+import "git.zgwit.com/zgwit/iot-admin/models"
+
 //通道
 type Tunnel interface {
 	Close() error
+	GetTunnel() *models.ModelTunnel
 }
 
 //连接

@@ -7,7 +7,7 @@ type Tunnel struct {
 	ModelId       int64 `json:"model_id"`
 	ModelTunnelId int64 `json:"model_tunnel_id"`
 
-	Inactive bool `json:"inactive"` //系统启动倒置置false
+	Active bool `json:"active"` //系统启动倒置置false
 
 	Created time.Time `json:"created" xorm:"created"`
 	Updated time.Time `json:"updated" xorm:"updated"`
@@ -21,7 +21,7 @@ type Link struct {
 
 	Serial string `json:"serial" xorm:"index"`
 
-	Inactive bool `json:"inactive"` //系统启动倒置置false
+	Active bool `json:"active"` //系统启动倒置置false
 
 	Created time.Time `json:"created" xorm:"created"`
 	Updated time.Time `json:"updated" xorm:"updated"`
