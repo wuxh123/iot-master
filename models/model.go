@@ -8,8 +8,8 @@ type Model struct {
 	Disabled    bool      `json:"disabled"`
 	Description string    `json:"description"`
 	Version     string    `json:"version"`
-	Created     time.Time `json:"created"`
-	Updated     time.Time `json:"updated"`
+	Created     time.Time `json:"created" xorm:"created"`
+	Updated     time.Time `json:"updated" xorm:"updated"`
 }
 
 type ModelBase struct {
@@ -17,8 +17,8 @@ type ModelBase struct {
 	ModelId     int64     `json:"model_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	Created     time.Time `json:"created"`
-	Updated     time.Time `json:"updated"`
+	Created     time.Time `json:"created" xorm:"created"`
+	Updated     time.Time `json:"updated" xorm:"updated"`
 }
 
 type ModelTunnel struct {
@@ -49,7 +49,9 @@ type ModelTunnel struct {
 
 type ModelVariable struct {
 	ModelBase `xorm:"extends"`
+	
 	TunnelId  int    `json:"tunnel_id"`
+
 	Type      string `json:"type"`
 	Addr      string `json:"addr"`
 	Alias     string `json:"alias"` //别名，用于编程
@@ -70,11 +72,15 @@ type ModelBatchResult struct {
 	BatchId  int64  `json:"batch_id"`
 	Offset   int    `json:"offset"`
 	Variable string `json:"variable"` //ModelVariable path
+	Created     time.Time `json:"created" xorm:"created"`
+	Updated     time.Time `json:"updated" xorm:"updated"`
 }
 
 type ModelBatch struct {
 	ModelBase `xorm:"extends"`
+
 	TunnelId  int    `json:"tunnel_id"`
+
 	Type      string `json:"type"`
 	Addr      string `json:"addr"`
 	Size      int    `json:"size"`
