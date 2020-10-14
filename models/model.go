@@ -58,7 +58,6 @@ type ModelVariable struct {
 
 	Type string `json:"type"`
 	Unit string `json:"unit"` //单位
-	//应该不缩放，保留原始值？？？？
 
 	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
 	Default  string  `json:"default"`
@@ -87,11 +86,13 @@ type ModelBatch struct {
 
 type ModelJob struct {
 	ModelBase `xorm:"extends"`
+
 	Cron      string `json:"cron"`
 	Script    string `json:"script"` //javascript
 }
 
 type ModelStrategy struct {
 	ModelBase `xorm:"extends"`
+	
 	Script    string `json:"script"` //javascript
 }

@@ -6,61 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ModelBase struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
-type ModelTunnel struct {
-	ModelBase
-	Protocol        string `json:"protocol"`
-	ProtocolOpts    string `json:"protocol_opts"`
-	PollingEnable   bool   `json:"polling_enable"`   //轮询
-	PollingInterval int    `json:"polling_interval"` //轮询间隔 ms
-	PollingCycle    int    `json:"polling_cycle"`    //轮询周期 s
-}
-
-type ModelVariable struct {
-	ModelBase
-	Tunnel   string `json:"core"`
-	Type     string `json:"type"`
-	Addr     string `json:"addr"`
-	Default  string `json:"default"`
-	Writable bool   `json:"writable"` //可写，用于输出（如开关）
-
-	//采样：无、定时、轮询
-	Cron          string `json:"cron"`
-	PollingEnable bool   `json:"polling_enable"` //轮询
-	PollingTimes  int    `json:"polling_times"`
-}
-
-type ModelBatch struct {
-	ModelBase
-	Tunnel string `json:"core"`
-	Type   string `json:"type"`
-	Addr   string `json:"addr"`
-	Size   int    `json:"size"`
-
-	//采样：无、定时、轮询
-	Cron          string `json:"cron"`
-	PollingEnable bool   `json:"polling_enable"` //轮询
-	PollingTimes  int    `json:"polling_times"`
-
-	//结果解析
-	Results []models.ModelBatchResult `json:"results"`
-}
-
-type ModelJob struct {
-	ModelBase
-	Cron   string `json:"cron"`
-	Script string `json:"script"` //javascript
-}
-
-type ModelStrategy struct {
-	ModelBase
-	Script string `json:"script"` //javascript
-}
-
 type Model struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -72,6 +17,84 @@ type Model struct {
 	Batches    []ModelBatch    `json:"batches"`
 	Jobs       []ModelJob      `json:"jobs"`
 	Strategies []ModelStrategy `json:"strategies"`
+}
+
+type ModelBase struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type ModelTunnel struct {
+	ModelBase
+
+	Role    string `json:"role"`
+	Net     string `json:"net"`
+	Addr    string `json:"addr"`
+	Timeout int    `json:"timeout"`
+
+	RegisterEnable bool   `json:"register_enable"`
+	RegisterRegex  string `json:"register_regex"`
+	RegisterMin    int    `json:"register_min"`
+	RegisterMax    int    `json:"register_max"`
+
+	HeartBeatEnable   bool   `json:"heart_beat_enable"`
+	HeartBeatInterval int    `json:"heart_beat_interval"`
+	HeartBeatContent  string `json:"heart_beat_content"`
+	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
+
+	Protocol     string `json:"protocol"`
+	ProtocolOpts string `json:"protocol_opts"`
+
+	PollingEnable   bool `json:"polling_enable"`   //轮询
+	PollingInterval int  `json:"polling_interval"` //轮询间隔 ms
+	PollingCycle    int  `json:"polling_cycle"`    //轮询周期 s
+}
+
+type ModelVariable struct {
+	ModelBase
+	
+	Tunnel string `json:"tunnel"`
+	models.Address
+
+	Type string `json:"type"`
+	Unit string `json:"unit"` //单位
+
+	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
+	Default  string  `json:"default"`
+	Writable bool    `json:"writable"` //可写，用于输出（如开关）
+
+	//采样：无、定时、轮询
+	Cron          string `json:"cron"`
+	PollingEnable bool   `json:"polling_enable"` //轮询
+	PollingTimes  int    `json:"polling_times"`
+}
+
+type ModelBatch struct {
+	ModelBase
+	
+	Tunnel string `json:"tunnel"`
+
+	models.Address `xorm:"extends"`
+
+	Size int `json:"size"`
+
+	//采样：无、定时、轮询
+	Cron          string `json:"cron"`
+	PollingEnable bool   `json:"polling_enable"` //轮询
+	PollingTimes  int    `json:"polling_times"`
+}
+
+type ModelJob struct {
+	ModelBase
+	
+	Cron   string `json:"cron"`
+	Script string `json:"script"` //javascript
+}
+
+type ModelStrategy struct {
+	ModelBase
+
+	Script string `json:"script"` //javascript
 }
 
 func modelImport(ctx *gin.Context) {
@@ -130,7 +153,7 @@ func modelImport(ctx *gin.Context) {
 			},
 			TunnelId:      tunnelIds[v.Tunnel],
 			Type:          v.Type,
-			Addr:          v.Addr,
+			Address:       v.Address,
 			Default:       v.Default,
 			Writable:      v.Writable,
 			Cron:          v.Cron,
@@ -153,8 +176,7 @@ func modelImport(ctx *gin.Context) {
 				Description: v.Description,
 			},
 			TunnelId:      tunnelIds[v.Tunnel],
-			Type:          v.Type,
-			Addr:          v.Addr,
+			Address:       v.Address,
 			Size:          v.Size,
 			Cron:          v.Cron,
 			PollingEnable: v.PollingEnable,
@@ -273,7 +295,8 @@ func modelExport(ctx *gin.Context) {
 			},
 			Tunnel:        tunnelIds[v.TunnelId],
 			Type:          v.Type,
-			Addr:          v.Addr,
+			Address:       v.Address,
+			Unit:          v.Unit,
 			Default:       v.Default,
 			Writable:      v.Writable,
 			Cron:          v.Cron,
@@ -297,8 +320,7 @@ func modelExport(ctx *gin.Context) {
 				Description: v.Description,
 			},
 			Tunnel:        tunnelIds[v.TunnelId],
-			Type:          v.Type,
-			Addr:          v.Addr,
+			Address:       v.Address,
 			Size:          v.Size,
 			Cron:          v.Cron,
 			PollingEnable: v.PollingEnable,
