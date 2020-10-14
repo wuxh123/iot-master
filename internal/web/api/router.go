@@ -2,9 +2,11 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/internal/conf"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"reflect"
 )
 
 type paramFilter struct {
@@ -22,12 +24,12 @@ type paramSearch struct {
 }
 
 type paramId struct {
-	Id int `uri:"id"`
+	Id int64 `uri:"id"`
 }
 
 type paramId2 struct {
-	Id  int `uri:"id"`
-	Id2 int `uri:"id2"`
+	Id  int64 `uri:"id"`
+	Id2 int64 `uri:"id2"`
 }
 
 func mustLogin(c *gin.Context) {
@@ -55,16 +57,18 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	}
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
-	app.POST("/channels", channels)
-	app.POST("/channel", channelCreate)
-	app.DELETE("/channel/:id", channelDelete)
-	app.PUT("/channel/:id", channelModify)
-	app.GET("/channel/:id", channelGet)
+	typ := reflect.TypeOf(models.Tunnel{})
+	app.POST("/channels", curdApiList(typ))
+	app.POST("/channel", curdApiCreate(typ, nil))
+	app.DELETE("/channel/:id", curdApiDelete(typ, nil))
+	app.PUT("/channel/:id", curdApiModify(typ, []string{}, nil))
+	app.GET("/channel/:id", curdApiGet(typ))
 	app.GET("/channel/:id/start", channelStart)
 	app.GET("/channel/:id/stop", channelStop)
 
 	//app.POST("/channel/:id/links")
 
+	typ = reflect.TypeOf(models.Link{})
 	//连接管理
 	app.POST("/links", links)
 	app.DELETE("/link/:id", linkDelete)

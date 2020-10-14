@@ -1,17 +1,18 @@
 package api
 
-
 import (
+	"git.zgwit.com/zgwit/iot-admin/internal/core"
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
+	"log"
 	"net/http"
 )
 
-func tunnels(ctx *gin.Context) {
-	cs := make([]models.ModelTunnel, 0)
+func channels(ctx *gin.Context) {
+	cs := make([]models.Tunnel, 0)
 
 	var body paramSearch
 	err := ctx.ShouldBind(&body)
@@ -31,14 +32,14 @@ func tunnels(ctx *gin.Context) {
 	if body.Keyword != "" {
 		cond = append(cond, q.Or(
 			q.Re("Name", body.Keyword),
-			q.Re("Key", body.Keyword),
+			q.Re("Addr", body.Keyword),
 		))
 	}
 
-	query := db.DB("model").From("core").Select(cond...)
+	query := db.DB("channel").Select(cond...)
 
 	//计算总数
-	cnt, err := query.Count(&models.ModelTunnel{})
+	cnt, err := query.Count(&models.Tunnel{})
 	if err != nil && err != storm.ErrNotFound {
 		replyError(ctx, err)
 		return
@@ -72,72 +73,164 @@ func tunnels(ctx *gin.Context) {
 	})
 }
 
-func tunnelCreate(ctx *gin.Context) {
-	var tunnel models.ModelTunnel
-	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
+func channelCreate(ctx *gin.Context) {
+	var channel models.Tunnel
+	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("core").Save(&tunnel)
+	err := db.DB("channel").Save(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, tunnel)
+	replyOk(ctx, channel)
+
+	//启动服务
+	go func() {
+		_, err := core.StartTunnel(&channel)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 }
 
-func tunnelDelete(ctx *gin.Context) {
+func channelDelete(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	err := db.DB("model").From("core").DeleteStruct(&models.Link{Id: pid.Id})
+	err := db.DB("channel").DeleteStruct(&models.Link{Id: pid.Id})
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 	replyOk(ctx, nil)
+
+	//删除服务
+	go func() {
+		channel, err := core.GetTunnel(pid.Id)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		err = channel.Close()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}()
 }
 
-func tunnelModify(ctx *gin.Context) {
+func channelModify(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var tunnel models.ModelTunnel
-	if err := ctx.ShouldBindJSON(&tunnel); err != nil {
+	var channel models.Tunnel
+	if err := ctx.ShouldBindJSON(&channel); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
 	//log.Println("update", core)
-	err := db.DB("model").From("core").Update(&tunnel)
+	err := db.DB("channel").Update(&channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	replyOk(ctx, tunnel)
+	replyOk(ctx, channel)
+
+	//重新启动服务
+	go func() {
+		_ = core.DeleteTunnel(channel.Id)
+		//如果 disabled，则删除之
+		if channel.Disabled {
+			return
+		}
+
+		_, err := core.StartTunnel(&channel)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}()
 }
 
+func getTunnelFromUri(ctx *gin.Context) (*models.Tunnel, error) {
+	var pid paramId
+	if err := ctx.BindUri(&pid); err != nil {
+		return nil, err
+	}
 
-func tunnelGet(ctx *gin.Context) {
+	var channel models.Tunnel
+	err := db.DB("channel").One("Id", pid.Id, &channel)
+	if err != nil {
+		return nil, err
+	}
+	return &channel, nil
+}
+
+func channelGet(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
-	var tunnel models.ModelTunnel
-	err := db.DB("model").From("core").One("Id", pid.Id, &tunnel)
+	var channel models.Tunnel
+	err := db.DB("channel").One("Id", pid.Id, &channel)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	replyOk(ctx, tunnel)
+	replyOk(ctx, channel)
 }
 
+func channelStart(ctx *gin.Context) {
+	var pid paramId
+	if err := ctx.BindUri(&pid); err != nil {
+		replyError(ctx, err)
+		return
+	}
+	c, err := core.GetTunnel(pid.Id)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	err = c.Open()
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	replyOk(ctx, nil)
+}
+
+func channelStop(ctx *gin.Context) {
+	var pid paramId
+	if err := ctx.BindUri(&pid); err != nil {
+		replyError(ctx, err)
+		return
+	}
+	c, err := core.GetTunnel(pid.Id)
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	err = c.Close()
+	if err != nil {
+		replyError(ctx, err)
+		return
+	}
+
+	replyOk(ctx, nil)
+}
