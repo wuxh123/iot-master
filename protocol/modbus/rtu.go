@@ -1,21 +1,21 @@
 package modbus
 
 import (
-	"encoding/binary"
-	"git.zgwit.com/zgwit/iot-admin/interfaces"
+	"git.zgwit.com/zgwit/iot-admin/base"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"git.zgwit.com/zgwit/iot-admin/protocol"
 	"git.zgwit.com/zgwit/iot-admin/protocol/helper"
 )
 
 type RTU struct {
-	linker   interfaces.Linker
-	listener protocol.AdapterListener
+	link base.Link
 
-	addr *address
+	listener protocol.AdapterListener
+	//addr *address
 }
 
-func NewModbusRtu(linker interfaces.Linker) protocol.Adapter {
-	m := &RTU{linker: linker}
+func NewModbusRtu(linker base.Link) protocol.Adapter {
+	m := &RTU{link: linker}
 	linker.Listen(m)
 	//TODO un listen
 	return m
@@ -33,39 +33,27 @@ func (m *RTU) Version() string {
 	return "v0.0.1"
 }
 
-func (m *RTU) Read(addr string, size int) (err error) {
-	m.addr, err = parseAddress(addr)
-	if err != nil {
-		return err
-	}
-
-	// 打包协议
+func (m *RTU) Read(addr *models.Address, size int) (err error) {
 	b := make([]byte, 8)
-	b[0] = m.addr.unit
-	b[1] = m.addr.code
-	helper.WriteUint16(b[2:], m.addr.addr)
+	b[0] = uint8(addr.Slave)
+	b[1] = uint8(addr.ReadCode)
+	helper.WriteUint16(b[2:], uint16(addr.Offset))
 	helper.WriteUint16(b[4:], uint16(size))
 	helper.WriteUint16(b[6:], CRC16(b[:6]))
 
-	return m.linker.Write(b)
+	return m.link.Write(b)
 }
 
-func (m *RTU) Write(addr string, buf []byte) (err error) {
-	m.addr, err = parseAddress(addr)
-	if err != nil {
-		return err
-	}
-
-	// 打包协议
+func (m *RTU) Write(addr *models.Address, buf []byte) (err error) {
 	l := 6 + len(buf)
 	b := make([]byte, l)
-	b[0] = m.addr.unit
-	b[1] = m.addr.code
-	helper.WriteUint16(b[2:], m.addr.addr)
+	b[0] = uint8(addr.Slave)
+	b[1] = uint8(addr.WriteCode)
+	helper.WriteUint16(b[2:], uint16(addr.Offset))
 	copy(b[4:], buf)
 	helper.WriteUint16(b[l-2:], CRC16(b[:l-2]))
 
-	return m.linker.Write(b)
+	return m.link.Write(b)
 }
 
 func (m *RTU) OnLinkerData(buf []byte) {
@@ -88,11 +76,13 @@ func (m *RTU) OnLinkerData(buf []byte) {
 		if count%8 != 0 {
 			length++
 		}
+		//TODO 解析开关
 	case FuncCodeReadInputRegisters,
 		FuncCodeReadHoldingRegisters,
 		FuncCodeReadWriteMultipleRegisters:
 		count := int(helper.ParseUint16(buf[4:]))
 		length += 1 + count*2
+		//TODO 解析word
 	case FuncCodeWriteSingleCoil,
 		FuncCodeWriteMultipleCoils,
 		FuncCodeWriteSingleRegister,
@@ -103,7 +93,6 @@ func (m *RTU) OnLinkerData(buf []byte) {
 	case FuncCodeReadFIFOQueue:
 		// undetermined
 	default:
-
 	}
 
 	if l < length {

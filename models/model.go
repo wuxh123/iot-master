@@ -56,6 +56,7 @@ type ModelVariable struct {
 
 	Address `xorm:"extends"`
 
+	Type string `json:"type"`
 	Unit string `json:"unit"` //单位
 	//应该不缩放，保留原始值？？？？
 

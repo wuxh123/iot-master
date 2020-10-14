@@ -3,10 +3,11 @@ package models
 import "time"
 
 type Address struct {
-	Type   string `json:"type"`
-	Area   string `json:"area"`  //区域 类似 S I O Q WR ……
-	Slave  int    `json:"slave"` //从站号 modbus
-	Offset int    `json:"offset"`
+	Area      string `json:"area"`  //区域 类似 S I O Q WR ……
+	Slave     uint8  `json:"slave"` //从站号 modbus
+	Offset    uint16 `json:"offset"`
+	ReadCode  uint8  `json:"read_code"`
+	WriteCode uint8  `json:"write_code"`
 }
 
 type Element struct {
@@ -32,6 +33,7 @@ type ElementVariable struct {
 
 	Address `xorm:"extends"` //地址
 
+	Type string `json:"type"`
 	Unit string `json:"unit"` //单位
 
 	Scale   float32 `json:"scale"`   //倍率，比如一般是 整数÷10，得到
