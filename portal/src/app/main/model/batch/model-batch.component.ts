@@ -1,18 +1,17 @@
-import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../api.service';
-import {ChannelEditComponent} from '../channel-edit/channel-edit.component';
+import { Component, OnInit } from '@angular/core';
+import {ApiService} from '../../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from "@angular/router";
-import {TabRef} from "../tabs/tabs.component";
+import {Router} from '@angular/router';
+import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
-  selector: 'app-channel',
-  templateUrl: './channel.component.html',
-  styleUrls: ['./channel.component.scss']
+  selector: 'app-model-batch',
+  templateUrl: './model-batch.component.html',
+  styleUrls: ['./model-batch.component.scss']
 })
-export class ChannelComponent implements OnInit {
+export class ModelBatchComponent implements OnInit {
 
-  channels: [];
+  batches: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -22,17 +21,14 @@ export class ChannelComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  roleFilters = [{text: '服务器', value: true}, {text: '客户端', value: false}];
-  netFilters = [{text: 'TCP', value: 'tcp'}, {text: 'UDP', value: 'udp'}];
   statusFilters = [{text: '启动', value: 1}];
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '通道管理';
+    tab.name = '批量采集';
   }
 
   ngOnInit(): void {
-    this.loadFilters();
   }
 
   reload(): void {
@@ -43,7 +39,7 @@ export class ChannelComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('channels', {
+    this.as.post('batches', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -52,7 +48,7 @@ export class ChannelComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.channels = res.data;
+      this.batches = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -61,26 +57,12 @@ export class ChannelComponent implements OnInit {
     });
   }
 
-  loadFilters(): void {
-    // this.as.get('distinct/copy/host').subscribe(res => {
-    //   console.log('res', res);
-    //   this.hosts = res.data.map(h => {
-    //     return {
-    //       text: h.host,
-    //       value: h.host
-    //     };
-    //   });
-    // }, error => {
-    //   console.log('error', error);
-    // });
-  }
-
   create(): void {
-    this.router.navigate(['/admin/channel-create']);
+    this.router.navigate(['/admin/batch-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/channel-edit/' + c.id]);
+    this.router.navigate(['/admin/batch-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

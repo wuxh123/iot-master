@@ -1,21 +1,21 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ApiService} from '../../api.service';
+import {Component, OnInit} from '@angular/core';
+import {ApiService} from '../../../api.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from "../tabs/tabs.component";
+import {TabRef} from "../../tabs/tabs.component";
 
 @Component({
-  selector: 'app-channel-edit',
-  templateUrl: './channel-edit.component.html',
-  styleUrls: ['./channel-edit.component.scss']
+  selector: 'app-model-job-edit',
+  templateUrl: './model-job-edit.component.html',
+  styleUrls: ['./model-job-edit.component.scss']
 })
-export class ChannelEditComponent implements OnInit {
-  target = 'channel';
+export class ModelJobEditComponent implements OnInit {
+  target = 'job';
   id = 0;
 
-  data: any = {is_server: true, type: 'tcp', addr: ':1843'};
+  data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '批量采集创建';
+    tab.name = '任务创建';
   }
 
   ngOnInit(): void {

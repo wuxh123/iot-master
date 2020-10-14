@@ -26,6 +26,16 @@ export class MainComponent implements OnInit {
       ]
     },
     {
+      title: '设备管理',
+      icon: 'api',
+      children: [
+        {
+          title: '通道管理',
+          router: 'device'
+        },
+      ]
+    },
+    {
       title: '数据通道',
       icon: 'api',
       children: [
@@ -48,26 +58,6 @@ export class MainComponent implements OnInit {
           title: '模型管理',
           router: 'model'
         },
-        {
-          title: '协议适配',
-          router: 'tunnel'
-        },
-        {
-          title: '变量管理',
-          router: 'variable'
-        },
-        {
-          title: '批量采集',
-          router: 'batch'
-        },
-        {
-          title: '定时任务',
-          router: 'job'
-        },
-        {
-          title: '自动策略',
-          router: 'strategy'
-        }
       ]
     },
     {

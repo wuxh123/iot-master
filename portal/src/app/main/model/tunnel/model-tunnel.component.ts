@@ -1,18 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../../api.service';
-import {BatchEditComponent} from '../batch-edit/batch-edit.component';
+import {ApiService} from '../../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from "@angular/router";
-import {TabRef} from "../tabs/tabs.component";
+import {Router} from '@angular/router';
+import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
-  selector: 'app-batch',
-  templateUrl: './batch.component.html',
-  styleUrls: ['./batch.component.scss']
+  selector: 'app-model-tunnel',
+  templateUrl: './model-tunnel.component.html',
+  styleUrls: ['./model-tunnel.component.scss']
 })
-export class BatchComponent implements OnInit {
+export class ModelTunnelComponent implements OnInit {
 
-  batches: [];
+  tunnels: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -26,7 +25,7 @@ export class BatchComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '批量采集';
+    tab.name = '协议适配';
   }
 
   ngOnInit(): void {
@@ -40,7 +39,7 @@ export class BatchComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('batches', {
+    this.as.post('tunnels', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -49,7 +48,7 @@ export class BatchComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.batches = res.data;
+      this.tunnels = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -59,11 +58,11 @@ export class BatchComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/batch-create']);
+    this.router.navigate(['/admin/tunnel-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/batch-edit/' + c.id]);
+    this.router.navigate(['/admin/tunnel-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

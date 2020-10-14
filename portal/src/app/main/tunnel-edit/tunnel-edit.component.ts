@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from "../tabs/tabs.component";
+import {ActivatedRoute} from '@angular/router';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
   selector: 'app-tunnel-edit',
@@ -12,10 +12,10 @@ export class TunnelEditComponent implements OnInit {
   target = 'tunnel';
   id = 0;
 
-  data: any = {};
+  data: any = {is_server: true, type: 'tcp', addr: ':1843'};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '链路创建';
+    tab.name = '批量采集创建';
   }
 
   ngOnInit(): void {

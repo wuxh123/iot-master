@@ -22,40 +22,40 @@ import {
 import {DashComponent} from './dash/dash.component';
 import {MomentModule} from 'ngx-moment';
 import {UiModule} from '../ui/ui.module';
-import {ChannelComponent} from './channel/channel.component';
+import {TunnelComponent} from './tunnel/tunnel.component';
 import {LinkComponent} from './link/link.component';
-import {ChannelEditComponent} from './channel-edit/channel-edit.component';
+import {TunnelEditComponent} from './tunnel-edit/tunnel-edit.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {NzSpaceModule} from 'ng-zorro-antd/space';
 import {LinkEditComponent} from './link-edit/link-edit.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 import {TabsComponent} from './tabs/tabs.component';
-import {ModelComponent} from './model/model.component';
-import {ModelEditComponent} from './model-edit/model-edit.component';
-import {VariableComponent} from './variable/variable.component';
-import {VariableEditComponent} from './variable-edit/variable-edit.component';
-import {BatchComponent} from './batch/batch.component';
-import {BatchEditComponent} from './batch-edit/batch-edit.component';
-import {JobComponent} from './job/job.component';
-import {JobEditComponent} from './job-edit/job-edit.component';
-import {StrategyComponent} from './strategy/strategy.component';
-import {StrategyEditComponent} from './strategy-edit/strategy-edit.component';
-import {TunnelComponent} from './tunnel/tunnel.component';
-import {TunnelEditComponent} from './tunnel-edit/tunnel-edit.component';
+import {ModelComponent} from './model/model/model.component';
+import {ModelEditComponent} from './model/model-edit/model-edit.component';
+import {ModelVariableComponent} from './model/variable/model-variable.component';
+import {ModelVariableEditComponent} from './model/variable-edit/model-variable-edit.component';
+import {ModelBatchComponent} from './model/batch/model-batch.component';
+import {ModelBatchEditComponent} from './model/batch-edit/model-batch-edit.component';
+import {ModelJobComponent} from './model/job/model-job.component';
+import {ModelJobEditComponent} from './model/job-edit/model-job-edit.component';
+import {ModelStrategyComponent} from './model/strategy/model-strategy.component';
+import {ModelStrategyEditComponent} from './model/strategy-edit/model-strategy-edit.component';
+import {ModelTunnelComponent} from './model/tunnel/model-tunnel.component';
+import {ModelTunnelEditComponent} from './model/tunnel-edit/model-tunnel-edit.component';
 
 
 @NgModule({
   declarations: [MainComponent, TabsComponent, DashComponent,
-    ChannelComponent, ChannelEditComponent,
+    TunnelComponent, TunnelEditComponent,
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ModelComponent, ModelEditComponent,
-    TunnelComponent, TunnelEditComponent,
-    VariableComponent, VariableEditComponent,
-    BatchComponent, BatchEditComponent,
-    JobComponent, JobEditComponent,
-    StrategyComponent, StrategyEditComponent,
+    ModelTunnelComponent, ModelTunnelEditComponent,
+    ModelVariableComponent, ModelVariableEditComponent,
+    ModelBatchComponent, ModelBatchEditComponent,
+    ModelJobComponent, ModelJobEditComponent,
+    ModelStrategyComponent, ModelStrategyEditComponent,
   ],
   imports: [
     CommonModule,

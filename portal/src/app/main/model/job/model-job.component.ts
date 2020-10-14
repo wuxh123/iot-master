@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../../api.service';
-import {JobEditComponent} from '../job-edit/job-edit.component';
+import {ApiService} from '../../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
-import {TabRef} from "../tabs/tabs.component";
+import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
-  selector: 'app-job',
-  templateUrl: './job.component.html',
-  styleUrls: ['./job.component.scss']
+  selector: 'app-model-job',
+  templateUrl: './model-job.component.html',
+  styleUrls: ['./model-job.component.scss']
 })
-export class JobComponent implements OnInit {
+export class ModelJobComponent implements OnInit {
 
   jobs: [];
   total = 0;

@@ -1,21 +1,21 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../api.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from "../tabs/tabs.component";
+import {ApiService} from '../../../api.service';
+import {ActivatedRoute} from '@angular/router';
+import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-edit',
-  templateUrl: './model-edit.component.html',
-  styleUrls: ['./model-edit.component.scss']
+  selector: 'app-model-tunnel-edit',
+  templateUrl: './model-tunnel-edit.component.html',
+  styleUrls: ['./model-tunnel-edit.component.scss']
 })
-export class ModelEditComponent implements OnInit {
-  target = 'model';
+export class ModelTunnelEditComponent implements OnInit {
+  target = 'tunnel';
   id = 0;
 
   data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '模型创建';
+    tab.name = '链路创建';
   }
 
   ngOnInit(): void {

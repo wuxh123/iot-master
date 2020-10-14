@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {TunnelEditComponent} from '../tunnel-edit/tunnel-edit.component';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from "@angular/router";
-import {TabRef} from "../tabs/tabs.component";
+import {Router} from '@angular/router';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
   selector: 'app-tunnel',
@@ -12,7 +11,7 @@ import {TabRef} from "../tabs/tabs.component";
 })
 export class TunnelComponent implements OnInit {
 
-  tunnels: [];
+  channels: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -22,14 +21,17 @@ export class TunnelComponent implements OnInit {
   keyword = '';
   loading = false;
 
+  roleFilters = [{text: '服务器', value: true}, {text: '客户端', value: false}];
+  netFilters = [{text: 'TCP', value: 'tcp'}, {text: 'UDP', value: 'udp'}];
   statusFilters = [{text: '启动', value: 1}];
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '协议适配';
+    tab.name = '通道管理';
   }
 
   ngOnInit(): void {
+    this.loadFilters();
   }
 
   reload(): void {
@@ -40,7 +42,7 @@ export class TunnelComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('tunnels', {
+    this.as.post('channels', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -49,13 +51,27 @@ export class TunnelComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.tunnels = res.data;
+      this.channels = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
     }, () => {
       this.loading = false;
     });
+  }
+
+  loadFilters(): void {
+    // this.as.get('distinct/copy/host').subscribe(res => {
+    //   console.log('res', res);
+    //   this.hosts = res.data.map(h => {
+    //     return {
+    //       text: h.host,
+    //       value: h.host
+    //     };
+    //   });
+    // }, error => {
+    //   console.log('error', error);
+    // });
   }
 
   create(): void {

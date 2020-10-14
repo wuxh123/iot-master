@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../api.service';
+import {ApiService} from '../../../api.service';
 import {ModelEditComponent} from '../model-edit/model-edit.component';
 import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from "@angular/router";
-import {TabRef} from "../tabs/tabs.component";
+import {TabRef} from "../../tabs/tabs.component";
 
 @Component({
   selector: 'app-model',
