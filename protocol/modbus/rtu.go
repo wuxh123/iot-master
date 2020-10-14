@@ -45,6 +45,7 @@ func (m *RTU) Read(addr *models.Address, size int) (err error) {
 }
 
 func (m *RTU) Write(addr *models.Address, buf []byte) (err error) {
+	//TODO 如果是线圈，需要Shrink
 	l := 6 + len(buf)
 	b := make([]byte, l)
 	b[0] = uint8(addr.Slave)
@@ -67,6 +68,7 @@ func (m *RTU) OnLinkerData(buf []byte) {
 		return
 	}
 
+	offset := helper.ParseUint16(buf[2:])
 	length := 4
 	switch buf[1] {
 	case FuncCodeReadDiscreteInputs,
@@ -76,18 +78,43 @@ func (m *RTU) OnLinkerData(buf []byte) {
 		if count%8 != 0 {
 			length++
 		}
-		//TODO 解析开关
+
+		if l < length {
+			//长度不够
+			return
+		}
+		b := buf[6 : l-2]
+
+		//解析开关
+		bb := helper.ExpandBool(b, count)
+		m.listener.OnAdapterRead(&models.Address{
+			Slave:     buf[0],
+			Offset:    offset,
+			ReadCode:  buf[1],
+		}, bb)
+
 	case FuncCodeReadInputRegisters,
 		FuncCodeReadHoldingRegisters,
 		FuncCodeReadWriteMultipleRegisters:
 		count := int(helper.ParseUint16(buf[4:]))
 		length += 1 + count*2
-		//TODO 解析word
+		if l < length {
+			//长度不够
+			return
+		}
+		b := buf[6 : l-2]
+		//解析word
+		m.listener.OnAdapterRead(&models.Address{
+			Slave:     buf[0],
+			Offset:    offset,
+			ReadCode:  buf[1],
+		}, b)
 	case FuncCodeWriteSingleCoil,
 		FuncCodeWriteMultipleCoils,
 		FuncCodeWriteSingleRegister,
 		FuncCodeWriteMultipleRegisters:
 		length += 4
+		//TODO 处理写入成功
 	case FuncCodeMaskWriteRegister:
 		length += 6
 	case FuncCodeReadFIFOQueue:
@@ -99,7 +126,6 @@ func (m *RTU) OnLinkerData(buf []byte) {
 		//长度不够
 		return
 	}
-	b := buf[2 : l-2]
 
 	//m.listener.OnAdapterRead()
 	//m.listener.OnAdapterWrite()

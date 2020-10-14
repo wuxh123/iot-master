@@ -142,8 +142,7 @@ func ByteToBool(buf []byte) []bool  {
 	return r
 }
 
-//ShrinkBool
-func BooleansToBytes(buf []bool) []byte {
+func ShrinkBool(buf []byte) []byte {
 	length := len(buf)
 	//length = length % 8 == 0 ? length / 8 : length / 8 + 1;
 	ln := length >> 3    // length/8
@@ -154,7 +153,7 @@ func BooleansToBytes(buf []bool) []byte {
 	b := make([]byte, ln)
 
 	for i := 0; i < length; i++ {
-		if buf[i] {
+		if buf[i] > 0 {
 			//b[i/8] += 1 << (i % 8)
 			b[i>>3] += 1 << (i & 0x07)
 		}
@@ -163,16 +162,18 @@ func BooleansToBytes(buf []bool) []byte {
 	return b
 }
 
-//ExpandBool
-func BytesToBooleans(buf []byte) []bool {
+func ExpandBool(buf []byte, count int) []byte {
 	length := len(buf)
 	ln := length << 3 // length * 8
-	b := make([]bool, ln)
+	if count > ln {
+		count = ln
+	}
+	b := make([]byte, count)
 
 	for i := 0; i < length; i++ {
 		//b[i] = buf[i/8] & (1 << (i % 8))
 		if buf[i>>3] & (1 << (i & 0x07)) > 0 {
-			b[i] = true
+			b[i] = 1
 		}
 	}
 
