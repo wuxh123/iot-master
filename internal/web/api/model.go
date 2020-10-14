@@ -4,10 +4,6 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/internal/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
-	"net/http"
-	"time"
 )
 
 type ModelBase struct {
@@ -94,23 +90,21 @@ func modelImport(ctx *gin.Context) {
 		Version:     model.Version,
 	}
 
-	modelDB := db.DB("model")
-	err = modelDB.Save(&m)
+	//TODO 根据origin查重
+	_, err = db.Engine.Insert(&m)
 	if err != nil {
 		replyError(ctx, err)
 		return
 	}
 
 	//创建通道
-	tunnelIds := make(map[string]int)
-	tunnelDB := modelDB.From("core")
+	tunnelIds := make(map[string]int64)
 	for _, t := range model.Tunnels {
 		tunnel := models.ModelTunnel{
 			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        t.Name,
 				Description: t.Description,
-				CreatedAt:   time.Now(),
 			},
 			Protocol:        t.Protocol,
 			ProtocolOpts:    t.ProtocolOpts,
@@ -118,7 +112,7 @@ func modelImport(ctx *gin.Context) {
 			PollingInterval: t.PollingInterval,
 			PollingCycle:    t.PollingCycle,
 		}
-		err = tunnelDB.Save(&tunnel)
+		_, err = db.Engine.Insert(&tunnel)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -127,14 +121,12 @@ func modelImport(ctx *gin.Context) {
 	}
 
 	//创建变量
-	variableDB := modelDB.From("variable")
 	for _, v := range model.Variables {
 		variable := models.ModelVariable{
 			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
-				CreatedAt:   time.Now(),
 			},
 			TunnelId:      tunnelIds[v.Tunnel],
 			Type:          v.Type,
@@ -145,7 +137,7 @@ func modelImport(ctx *gin.Context) {
 			PollingEnable: v.PollingEnable,
 			PollingTimes:  v.PollingTimes,
 		}
-		err = variableDB.Save(&variable)
+		_, err = db.Engine.Insert(&variable)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -153,14 +145,12 @@ func modelImport(ctx *gin.Context) {
 	}
 
 	//创建批量
-	batchDB := modelDB.From("batch")
 	for _, v := range model.Batches {
 		batch := models.ModelBatch{
 			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
-				CreatedAt:   time.Now(),
 			},
 			TunnelId:      tunnelIds[v.Tunnel],
 			Type:          v.Type,
@@ -169,9 +159,8 @@ func modelImport(ctx *gin.Context) {
 			Cron:          v.Cron,
 			PollingEnable: v.PollingEnable,
 			PollingTimes:  v.PollingTimes,
-			Results:       nil,
 		}
-		err = batchDB.Save(&batch)
+		_, err = db.Engine.Insert(&batch)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -179,19 +168,17 @@ func modelImport(ctx *gin.Context) {
 	}
 
 	//创建任务
-	jobDB := modelDB.From("job")
 	for _, v := range model.Jobs {
 		job := models.ModelJob{
 			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
-				CreatedAt:   time.Now(),
 			},
 			Cron:   v.Cron,
 			Script: v.Script,
 		}
-		err = jobDB.Save(&job)
+		_, err = db.Engine.Insert(&job)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -199,18 +186,16 @@ func modelImport(ctx *gin.Context) {
 	}
 
 	//创建策略
-	strategyDB := modelDB.From("strategy")
 	for _, v := range model.Strategies {
-		job := models.ModelStrategy{
+		strategy := models.ModelStrategy{
 			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        v.Name,
 				Description: v.Description,
-				CreatedAt:   time.Now(),
 			},
 			Script: v.Script,
 		}
-		err = strategyDB.Save(&job)
+		_, err = db.Engine.Insert(&strategy)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -228,8 +213,11 @@ func modelExport(ctx *gin.Context) {
 	}
 
 	var model models.Model
-	modelDB := db.DB("model")
-	err := modelDB.One("Id", pid.Id, &model)
+	has, err := db.Engine.ID(pid.Id).Get(&model)
+	if !has {
+		replyFail(ctx, "记录不存在")
+		return
+	}
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -247,10 +235,9 @@ func modelExport(ctx *gin.Context) {
 	}
 
 	//读取通道
-	tunnelIds := make(map[int]string)
-	tunnelDB := modelDB.From("core")
+	tunnelIds := make(map[int64]string)
 	var tunnels []models.ModelTunnel
-	err = tunnelDB.Find("ModelId", model.Id, &tunnels)
+	err = db.Engine.Where("model_id=?", model.Id).Find(&tunnels)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -272,9 +259,8 @@ func modelExport(ctx *gin.Context) {
 	}
 
 	//读取变量
-	variableDB := modelDB.From("variable")
 	var variables []models.ModelVariable
-	err = variableDB.Find("ModelId", model.Id, &variables)
+	err = db.Engine.Where("model_id=?", model.Id).Find(&variables)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -298,9 +284,8 @@ func modelExport(ctx *gin.Context) {
 	}
 
 	//读取批量
-	batchDB := modelDB.From("batch")
 	var batches []models.ModelBatch
-	err = batchDB.Find("ModelId", model.Id, &batches)
+	err = db.Engine.Where("model_id=?", model.Id).Find(&batches)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -318,15 +303,14 @@ func modelExport(ctx *gin.Context) {
 			Cron:          v.Cron,
 			PollingEnable: v.PollingEnable,
 			PollingTimes:  v.PollingTimes,
-			Results:       v.Results,
+			//Results:       v.Results, //TODO results
 		}
 		m.Batches = append(m.Batches, batch)
 	}
 
 	//读取任务
-	jobDB := modelDB.From("job")
 	var jobs []models.ModelJob
-	err = jobDB.Find("ModelId", model.Id, &jobs)
+	err = db.Engine.Where("model_id=?", model.Id).Find(&jobs)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -344,9 +328,8 @@ func modelExport(ctx *gin.Context) {
 	}
 
 	//读取策略
-	strategyDB := modelDB.From("strategy")
 	var strategies []models.ModelStrategy
-	err = strategyDB.Find("ModelId", model.Id, &strategies)
+	err = db.Engine.Where("model_id=?", model.Id).Find(&strategies)
 	if err != nil {
 		replyError(ctx, err)
 		return

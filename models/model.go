@@ -52,7 +52,7 @@ type ModelTunnel struct {
 type ModelVariable struct {
 	ModelBase `xorm:"extends"`
 
-	TunnelId int `json:"tunnel_id"`
+	TunnelId int64 `json:"tunnel_id"`
 
 	Type  string `json:"type"`
 	Addr  string `json:"addr"`
@@ -81,7 +81,7 @@ type ModelBatchResult struct {
 type ModelBatch struct {
 	ModelBase `xorm:"extends"`
 
-	TunnelId int `json:"tunnel_id"`
+	TunnelId int64 `json:"tunnel_id"`
 
 	Type string `json:"type"`
 	Addr string `json:"addr"`
