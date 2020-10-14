@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-type hook func(ctx *gin.Context) error
+type hook func(value interface{}) error
 
 func curdApiList(typ reflect.Type) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -74,6 +74,15 @@ func curdApiCreate(typ reflect.Type, after hook) gin.HandlerFunc {
 			replyError(ctx, err)
 			return
 		}
+
+		if after != nil {
+			err = after(batch)
+			if err != nil {
+				replyError(ctx, err)
+				return
+			}
+		}
+
 		replyOk(ctx, batch)
 	}
 }
@@ -92,12 +101,18 @@ func curdApiModify(typ reflect.Type, updateFields []string, after hook) gin.Hand
 			return
 		}
 
-		//log.Println("update", batch)
-		//TODO 补充列
 		_, err := db.Engine.ID(pid.Id).Cols(updateFields...).Update(batch)
 		if err != nil {
 			replyError(ctx, err)
 			return
+		}
+
+		if after != nil {
+			err = after(batch)
+			if err != nil {
+				replyError(ctx, err)
+				return
+			}
 		}
 
 		replyOk(ctx, batch)
@@ -118,6 +133,15 @@ func curdApiDelete(typ reflect.Type, after hook) gin.HandlerFunc {
 			replyError(ctx, err)
 			return
 		}
+
+		if after != nil {
+			err = after(batch)
+			if err != nil {
+				replyError(ctx, err)
+				return
+			}
+		}
+
 		replyOk(ctx, nil)
 	}
 }

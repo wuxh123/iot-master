@@ -7,9 +7,11 @@ type Model struct {
 	Name        string    `json:"name"`
 	Disabled    bool      `json:"disabled"`
 	Description string    `json:"description"`
+	Origin      string    `json:"origin"` //模板ID
 	Version     string    `json:"version"`
 	Created     time.Time `json:"created" xorm:"created"`
 	Updated     time.Time `json:"updated" xorm:"updated"`
+	Deployed    time.Time `json:"deployed"` //如果 deployed < updated，说明有更新，提示重新部署
 }
 
 type ModelBase struct {
@@ -49,13 +51,13 @@ type ModelTunnel struct {
 
 type ModelVariable struct {
 	ModelBase `xorm:"extends"`
-	
-	TunnelId  int    `json:"tunnel_id"`
 
-	Type      string `json:"type"`
-	Addr      string `json:"addr"`
-	Alias     string `json:"alias"` //别名，用于编程
-	Unit      string `json:"unit"`  //单位
+	TunnelId int `json:"tunnel_id"`
+
+	Type  string `json:"type"`
+	Addr  string `json:"addr"`
+	Alias string `json:"alias"` //别名，用于编程
+	Unit  string `json:"unit"`  //单位
 	//应该不缩放，保留原始值？？？？
 	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
 	Default  string  `json:"default"`
@@ -68,22 +70,22 @@ type ModelVariable struct {
 }
 
 type ModelBatchResult struct {
-	Id       int64  `json:"id"`
-	BatchId  int64  `json:"batch_id"`
-	Offset   int    `json:"offset"`
-	Variable string `json:"variable"` //ModelVariable path
-	Created     time.Time `json:"created" xorm:"created"`
-	Updated     time.Time `json:"updated" xorm:"updated"`
+	Id       int64     `json:"id"`
+	BatchId  int64     `json:"batch_id"`
+	Offset   int       `json:"offset"`
+	Variable string    `json:"variable"` //ModelVariable path
+	Created  time.Time `json:"created" xorm:"created"`
+	Updated  time.Time `json:"updated" xorm:"updated"`
 }
 
 type ModelBatch struct {
 	ModelBase `xorm:"extends"`
 
-	TunnelId  int    `json:"tunnel_id"`
+	TunnelId int `json:"tunnel_id"`
 
-	Type      string `json:"type"`
-	Addr      string `json:"addr"`
-	Size      int    `json:"size"`
+	Type string `json:"type"`
+	Addr string `json:"addr"`
+	Size int    `json:"size"`
 
 	//采样：无、定时、轮询
 	Cron          string `json:"cron"`
