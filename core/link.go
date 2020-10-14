@@ -26,8 +26,13 @@ type Link struct {
 	cache [][]byte
 
 	peer base.Link
+	listener base.LinkListener
 
 	lastTime time.Time
+}
+
+func (l *Link) Listen(listener base.LinkListener){
+	l.listener = listener
 }
 
 func (l *Link) onData(buf []byte) {
@@ -60,6 +65,10 @@ func (l *Link) onData(buf []byte) {
 	if l.peer != nil {
 		_ = l.peer.Write(buf)
 		return
+	}
+
+	if l.listener != nil {
+		l.listener.OnLinkData(buf)
 	}
 
 	//发送至MQTT
