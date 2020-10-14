@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/internal/db"
+	"git.zgwit.com/zgwit/iot-admin/db"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
@@ -9,10 +9,10 @@ import (
 
 type hook func(value interface{}) error
 
-func curdApiList(typ reflect.Type) gin.HandlerFunc {
+func curdApiList(mod reflect.Type) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		cs := reflect.MakeSlice(typ, 0, 0)
+		cs := reflect.MakeSlice(mod, 0, 0)
 
 		var body paramSearch
 		err := ctx.ShouldBind(&body)
@@ -61,9 +61,9 @@ func curdApiList(typ reflect.Type) gin.HandlerFunc {
 	}
 }
 
-func curdApiCreate(typ reflect.Type, after hook) gin.HandlerFunc {
+func curdApiCreate(mod reflect.Type, after hook) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		batch := reflect.New(typ).Interface()
+		batch := reflect.New(mod).Interface()
 		if err := ctx.ShouldBindJSON(&batch); err != nil {
 			replyError(ctx, err)
 			return
@@ -87,7 +87,7 @@ func curdApiCreate(typ reflect.Type, after hook) gin.HandlerFunc {
 	}
 }
 
-func curdApiModify(typ reflect.Type, updateFields []string, after hook) gin.HandlerFunc {
+func curdApiModify(mod reflect.Type, updateFields []string, after hook) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var pid paramId
 		if err := ctx.BindUri(&pid); err != nil {
@@ -95,7 +95,7 @@ func curdApiModify(typ reflect.Type, updateFields []string, after hook) gin.Hand
 			return
 		}
 
-		batch := reflect.New(typ).Interface()
+		batch := reflect.New(mod).Interface()
 		if err := ctx.ShouldBindJSON(&batch); err != nil {
 			replyError(ctx, err)
 			return
@@ -119,7 +119,7 @@ func curdApiModify(typ reflect.Type, updateFields []string, after hook) gin.Hand
 	}
 }
 
-func curdApiDelete(typ reflect.Type, after hook) gin.HandlerFunc {
+func curdApiDelete(mod reflect.Type, after hook) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var pid paramId
 		if err := ctx.BindUri(&pid); err != nil {
@@ -127,7 +127,7 @@ func curdApiDelete(typ reflect.Type, after hook) gin.HandlerFunc {
 			return
 		}
 
-		batch := reflect.New(typ).Interface()
+		batch := reflect.New(mod).Interface()
 		_, err := db.Engine.ID(pid.Id).Delete(batch)
 		if err != nil {
 			replyError(ctx, err)
@@ -146,14 +146,14 @@ func curdApiDelete(typ reflect.Type, after hook) gin.HandlerFunc {
 	}
 }
 
-func curdApiGet(typ reflect.Type) gin.HandlerFunc {
+func curdApiGet(mod reflect.Type) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var pid paramId
 		if err := ctx.BindUri(&pid); err != nil {
 			replyError(ctx, err)
 			return
 		}
-		batch := reflect.New(typ).Interface()
+		batch := reflect.New(mod).Interface()
 		has, err := db.Engine.ID(pid.Id).Get(&batch)
 		if !has {
 			replyFail(ctx, "记录不存在")

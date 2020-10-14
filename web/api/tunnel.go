@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/internal/core"
+	"git.zgwit.com/zgwit/iot-admin/core"
 	"github.com/gin-gonic/gin"
 )
 

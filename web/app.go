@@ -1,10 +1,10 @@
 package web
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/internal/conf"
-	"git.zgwit.com/zgwit/iot-admin/internal/web/api"
-	"git.zgwit.com/zgwit/iot-admin/internal/web/open"
-	wwwFiles "git.zgwit.com/zgwit/iot-admin/internal/web/www"
+	"git.zgwit.com/zgwit/iot-admin/conf"
+	"git.zgwit.com/zgwit/iot-admin/web/api"
+	"git.zgwit.com/zgwit/iot-admin/web/open"
+	wwwFiles "git.zgwit.com/zgwit/iot-admin/web/www"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"

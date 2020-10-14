@@ -2,7 +2,7 @@ package core
 
 import (
 	"errors"
-	"git.zgwit.com/zgwit/iot-admin/internal/db"
+	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"log"
 	"sync"

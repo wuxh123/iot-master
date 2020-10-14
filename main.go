@@ -1,9 +1,10 @@
 package main
 
 import (
+	"git.zgwit.com/zgwit/iot-admin/conf"
+	"git.zgwit.com/zgwit/iot-admin/core"
 	"git.zgwit.com/zgwit/iot-admin/flag"
-	"git.zgwit.com/zgwit/iot-admin/internal"
-	"git.zgwit.com/zgwit/iot-admin/internal/web"
+	"git.zgwit.com/zgwit/iot-admin/web"
 	"github.com/denisbrodbeck/machineid"
 	"log"
 )
@@ -35,10 +36,24 @@ func main() {
 	}
 	log.Println("Machine-Id:", id)
 
-	//启动总线
-	err = internal.Start()
+	//加载配置
+	err = conf.Load()
 	if err != nil {
-		log.Println("启动失败：", err)
+		log.Println(err)
+		return
+	}
+
+	//启动总线
+	err = core.StartDBus(conf.Config.DBus.Addr)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	//恢复之前的链接
+	err = core.Recovery()
+	if err != nil {
+		log.Println(err)
 		return
 	}
 
