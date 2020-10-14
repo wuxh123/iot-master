@@ -54,11 +54,11 @@ type ModelVariable struct {
 
 	TunnelId int64 `json:"tunnel_id"`
 
-	Type  string `json:"type"`
-	Addr  string `json:"addr"`
-	Alias string `json:"alias"` //别名，用于编程
-	Unit  string `json:"unit"`  //单位
+	Address `xorm:"extends"`
+
+	Unit string `json:"unit"` //单位
 	//应该不缩放，保留原始值？？？？
+
 	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
 	Default  string  `json:"default"`
 	Writable bool    `json:"writable"` //可写，用于输出（如开关）
@@ -69,31 +69,19 @@ type ModelVariable struct {
 	PollingTimes  int    `json:"polling_times"`
 }
 
-type ModelBatchResult struct {
-	Id       int64     `json:"id"`
-	BatchId  int64     `json:"batch_id"`
-	Offset   int       `json:"offset"`
-	Variable string    `json:"variable"` //ModelVariable path
-	Created  time.Time `json:"created" xorm:"created"`
-	Updated  time.Time `json:"updated" xorm:"updated"`
-}
-
 type ModelBatch struct {
 	ModelBase `xorm:"extends"`
 
 	TunnelId int64 `json:"tunnel_id"`
 
-	Type string `json:"type"`
-	Addr string `json:"addr"`
-	Size int    `json:"size"`
+	Address `xorm:"extends"`
+
+	Size int `json:"size"`
 
 	//采样：无、定时、轮询
 	Cron          string `json:"cron"`
 	PollingEnable bool   `json:"polling_enable"` //轮询
 	PollingTimes  int    `json:"polling_times"`
-
-	//结果解析 拆入子表
-	//Results []ModelBatchResult `json:"results" xorm:"json"`
 }
 
 type ModelJob struct {

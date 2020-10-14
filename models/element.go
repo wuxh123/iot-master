@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+type Address struct {
+	Type   string `json:"type"`
+	Area   string `json:"area"`  //区域 类似 S I O Q WR ……
+	Slave  int    `json:"slave"` //从站号 modbus
+	Offset int    `json:"offset"`
+}
+
 type Element struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
@@ -21,12 +28,15 @@ type ElementVariable struct {
 	Created     time.Time `json:"created" xorm:"created"`
 	Updated     time.Time `json:"updated" xorm:"updated"`
 
-	Type  string `json:"type"`
-	Addr  string `json:"addr"`
 	Alias string `json:"alias"` //别名，用于编程
-	Unit  string `json:"unit"`  //单位
-	//应该不缩放，保留原始值？？？？
-	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
-	Default  string  `json:"default"`
-	Writable bool    `json:"writable"` //可写，用于输出（如开关）
+
+	Address `xorm:"extends"` //地址
+
+	Unit string `json:"unit"` //单位
+
+	Scale   float32 `json:"scale"`   //倍率，比如一般是 整数÷10，得到
+	Correct float32 `json:"correct"` //校准
+
+	Default  string `json:"default"`
+	Writable bool   `json:"writable"` //可写，用于输出（如开关）
 }

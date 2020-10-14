@@ -13,7 +13,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
-	github.com/zgwit/storm/v3 v3.2.4
 	go.etcd.io/bbolt v1.3.5 // indirect
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/sys v0.0.0-20200908134130-d2e65c121b96 // indirect
