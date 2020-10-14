@@ -1,12 +1,13 @@
 package protocol
 
 import (
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"sync"
 )
 
 type AdapterListener interface {
-	OnAdapterRead(addr string, buf []byte)
-	OnAdapterWrite(addr string, size int)
+	OnAdapterRead(addr *models.Address, buf []byte)
+	OnAdapterWrite(addr *models.Address, size int)
 	OnAdapterError(err error)
 }
 
@@ -16,15 +17,15 @@ type Adapter interface {
 	Name() string
 	Version() string
 
-	Read(addr string, size int) error
-	Write(addr string, buf []byte) error
+	Read(addr *models.Address, size int) error
+	Write(addr *models.Address, buf []byte) error
 }
 
-//TODO 改为普通map
+//可以改为普通map
 var adapters sync.Map
 
-func Adapters() sync.Map {
-	return adapters
+func Adapters() {
+	//return adapters
 }
 
 //TODO 添加参数

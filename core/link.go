@@ -13,15 +13,6 @@ import (
 	"time"
 )
 
-//连接
-type ILink interface {
-	Write(buf []byte) error
-	Close() error
-
-	Attach(link ILink) error
-	Detach() error
-}
-
 type Link struct {
 	models.Link
 
@@ -34,7 +25,7 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	peer ILink
+	peer base.Link
 
 	lastTime time.Time
 }
@@ -133,15 +124,17 @@ func (l *Link) Close() error {
 	return err
 }
 
-func (l *Link) Attach(link ILink) error {
-	//TODO check peer
+func (l *Link) Attach(link base.Link) error {
+	//check peer
 	l.peer = link
 	return nil
 }
 func (l *Link) Detach() error {
-	//TODO check peer
-	_ = l.peer.Detach()
-	l.peer = nil
+	//check peer
+	if l.peer != nil {
+		_ = l.peer.Detach()
+		l.peer = nil
+	}
 	return nil
 }
 
