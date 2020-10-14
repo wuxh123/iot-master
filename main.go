@@ -3,6 +3,7 @@ package main
 import (
 	"git.zgwit.com/zgwit/iot-admin/conf"
 	"git.zgwit.com/zgwit/iot-admin/core"
+	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/flag"
 	"git.zgwit.com/zgwit/iot-admin/web"
 	"github.com/denisbrodbeck/machineid"
@@ -34,12 +35,26 @@ func main() {
 		log.Println("获取ID错误：", err)
 		return
 	}
-	log.Println("Machine-Id:", id)
+	log.Println("机器码：", id)
 
 	//加载配置
 	err = conf.Load()
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	//打印用户名密码，方便用户登录
+	if !conf.Config.SysAdmin.Enable {
+		for k, v := range conf.Config.BaseAuth.Users {
+			log.Println("用户名：", k, "，密码：", v)
+		}
+		log.Println("系统使用HTTP简单认证，有泄露密码的风险，请采用安全的SysAdmin方式！！！")
+	}
+
+	err = db.Open()
+	if err != nil {
+		log.Println("数据库错误：", err)
 		return
 	}
 

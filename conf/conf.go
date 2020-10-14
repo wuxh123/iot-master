@@ -87,6 +87,11 @@ func Load() error {
 
 	// 如果没有文件，则使用默认信息创建
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
+
+		//生成管理员账号 和 随机密码
+		password := base.RandomString(6)
+		Config.BaseAuth.Users["admin"] = password
+
 		return Save()
 	} else {
 		y, err := os.Open(filename)
@@ -95,11 +100,6 @@ func Load() error {
 			return err
 		}
 		defer y.Close()
-
-		//生成管理员账号 和 随机密码
-		password := base.RandomString(6)
-		log.Println("username:admin, password:", password)
-		Config.BaseAuth.Users["admin"] = password
 
 		d := yaml.NewDecoder(y)
 		return d.Decode(&Config)
