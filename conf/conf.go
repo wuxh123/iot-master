@@ -89,7 +89,7 @@ func Load() error {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 
 		//生成管理员账号 和 随机密码
-		password := base.RandomString(6)
+		password := base.RandomNumber(6)
 		Config.BaseAuth.Users["admin"] = password
 
 		return Save()

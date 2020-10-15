@@ -16,3 +16,12 @@ func RandomString(size int) string {
 	}
 	return s.String()
 }
+
+func RandomNumber(size int) string {
+	rand.Seed(time.Now().UnixNano()) // 产生随机种子
+	var s bytes.Buffer
+	for i := 0; i < size; i ++ {
+		s.WriteByte('0' + uint8(rand.Intn(10)))
+	}
+	return s.String()
+}
