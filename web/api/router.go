@@ -103,12 +103,12 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	app.GET("/model/:id/refresh", modelRefresh)
 
-	mod = reflect.TypeOf(models.ModelTunnel{})
-	app.POST("/model-tunnels", curdApiList(mod))
-	app.POST("/model-tunnel", curdApiCreate(mod, nil))
-	app.DELETE("/model-tunnel/:id", curdApiDelete(mod, nil))
-	app.PUT("/model-tunnel/:id", curdApiModify(mod, []string{}, nil))
-	app.GET("/model-tunnel/:id", curdApiGet(mod))
+	mod = reflect.TypeOf(models.ModelAdapter{})
+	app.POST("/model-adapters", curdApiList(mod))
+	app.POST("/model-adapter", curdApiCreate(mod, nil))
+	app.DELETE("/model-adapter/:id", curdApiDelete(mod, nil))
+	app.PUT("/model-adapter/:id", curdApiModify(mod, []string{}, nil))
+	app.GET("/model-adapter/:id", curdApiGet(mod))
 
 	mod = reflect.TypeOf(models.ModelVariable{})
 	app.POST("/model-variables", curdApiList(mod))

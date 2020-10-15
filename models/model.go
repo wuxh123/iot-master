@@ -23,25 +23,10 @@ type ModelBase struct {
 	Updated     time.Time `json:"updated" xorm:"updated"`
 }
 
-type ModelTunnel struct {
+type ModelAdapter struct {
 	ModelBase `xorm:"extends"`
 
-	Role    string `json:"role"`
-	Net     string `json:"net"`
-	Addr    string `json:"addr"`
-	Timeout int    `json:"timeout"`
-
-	RegisterEnable bool   `json:"register_enable"`
-	RegisterRegex  string `json:"register_regex"`
-	RegisterMin    int    `json:"register_min"`
-	RegisterMax    int    `json:"register_max"`
-
-	HeartBeatEnable   bool   `json:"heart_beat_enable"`
-	HeartBeatInterval int    `json:"heart_beat_interval"`
-	HeartBeatContent  string `json:"heart_beat_content"`
-	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
-
-	Protocol     string `json:"protocol"`
+	ProtocolName string `json:"protocol_name"`
 	ProtocolOpts string `json:"protocol_opts"`
 
 	PollingEnable   bool `json:"polling_enable"`   //轮询
@@ -87,12 +72,12 @@ type ModelBatch struct {
 type ModelJob struct {
 	ModelBase `xorm:"extends"`
 
-	Cron      string `json:"cron"`
-	Script    string `json:"script"` //javascript
+	Cron   string `json:"cron"`
+	Script string `json:"script"` //javascript
 }
 
 type ModelStrategy struct {
 	ModelBase `xorm:"extends"`
-	
-	Script    string `json:"script"` //javascript
+
+	Script string `json:"script"` //javascript
 }

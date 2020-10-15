@@ -123,7 +123,7 @@ func modelImport(ctx *gin.Context) {
 	//创建通道
 	tunnelIds := make(map[string]int64)
 	for _, t := range model.Tunnels {
-		tunnel := models.ModelTunnel{
+		tunnel := models.ModelAdapter{
 			ModelBase: models.ModelBase{
 				ModelId:     m.Id,
 				Name:        t.Name,
@@ -258,7 +258,7 @@ func modelExport(ctx *gin.Context) {
 
 	//读取通道
 	tunnelIds := make(map[int64]string)
-	var tunnels []models.ModelTunnel
+	var tunnels []models.ModelAdapter
 	err = db.Engine.Where("model_id=?", model.Id).Find(&tunnels)
 	if err != nil {
 		replyError(ctx, err)

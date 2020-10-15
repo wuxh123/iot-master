@@ -10,17 +10,17 @@ import (
 type Tunnel interface {
 	Open() error
 	Close() error
-	GetTunnel() *models.ModelTunnel
+	GetTunnel() *models.Tunnel
 	GetLink(id int64) (*Link, error)
 }
 
 type baseTunnel struct {
 	models.Tunnel
-	models.ModelTunnel
+	//models.ModelAdapter
 }
 
-func (t *baseTunnel) GetTunnel() *models.ModelTunnel {
-	return &t.ModelTunnel
+func (t *baseTunnel) GetTunnel() *models.Tunnel {
+	return &t.Tunnel
 }
 
 func (t *baseTunnel) checkRegister(buf []byte) (string, error) {
@@ -45,12 +45,11 @@ func (t *baseTunnel) checkRegister(buf []byte) (string, error) {
 	return serial, nil
 }
 
-
-func NewTunnel(tunnel *models.ModelTunnel) (Tunnel, error) {
+func NewTunnel(tunnel *models.Tunnel) (Tunnel, error) {
 	if tunnel.Role == "client" {
 		return &TcpClient{
 			baseTunnel: baseTunnel{
-				ModelTunnel: *tunnel,
+				Tunnel: *tunnel,
 			},
 		}, nil
 	} else if tunnel.Role == "server" {
@@ -58,13 +57,13 @@ func NewTunnel(tunnel *models.ModelTunnel) (Tunnel, error) {
 		case "tcp", "tcp4", "tcp6", "unix":
 			return &TcpServer{
 				baseTunnel: baseTunnel{
-					ModelTunnel: *tunnel,
+					Tunnel: *tunnel,
 				},
 			}, nil
 		case "udp", "udp4", "udp6", "unixgram":
 			return &PacketServer{
 				baseTunnel: baseTunnel{
-					ModelTunnel: *tunnel,
+					Tunnel: *tunnel,
 				},
 			}, nil
 		default:

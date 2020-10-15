@@ -25,13 +25,13 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	peer base.Link
+	peer     base.Link
 	listener base.LinkListener
 
 	lastTime time.Time
 }
 
-func (l *Link) Listen(listener base.LinkListener){
+func (l *Link) Listen(listener base.LinkListener) {
 	l.listener = listener
 }
 
@@ -153,7 +153,6 @@ func newLink(ch Tunnel, conn net.Conn) *Link {
 		Link: models.Link{
 			Id:       0,
 			TunnelId: c.Id,
-			ModelId:  c.ModelId,
 			//ModelTunnelId: c.ModelId,
 			Active: true,
 		},
@@ -169,9 +168,7 @@ func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 		Link: models.Link{
 			Id:       0,
 			TunnelId: c.Id,
-			ModelId:  c.ModelId,
-			//ModelTunnelId: c.ModelId,
-			Active: true,
+			Active:   true,
 		},
 		tunnel: ch,
 		conn:   base.NewPackConn(conn, addr),

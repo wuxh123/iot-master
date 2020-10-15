@@ -21,7 +21,7 @@ func Tunnels() []Tunnel {
 
 func Recovery() error {
 	//TODO 改为 加载模型，创建通道
-	var cs []models.ModelTunnel
+	var cs []models.ModelAdapter
 	err := db.Engine.Find(&cs)
 	if err != nil {
 		return err
@@ -39,7 +39,7 @@ func Recovery() error {
 	return nil
 }
 
-func StartTunnel(c *models.ModelTunnel) (Tunnel, error) {
+func StartTunnel(c *models.Tunnel) (Tunnel, error) {
 	//log.Println("Start core", c)
 	tunnel, err := NewTunnel(c)
 	if err != nil {
