@@ -41,8 +41,8 @@ import {ModelJobComponent} from './model/job/model-job.component';
 import {ModelJobEditComponent} from './model/job-edit/model-job-edit.component';
 import {ModelStrategyComponent} from './model/strategy/model-strategy.component';
 import {ModelStrategyEditComponent} from './model/strategy-edit/model-strategy-edit.component';
-import {ModelTunnelComponent} from './model/tunnel/model-tunnel.component';
-import {ModelTunnelEditComponent} from './model/tunnel-edit/model-tunnel-edit.component';
+import {ModelAdapterComponent} from './model/adapter/model-adapter.component';
+import {ModelAdapterEditComponent} from './model/adapter-edit/model-adapter-edit.component';
 
 
 @NgModule({
@@ -51,7 +51,7 @@ import {ModelTunnelEditComponent} from './model/tunnel-edit/model-tunnel-edit.co
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ModelComponent, ModelEditComponent,
-    ModelTunnelComponent, ModelTunnelEditComponent,
+    ModelAdapterComponent, ModelAdapterEditComponent,
     ModelVariableComponent, ModelVariableEditComponent,
     ModelBatchComponent, ModelBatchEditComponent,
     ModelJobComponent, ModelJobEditComponent,

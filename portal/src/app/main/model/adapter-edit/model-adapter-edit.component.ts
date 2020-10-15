@@ -4,12 +4,12 @@ import {ActivatedRoute} from '@angular/router';
 import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-tunnel-edit',
-  templateUrl: './model-tunnel-edit.component.html',
-  styleUrls: ['./model-tunnel-edit.component.scss']
+  selector: 'app-model-adapter-edit',
+  templateUrl: './model-adapter-edit.component.html',
+  styleUrls: ['./model-adapter-edit.component.scss']
 })
-export class ModelTunnelEditComponent implements OnInit {
-  target = 'tunnel';
+export class ModelAdapterEditComponent implements OnInit {
+  target = 'adapter';
   id = 0;
 
   data: any = {};

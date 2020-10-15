@@ -7,7 +7,7 @@ import {TunnelComponent} from './tunnel/tunnel.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {ModelComponent} from './model/model/model.component';
-import {ModelTunnelComponent} from './model/tunnel/model-tunnel.component';
+import {ModelAdapterComponent} from './model/adapter/model-adapter.component';
 import {ModelVariableComponent} from './model/variable/model-variable.component';
 import {ModelBatchComponent} from './model/batch/model-batch.component';
 import {ModelJobComponent} from './model/job/model-job.component';
@@ -19,7 +19,7 @@ import {ModelStrategyEditComponent} from './model/strategy-edit/model-strategy-e
 import {ModelJobEditComponent} from './model/job-edit/model-job-edit.component';
 import {ModelBatchEditComponent} from './model/batch-edit/model-batch-edit.component';
 import {ModelVariableEditComponent} from './model/variable-edit/model-variable-edit.component';
-import {ModelTunnelEditComponent} from './model/tunnel-edit/model-tunnel-edit.component';
+import {ModelAdapterEditComponent} from './model/adapter-edit/model-adapter-edit.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 
 const routes: Routes = [
@@ -41,9 +41,9 @@ const routes: Routes = [
       {path: 'model', component: ModelComponent},
       {path: 'model-create', component: ModelEditComponent},
       {path: 'model-edit/:id', component: ModelEditComponent},
-      {path: 'model-tunnel', component: ModelTunnelComponent},
-      {path: 'model-tunnel-create', component: ModelTunnelEditComponent},
-      {path: 'model-tunnel-edit/:id', component: ModelTunnelEditComponent},
+      {path: 'model-adapter', component: ModelAdapterComponent},
+      {path: 'model-adapter-create', component: ModelAdapterEditComponent},
+      {path: 'model-adapter-edit/:id', component: ModelAdapterEditComponent},
       {path: 'model-variable', component: ModelVariableComponent},
       {path: 'model-variable-create', component: ModelVariableEditComponent},
       {path: 'model-variable-edit/:id', component: ModelVariableEditComponent},

@@ -6,10 +6,10 @@ import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
   selector: 'app-model-tunnel',
-  templateUrl: './model-tunnel.component.html',
-  styleUrls: ['./model-tunnel.component.scss']
+  templateUrl: './model-adapter.component.html',
+  styleUrls: ['./model-adapter.component.scss']
 })
-export class ModelTunnelComponent implements OnInit {
+export class ModelAdapterComponent implements OnInit {
 
   tunnels: [];
   total = 0;
@@ -58,11 +58,11 @@ export class ModelTunnelComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/tunnel-create']);
+    this.router.navigate(['/admin/adapter-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/tunnel-edit/' + c.id]);
+    this.router.navigate(['/admin/adapter-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
