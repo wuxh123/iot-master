@@ -4,7 +4,7 @@ import "time"
 
 type Tunnel struct {
 	Id      int64 `json:"id"`
-	ModelId int64 `json:"model_id"`
+	ModelId int64 `json:"model_id"` //模型ID
 
 	Role    string `json:"role"`
 	Net     string `json:"net"`
@@ -31,6 +31,7 @@ type Tunnel struct {
 type Link struct {
 	Id       int64 `json:"id"`
 	TunnelId int64 `json:"tunnel_id"`
+	ModelId  int64 `json:"model_id"` //模型ID，默认继承自Tunnel
 
 	Serial string `json:"serial" xorm:"index"`
 
