@@ -42,7 +42,7 @@ type ModelTunnel struct {
 	HeartBeatContent  string `json:"heart_beat_content"`
 	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
 
-	Protocol     string `json:"protocol"`
+	ProtocolName string `json:"protocol"`
 	ProtocolOpts string `json:"protocol_opts"`
 
 	PollingEnable   bool `json:"polling_enable"`   //轮询
@@ -52,7 +52,7 @@ type ModelTunnel struct {
 
 type ModelVariable struct {
 	ModelBase
-	
+
 	Tunnel string `json:"tunnel"`
 	models.Address
 
@@ -71,7 +71,7 @@ type ModelVariable struct {
 
 type ModelBatch struct {
 	ModelBase
-	
+
 	Tunnel string `json:"tunnel"`
 
 	models.Address `xorm:"extends"`
@@ -86,7 +86,7 @@ type ModelBatch struct {
 
 type ModelJob struct {
 	ModelBase
-	
+
 	Cron   string `json:"cron"`
 	Script string `json:"script"` //javascript
 }
@@ -129,7 +129,7 @@ func modelImport(ctx *gin.Context) {
 				Name:        t.Name,
 				Description: t.Description,
 			},
-			Protocol:        t.Protocol,
+			ProtocolName:    t.ProtocolName,
 			ProtocolOpts:    t.ProtocolOpts,
 			PollingEnable:   t.PollingEnable,
 			PollingInterval: t.PollingInterval,
@@ -270,7 +270,7 @@ func modelExport(ctx *gin.Context) {
 				Name:        v.Name,
 				Description: v.Description,
 			},
-			Protocol:        v.Protocol,
+			ProtocolName:    v.ProtocolName,
 			ProtocolOpts:    v.ProtocolOpts,
 			PollingEnable:   v.PollingEnable,
 			PollingInterval: v.PollingInterval,

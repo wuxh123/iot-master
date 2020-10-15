@@ -20,8 +20,7 @@ func Tunnels() []Tunnel {
 }
 
 func Recovery() error {
-	//TODO 改为 加载模型，创建通道
-	var cs []models.ModelAdapter
+	var cs []models.Tunnel
 	err := db.Engine.Find(&cs)
 	if err != nil {
 		return err
