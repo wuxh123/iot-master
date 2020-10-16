@@ -41,7 +41,7 @@ export class MainComponent implements OnInit {
       children: [
         {
           title: '通道管理',
-          router: 'channel'
+          router: 'tunnel'
         },
         {
           title: '连接管理',

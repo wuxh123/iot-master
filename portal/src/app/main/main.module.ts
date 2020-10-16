@@ -11,7 +11,7 @@ import {MainRoutingModule} from './main-routing.module';
 import {MainComponent} from './main.component';
 import {
   NzButtonModule,
-  NzCheckboxModule, NzDividerModule, NzDrawerModule,
+  NzCheckboxModule, NzCollapseModule, NzDividerModule, NzDrawerModule,
   NzFormModule,
   NzIconModule,
   NzInputModule, NzInputNumberModule,
@@ -31,18 +31,19 @@ import {LinkEditComponent} from './link-edit/link-edit.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 import {TabsComponent} from './tabs/tabs.component';
-import {ModelComponent} from './model/model/model.component';
-import {ModelEditComponent} from './model/model-edit/model-edit.component';
-import {ModelVariableComponent} from './model/variable/model-variable.component';
-import {ModelVariableEditComponent} from './model/variable-edit/model-variable-edit.component';
-import {ModelBatchComponent} from './model/batch/model-batch.component';
-import {ModelBatchEditComponent} from './model/batch-edit/model-batch-edit.component';
-import {ModelJobComponent} from './model/job/model-job.component';
-import {ModelJobEditComponent} from './model/job-edit/model-job-edit.component';
-import {ModelStrategyComponent} from './model/strategy/model-strategy.component';
-import {ModelStrategyEditComponent} from './model/strategy-edit/model-strategy-edit.component';
-import {ModelAdapterComponent} from './model/adapter/model-adapter.component';
-import {ModelAdapterEditComponent} from './model/adapter-edit/model-adapter-edit.component';
+import {ModelComponent} from './model/model.component';
+import {ModelEditComponent} from './model-detail/model-edit/model-edit.component';
+import {ModelVariableComponent} from './model-detail/variable/model-variable.component';
+import {ModelVariableEditComponent} from './model-detail/variable-edit/model-variable-edit.component';
+import {ModelBatchComponent} from './model-detail/batch/model-batch.component';
+import {ModelBatchEditComponent} from './model-detail/batch-edit/model-batch-edit.component';
+import {ModelJobComponent} from './model-detail/job/model-job.component';
+import {ModelJobEditComponent} from './model-detail/job-edit/model-job-edit.component';
+import {ModelStrategyComponent} from './model-detail/strategy/model-strategy.component';
+import {ModelStrategyEditComponent} from './model-detail/strategy-edit/model-strategy-edit.component';
+import {ModelAdapterComponent} from './model-detail/adapter/model-adapter.component';
+import {ModelAdapterEditComponent} from './model-detail/adapter-edit/model-adapter-edit.component';
+import {ModelDetailComponent} from './model-detail/model-detail.component';
 
 
 @NgModule({
@@ -50,7 +51,7 @@ import {ModelAdapterEditComponent} from './model/adapter-edit/model-adapter-edit
     TunnelComponent, TunnelEditComponent,
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
-    ModelComponent, ModelEditComponent,
+    ModelComponent, ModelEditComponent, ModelDetailComponent,
     ModelAdapterComponent, ModelAdapterEditComponent,
     ModelVariableComponent, ModelVariableEditComponent,
     ModelBatchComponent, ModelBatchEditComponent,
@@ -87,6 +88,7 @@ import {ModelAdapterEditComponent} from './model/adapter-edit/model-adapter-edit
     NzInputNumberModule,
     NzStatisticModule,
     NzTabsModule,
+    NzCollapseModule,
   ],
   bootstrap: [MainComponent]
 })

@@ -12,7 +12,12 @@ type hook func(value interface{}) error
 func curdApiList(mod reflect.Type) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		cs := reflect.MakeSlice(mod, 0, 0)
+		cs := reflect.MakeSlice(reflect.SliceOf(mod), 10, 10).Interface()
+		//cs := reflect.New(slice.Type())
+		//cs.Elem().Set(slice)
+
+		datas := cs.([]interface{})
+		//datas := cs.Interface()
 
 		var body paramSearch
 		err := ctx.ShouldBind(&body)
@@ -46,7 +51,7 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 		} else {
 			op.Desc("id")
 		}
-		cnt, err := op.FindAndCount(&cs)
+		cnt, err := op.FindAndCount(&datas)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -55,7 +60,7 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 		//replyOk(ctx, cs)
 		ctx.JSON(http.StatusOK, gin.H{
 			"ok":    true,
-			"data":  cs,
+			"data":  datas,
 			"total": cnt,
 		})
 	}

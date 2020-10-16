@@ -1,18 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {ApiService} from '../../../api.service';
-import {ModelEditComponent} from '../model-edit/model-edit.component';
-import {NzDrawerService, NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from "@angular/router";
-import {TabRef} from "../../tabs/tabs.component";
+import {NzTableQueryParams} from 'ng-zorro-antd';
+import {Router} from '@angular/router';
+import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model',
-  templateUrl: './model.component.html',
-  styleUrls: ['./model.component.scss']
+  selector: 'app-model-adapter',
+  templateUrl: './model-adapter.component.html',
+  styleUrls: ['./model-adapter.component.scss']
 })
-export class ModelComponent implements OnInit {
+export class ModelAdapterComponent implements OnInit {
 
-  models: [];
+  tunnels: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -26,7 +25,7 @@ export class ModelComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '模型管理';
+    tab.name = '协议适配';
   }
 
   ngOnInit(): void {
@@ -40,7 +39,7 @@ export class ModelComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('models', {
+    this.as.post('tunnels', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -49,7 +48,7 @@ export class ModelComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.models = res.data;
+      this.tunnels = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -59,11 +58,11 @@ export class ModelComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/model-create']);
+    this.router.navigate(['/admin/adapter-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/model-edit/' + c.id]);
+    this.router.navigate(['/admin/adapter-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../api.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from "../../tabs/tabs.component";
+import {ActivatedRoute} from '@angular/router';
+import {TabRef} from '../../tabs/tabs.component';
 
 @Component({
   selector: 'app-model-edit',

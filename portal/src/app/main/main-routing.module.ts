@@ -6,21 +6,22 @@ import {LinkComponent} from './link/link.component';
 import {TunnelComponent} from './tunnel/tunnel.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
-import {ModelComponent} from './model/model/model.component';
-import {ModelAdapterComponent} from './model/adapter/model-adapter.component';
-import {ModelVariableComponent} from './model/variable/model-variable.component';
-import {ModelBatchComponent} from './model/batch/model-batch.component';
-import {ModelJobComponent} from './model/job/model-job.component';
-import {ModelStrategyComponent} from './model/strategy/model-strategy.component';
-import {ModelEditComponent} from './model/model-edit/model-edit.component';
+import {ModelComponent} from './model/model.component';
+import {ModelAdapterComponent} from './model-detail/adapter/model-adapter.component';
+import {ModelVariableComponent} from './model-detail/variable/model-variable.component';
+import {ModelBatchComponent} from './model-detail/batch/model-batch.component';
+import {ModelJobComponent} from './model-detail/job/model-job.component';
+import {ModelStrategyComponent} from './model-detail/strategy/model-strategy.component';
+import {ModelEditComponent} from './model-detail/model-edit/model-edit.component';
 import {TunnelEditComponent} from './tunnel-edit/tunnel-edit.component';
 import {LinkEditComponent} from './link-edit/link-edit.component';
-import {ModelStrategyEditComponent} from './model/strategy-edit/model-strategy-edit.component';
-import {ModelJobEditComponent} from './model/job-edit/model-job-edit.component';
-import {ModelBatchEditComponent} from './model/batch-edit/model-batch-edit.component';
-import {ModelVariableEditComponent} from './model/variable-edit/model-variable-edit.component';
-import {ModelAdapterEditComponent} from './model/adapter-edit/model-adapter-edit.component';
+import {ModelStrategyEditComponent} from './model-detail/strategy-edit/model-strategy-edit.component';
+import {ModelJobEditComponent} from './model-detail/job-edit/model-job-edit.component';
+import {ModelBatchEditComponent} from './model-detail/batch-edit/model-batch-edit.component';
+import {ModelVariableEditComponent} from './model-detail/variable-edit/model-variable-edit.component';
+import {ModelAdapterEditComponent} from './model-detail/adapter-edit/model-adapter-edit.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
+import {ModelDetailComponent} from "./model-detail/model-detail.component";
 
 const routes: Routes = [
   {
@@ -41,21 +42,7 @@ const routes: Routes = [
       {path: 'model', component: ModelComponent},
       {path: 'model-create', component: ModelEditComponent},
       {path: 'model-edit/:id', component: ModelEditComponent},
-      {path: 'model-adapter', component: ModelAdapterComponent},
-      {path: 'model-adapter-create', component: ModelAdapterEditComponent},
-      {path: 'model-adapter-edit/:id', component: ModelAdapterEditComponent},
-      {path: 'model-variable', component: ModelVariableComponent},
-      {path: 'model-variable-create', component: ModelVariableEditComponent},
-      {path: 'model-variable-edit/:id', component: ModelVariableEditComponent},
-      {path: 'model-batch', component: ModelBatchComponent},
-      {path: 'model-batch-create', component: ModelBatchEditComponent},
-      {path: 'model-batch-edit/:id', component: ModelBatchEditComponent},
-      {path: 'model-job', component: ModelJobComponent},
-      {path: 'model-job-create', component: ModelJobEditComponent},
-      {path: 'model-job-edit/:id', component: ModelJobEditComponent},
-      {path: 'model-strategy', component: ModelStrategyComponent},
-      {path: 'model-strategy-create', component: ModelStrategyEditComponent},
-      {path: 'model-strategy-edit/:id', component: ModelStrategyEditComponent},
+      {path: 'model-detail/:id', component: ModelDetailComponent},
       {path: '**', redirectTo: 'dash'},
     ]
   },

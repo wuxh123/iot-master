@@ -42,7 +42,7 @@ export class TunnelComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('channels', {
+    this.as.post('tunnels', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
