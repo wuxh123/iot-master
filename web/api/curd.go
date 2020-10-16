@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
+//"github.com/modern-go/reflect2"
 )
 
 type hook func(value interface{}) error
@@ -12,12 +13,13 @@ type hook func(value interface{}) error
 func curdApiList(mod reflect.Type) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		cs := reflect.MakeSlice(reflect.SliceOf(mod), 10, 10).Interface()
-		//cs := reflect.New(slice.Type())
-		//cs.Elem().Set(slice)
+		//datas := reflect.MakeSlice(reflect.SliceOf(mod), 0, 10).Interface()
 
-		datas := cs.([]interface{})
-		//datas := cs.Interface()
+		//解决不可寻址的问题，参考modern-go/reflect2 safe_slice.go
+		val := reflect.MakeSlice(reflect.SliceOf(mod), 0, 1)
+		ptr := reflect.New(val.Type())
+		ptr.Elem().Set(val)
+		datas := ptr.Interface()
 
 		var body paramSearch
 		err := ctx.ShouldBind(&body)
@@ -51,7 +53,7 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 		} else {
 			op.Desc("id")
 		}
-		cnt, err := op.FindAndCount(&datas)
+		cnt, err := op.FindAndCount(datas)
 		if err != nil {
 			replyError(ctx, err)
 			return
