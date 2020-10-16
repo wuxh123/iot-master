@@ -37,8 +37,6 @@ type ModelAdapter struct {
 type ModelVariable struct {
 	ModelBase `xorm:"extends"`
 
-	TunnelId int64 `json:"tunnel_id"`
-
 	Address `xorm:"extends"`
 
 	Type string `json:"type"`
@@ -56,8 +54,6 @@ type ModelVariable struct {
 
 type ModelBatch struct {
 	ModelBase `xorm:"extends"`
-
-	TunnelId int64 `json:"tunnel_id"`
 
 	Address `xorm:"extends"`
 
