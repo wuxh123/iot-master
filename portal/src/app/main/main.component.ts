@@ -26,11 +26,11 @@ export class MainComponent implements OnInit {
       ]
     },
     {
-      title: '设备管理',
-      icon: 'api',
+      title: '设备中心',
+      icon: 'block',
       children: [
         {
-          title: '所有设备',
+          title: '设备管理',
           router: 'device'
         },
         {
@@ -38,13 +38,41 @@ export class MainComponent implements OnInit {
           router: 'device-map'
         },
         {
-          title: '报警消息',
-          router: 'device-alarm'
-        },
-        {
           title: '操作日志',
           router: 'device-log'
         },
+      ]
+    },
+    {
+      title: '数据中心',
+      icon: 'database',
+      children: [
+        {
+          title: '历史记录',
+          router: 'tunnel'
+        },
+        {
+          title: '算法分析',
+          router: 'link'
+        },
+      ]
+    },
+    {
+      title: '报警中心',
+      icon: 'alert',
+      children: [
+        {
+          title: '报警记录',
+          router: 'alert'
+        },
+        {
+          title: '微信通知',
+          router: 'alert-wechat'
+        },
+        {
+          title: '邮件通知',
+          router: 'alert-email'
+        }
       ]
     },
     {
@@ -62,13 +90,13 @@ export class MainComponent implements OnInit {
       ]
     },
     {
-      title: '设备模型',
-      icon: 'cluster',
+      title: '项目管理',
+      icon: 'project',
       open: false,
       children: [
         {
-          title: '模型管理',
-          router: 'model'
+          title: '项目管理',
+          router: 'project'
         },
         {
           title: '元件管理',
@@ -81,6 +109,21 @@ export class MainComponent implements OnInit {
       ]
     },
     {
+      title: 'OTA升级',
+      icon: 'cloud-upload',
+      open: false,
+      children: [
+        {
+          title: '固件管理',
+          router: 'firmware'
+        },
+        {
+          title: '升级日志',
+          router: 'upgrade-log'
+        },
+      ]
+    },
+    {
       title: '设置',
       icon: 'setting',
       open: false,
@@ -88,6 +131,10 @@ export class MainComponent implements OnInit {
         {
           title: '设置',
           router: 'setting'
+        },
+        {
+          title: '邮件发件箱',
+          router: 'backup'
         },
         {
           title: '数据备份',
