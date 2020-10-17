@@ -1,15 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../../api.service';
+import {ApiService} from '../../api.service';
 import {ActivatedRoute} from '@angular/router';
-import {TabRef} from '../../tabs/tabs.component';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-edit',
-  templateUrl: './model-edit.component.html',
-  styleUrls: ['./model-edit.component.scss']
+  selector: 'app-project-edit',
+  templateUrl: './project-edit.component.html',
+  styleUrls: ['./project-edit.component.scss']
 })
-export class ModelEditComponent implements OnInit {
-  target = 'model';
+export class ProjectEditComponent implements OnInit {
+  target = 'project';
   id = 0;
 
   data: any = {};

@@ -5,11 +5,11 @@ import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model',
-  templateUrl: './model.component.html',
-  styleUrls: ['./model.component.scss']
+  selector: 'app-project',
+  templateUrl: './project.component.html',
+  styleUrls: ['./project.component.scss']
 })
-export class ModelComponent implements OnInit {
+export class ProjectComponent implements OnInit {
 
   models: [];
   total = 0;
@@ -39,7 +39,7 @@ export class ModelComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('models', {
+    this.as.post('projects', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -58,11 +58,11 @@ export class ModelComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/model-create']);
+    this.router.navigate(['/admin/project-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/model-edit/' + c.id]);
+    this.router.navigate(['/admin/project-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
