@@ -1,30 +1,24 @@
 package models
 
-import "time"
+type Template struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Version     string `json:"version"`
 
-type Model struct {
-	Id          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Disabled    bool      `json:"disabled"`
-	Description string    `json:"description"`
-	Origin      string    `json:"origin"` //模板ID
-	Version     string    `json:"version"`
-	Created     time.Time `json:"created" xorm:"created"`
-	Updated     time.Time `json:"updated" xorm:"updated"`
-	Deployed    time.Time `json:"deployed"` //如果 deployed < updated，说明有更新，提示重新部署
+	Adapter    TemplateAdapter    `json:"adapter"`
+	Variables  []TemplateVariable `json:"variables"`
+	Batches    []TemplateBatch    `json:"batches"`
+	Jobs       []TemplateJob      `json:"jobs"`
+	Strategies []TemplateStrategy `json:"strategies"`
 }
 
-type ModelBase struct {
-	Id          int64     `json:"id"`
-	ModelId     int64     `json:"model_id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Created     time.Time `json:"created" xorm:"created"`
-	Updated     time.Time `json:"updated" xorm:"updated"`
+type TemplateBase struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
-type ModelAdapter struct {
-	ModelBase `xorm:"extends"`
+type TemplateAdapter struct {
+	TemplateBase `xorm:"extends"`
 
 	ProtocolName string `json:"protocol_name"`
 	ProtocolOpts string `json:"protocol_opts"`
@@ -34,8 +28,8 @@ type ModelAdapter struct {
 	PollingCycle    int  `json:"polling_cycle"`    //轮询周期 s
 }
 
-type ModelVariable struct {
-	ModelBase `xorm:"extends"`
+type TemplateVariable struct {
+	TemplateBase `xorm:"extends"`
 
 	Address `xorm:"extends"`
 
@@ -52,8 +46,8 @@ type ModelVariable struct {
 	PollingTimes  int    `json:"polling_times"`
 }
 
-type ModelBatch struct {
-	ModelBase `xorm:"extends"`
+type TemplateBatch struct {
+	TemplateBase `xorm:"extends"`
 
 	Address `xorm:"extends"`
 
@@ -65,15 +59,16 @@ type ModelBatch struct {
 	PollingTimes  int    `json:"polling_times"`
 }
 
-type ModelJob struct {
-	ModelBase `xorm:"extends"`
+type TemplateJob struct {
+	TemplateBase `xorm:"extends"`
 
 	Cron   string `json:"cron"`
 	Script string `json:"script"` //javascript
 }
 
-type ModelStrategy struct {
-	ModelBase `xorm:"extends"`
+type TemplateStrategy struct {
+	TemplateBase `xorm:"extends"`
 
 	Script string `json:"script"` //javascript
 }
+

@@ -16,7 +16,7 @@ type Tunnel interface {
 
 type baseTunnel struct {
 	models.Tunnel
-	//models.ModelAdapter
+	//models.ProjectAdapter
 }
 
 func (t *baseTunnel) GetTunnel() *models.Tunnel {

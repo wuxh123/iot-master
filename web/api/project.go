@@ -6,80 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Model struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Version     string `json:"version"`
-
-	Adapter    ModelAdapter    `json:"adapter"`
-	Variables  []ModelVariable `json:"variables"`
-	Batches    []ModelBatch    `json:"batches"`
-	Jobs       []ModelJob      `json:"jobs"`
-	Strategies []ModelStrategy `json:"strategies"`
-}
-
-type ModelBase struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
-type ModelAdapter struct {
-	ModelBase `xorm:"extends"`
-
-	ProtocolName string `json:"protocol_name"`
-	ProtocolOpts string `json:"protocol_opts"`
-
-	PollingEnable   bool `json:"polling_enable"`   //轮询
-	PollingInterval int  `json:"polling_interval"` //轮询间隔 ms
-	PollingCycle    int  `json:"polling_cycle"`    //轮询周期 s
-}
-
-type ModelVariable struct {
-	ModelBase `xorm:"extends"`
-
-	models.Address `xorm:"extends"`
-
-	Type string `json:"type"`
-	Unit string `json:"unit"` //单位
-
-	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
-	Default  string  `json:"default"`
-	Writable bool    `json:"writable"` //可写，用于输出（如开关）
-
-	//采样：无、定时、轮询
-	Cron          string `json:"cron"`
-	PollingEnable bool   `json:"polling_enable"` //轮询
-	PollingTimes  int    `json:"polling_times"`
-}
-
-type ModelBatch struct {
-	ModelBase `xorm:"extends"`
-
-	models.Address `xorm:"extends"`
-
-	Size int `json:"size"`
-
-	//采样：无、定时、轮询
-	Cron          string `json:"cron"`
-	PollingEnable bool   `json:"polling_enable"` //轮询
-	PollingTimes  int    `json:"polling_times"`
-}
-
-type ModelJob struct {
-	ModelBase `xorm:"extends"`
-
-	Cron   string `json:"cron"`
-	Script string `json:"script"` //javascript
-}
-
-type ModelStrategy struct {
-	ModelBase `xorm:"extends"`
-
-	Script string `json:"script"` //javascript
-}
-
-func modelImport(ctx *gin.Context) {
-	var model Model
+func projectImport(ctx *gin.Context) {
+	var model models.Template
 
 	err := ctx.ShouldBind(&model)
 	if err != nil {
@@ -88,7 +16,7 @@ func modelImport(ctx *gin.Context) {
 	}
 
 	//TODO 导入模型
-	m := models.Model{
+	m := models.Project{
 		Name:        model.Name,
 		Description: model.Description,
 		Version:     model.Version,
@@ -103,9 +31,9 @@ func modelImport(ctx *gin.Context) {
 
 	//创建通道	
 	t := model.Adapter
-	tunnel := models.ModelAdapter{
-		ModelBase: models.ModelBase{
-			ModelId:     m.Id,
+	tunnel := models.ProjectAdapter{
+		ProjectBase: models.ProjectBase{
+			ProjectId:   m.Id,
 			Name:        t.Name,
 			Description: t.Description,
 		},
@@ -123,9 +51,9 @@ func modelImport(ctx *gin.Context) {
 
 	//创建变量
 	for _, v := range model.Variables {
-		variable := models.ModelVariable{
-			ModelBase: models.ModelBase{
-				ModelId:     m.Id,
+		variable := models.ProjectVariable{
+			ProjectBase: models.ProjectBase{
+				ProjectId:   m.Id,
 				Name:        v.Name,
 				Description: v.Description,
 			},
@@ -146,9 +74,9 @@ func modelImport(ctx *gin.Context) {
 
 	//创建批量
 	for _, v := range model.Batches {
-		batch := models.ModelBatch{
-			ModelBase: models.ModelBase{
-				ModelId:     m.Id,
+		batch := models.ProjectBatch{
+			ProjectBase: models.ProjectBase{
+				ProjectId:   m.Id,
 				Name:        v.Name,
 				Description: v.Description,
 			},
@@ -167,9 +95,9 @@ func modelImport(ctx *gin.Context) {
 
 	//创建任务
 	for _, v := range model.Jobs {
-		job := models.ModelJob{
-			ModelBase: models.ModelBase{
-				ModelId:     m.Id,
+		job := models.ProjectJob{
+			ProjectBase: models.ProjectBase{
+				ProjectId:   m.Id,
 				Name:        v.Name,
 				Description: v.Description,
 			},
@@ -185,9 +113,9 @@ func modelImport(ctx *gin.Context) {
 
 	//创建策略
 	for _, v := range model.Strategies {
-		strategy := models.ModelStrategy{
-			ModelBase: models.ModelBase{
-				ModelId:     m.Id,
+		strategy := models.ProjectStrategy{
+			ProjectBase: models.ProjectBase{
+				ProjectId:   m.Id,
 				Name:        v.Name,
 				Description: v.Description,
 			},
@@ -203,14 +131,14 @@ func modelImport(ctx *gin.Context) {
 	replyOk(ctx, m)
 }
 
-func modelExport(ctx *gin.Context) {
+func projectExport(ctx *gin.Context) {
 	var pid paramId
 	if err := ctx.BindUri(&pid); err != nil {
 		replyError(ctx, err)
 		return
 	}
 
-	var model Model
+	var model models.Template
 	has, err := db.Engine.ID(pid.Id).Table("model").Get(&model)
 	if !has {
 		replyFail(ctx, "记录不存在")
@@ -221,11 +149,11 @@ func modelExport(ctx *gin.Context) {
 		return
 	}
 
-	//model := Model{
-	//	Variables:   make([]ModelVariable, 0),
-	//	Batches:     make([]ModelBatch, 0),
-	//	Jobs:        make([]ModelJob, 0),
-	//	Strategies:  make([]ModelStrategy, 0),
+	//model := Template{
+	//	Variables:   make([]ProjectVariable, 0),
+	//	Batches:     make([]ProjectBatch, 0),
+	//	Jobs:        make([]ProjectJob, 0),
+	//	Strategies:  make([]ProjectStrategy, 0),
 	//}
 
 	//读取通道
@@ -266,6 +194,6 @@ func modelExport(ctx *gin.Context) {
 	replyOk(ctx, model)
 }
 
-func modelRefresh(ctx *gin.Context) {
+func projectDeploy(ctx *gin.Context) {
 
 }
