@@ -10,6 +10,7 @@
   <div class="title" *ngFor="let tab of tabs; let i=index"
        [class.active]="i==current"
        (click)="onTabsChange(i)"
+       (dblclick)="onTabClose(i)"
   >
     <a [routerLink]="tab.route">
       {{tab.name || tab.route}}

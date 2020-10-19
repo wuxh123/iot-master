@@ -15,7 +15,7 @@ export class ProjectEditComponent implements OnInit {
   data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '模型创建';
+    tab.name = '项目创建';
   }
 
   ngOnInit(): void {

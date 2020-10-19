@@ -35,11 +35,11 @@ export class MainComponent implements OnInit {
         },
         {
           title: '地图模式',
-          router: 'device-map'
+          router: 'device/map'
         },
         {
           title: '操作日志',
-          router: 'device-log'
+          router: 'device/log'
         },
       ]
     },
@@ -49,11 +49,11 @@ export class MainComponent implements OnInit {
       children: [
         {
           title: '历史记录',
-          router: 'tunnel'
+          router: 'history'
         },
         {
           title: '算法分析',
-          router: 'link'
+          router: 'algorithm'
         },
       ]
     },
@@ -108,7 +108,7 @@ export class MainComponent implements OnInit {
         },
         {
           title: '协议管理',
-          router: 'project-adapter'
+          router: 'adapter'
         },
       ]
     },
@@ -138,7 +138,7 @@ export class MainComponent implements OnInit {
         },
         {
           title: '邮件发件箱',
-          router: 'backup'
+          router: 'email'
         },
         {
           title: '数据备份',

@@ -22,6 +22,17 @@ import {ProjectVariableEditComponent} from './project-variable-edit/project-vari
 import {ProjectAdapterEditComponent} from './project-adapter-edit/project-adapter-edit.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
+import {DeviceComponent} from './device/device.component';
+import {DeviceDetailComponent} from './device-detail/device-detail.component';
+import {DeviceLogComponent} from './device-log/device-log.component';
+import {DeviceMapComponent} from './device-map/device-map.component';
+import {ElementComponent} from './element/element.component';
+import {ElementEditComponent} from './element-edit/element-edit.component';
+import {AdapterComponent} from './adapter/adapter.component';
+import {AdapterEditComponent} from './adapter-edit/adapter-edit.component';
+import {HistoryComponent} from './history/history.component';
+import {AlgorithmComponent} from './algorithm/algorithm.component';
+import {AlertComponent} from "./alert/alert.component";
 
 const routes: Routes = [
   {
@@ -30,6 +41,18 @@ const routes: Routes = [
     children: [
       {path: '', redirectTo: 'dash'},
       {path: 'dash', component: DashComponent},
+
+      {path: 'device', component: DeviceComponent},
+      {path: 'device/map', component: DeviceMapComponent},
+      {path: 'device/log', component: DeviceLogComponent},
+      {path: 'device/:id/detail', component: DeviceDetailComponent},
+      {path: 'device/:id/log', component: DeviceLogComponent},
+
+      {path: 'history', component: HistoryComponent},
+      {path: 'algorithm', component: AlgorithmComponent},
+
+      {path: 'alert', component: AlertComponent},
+
       {path: 'tunnel', component: TunnelComponent},
       {path: 'tunnel/create', component: TunnelEditComponent},
       {path: 'tunnel/:id/edit', component: TunnelEditComponent},
@@ -37,9 +60,11 @@ const routes: Routes = [
       {path: 'link', component: LinkComponent},
       {path: 'link/:id/edit', component: LinkEditComponent},
       {path: 'link/:id/monitor', component: LinkMonitorComponent},
-      {path: 'plugin', component: PluginEditComponent},
+
+      {path: 'plugin', component: PluginComponent},
       {path: 'plugin/create', component: PluginEditComponent},
-      {path: 'plugin/:id/edit', component: PluginComponent},
+      {path: 'plugin/:id/edit', component: PluginEditComponent},
+
       {path: 'project', component: ProjectComponent},
       {path: 'project/create', component: ProjectEditComponent},
       {path: 'project/:id/edit', component: ProjectEditComponent},
@@ -59,6 +84,14 @@ const routes: Routes = [
       {path: 'project/:id/strategy', component: ProjectStrategyComponent},
       {path: 'project/:id/strategy/create', component: ProjectStrategyEditComponent},
       {path: 'project/:id/strategy/:id/edit', component: ProjectStrategyEditComponent},
+
+      {path: 'element', component: ElementComponent},
+      {path: 'element/create', component: ElementEditComponent},
+      {path: 'element/:id/edit', component: ElementEditComponent},
+
+      {path: 'adapter', component: AdapterComponent},
+      {path: 'adapter/create', component: AdapterEditComponent},
+      {path: 'adapter/:id/edit', component: AdapterEditComponent},
 
       {path: '**', redirectTo: 'dash'},
     ]

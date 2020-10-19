@@ -15,7 +15,7 @@ export class ProjectAdapterEditComponent implements OnInit {
   data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '链路创建';
+    tab.name = '协议适配创建';
   }
 
   ngOnInit(): void {

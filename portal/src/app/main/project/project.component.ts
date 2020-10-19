@@ -25,7 +25,7 @@ export class ProjectComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '模型管理';
+    tab.name = '项目管理';
   }
 
   ngOnInit(): void {
