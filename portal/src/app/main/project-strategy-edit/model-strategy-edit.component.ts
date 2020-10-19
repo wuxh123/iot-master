@@ -1,21 +1,21 @@
 import {Component, OnInit} from '@angular/core';
-import {ApiService} from '../../../api.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from "../../tabs/tabs.component";
+import {ApiService} from '../../api.service';
+import {ActivatedRoute} from '@angular/router';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-job-edit',
-  templateUrl: './model-job-edit.component.html',
-  styleUrls: ['./model-job-edit.component.scss']
+  selector: 'app-model-strategy-edit',
+  templateUrl: './model-strategy-edit.component.html',
+  styleUrls: ['./model-strategy-edit.component.scss']
 })
-export class ModelJobEditComponent implements OnInit {
-  target = 'job';
+export class ModelStrategyEditComponent implements OnInit {
+  target = 'strategy';
   id = 0;
 
   data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '任务创建';
+    tab.name = '策略创建';
   }
 
   ngOnInit(): void {

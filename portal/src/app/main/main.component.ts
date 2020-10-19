@@ -72,11 +72,15 @@ export class MainComponent implements OnInit {
         {
           title: '邮件通知',
           router: 'alert-email'
+        },
+        {
+          title: '短信通知',
+          router: 'alert-email'
         }
       ]
     },
     {
-      title: '数据通道',
+      title: '通道管理',
       icon: 'api',
       children: [
         {
@@ -104,7 +108,7 @@ export class MainComponent implements OnInit {
         },
         {
           title: '协议管理',
-          router: 'adapter'
+          router: 'project-adapter'
         },
       ]
     },

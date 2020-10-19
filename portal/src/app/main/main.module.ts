@@ -33,16 +33,16 @@ import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {ProjectComponent} from './project/project.component';
 import {ProjectEditComponent} from './project-edit/project-edit.component';
-import {ModelVariableComponent} from './project-detail/variable/model-variable.component';
-import {ModelVariableEditComponent} from './project-detail/variable-edit/model-variable-edit.component';
-import {ModelBatchComponent} from './project-detail/batch/model-batch.component';
-import {ModelBatchEditComponent} from './project-detail/batch-edit/model-batch-edit.component';
-import {ModelJobComponent} from './project-detail/job/model-job.component';
-import {ModelJobEditComponent} from './project-detail/job-edit/model-job-edit.component';
-import {ModelStrategyComponent} from './project-detail/strategy/model-strategy.component';
-import {ModelStrategyEditComponent} from './project-detail/strategy-edit/model-strategy-edit.component';
-import {ModelAdapterComponent} from './project-detail/adapter/model-adapter.component';
-import {ModelAdapterEditComponent} from './project-detail/adapter-edit/model-adapter-edit.component';
+import {ModelVariableComponent} from './project-variable/model-variable.component';
+import {ModelVariableEditComponent} from './project-variable-edit/model-variable-edit.component';
+import {ModelBatchComponent} from './project-batch/model-batch.component';
+import {ModelBatchEditComponent} from './project-batch-edit/model-batch-edit.component';
+import {ModelJobComponent} from './project-job/model-job.component';
+import {ModelJobEditComponent} from './project-job-edit/model-job-edit.component';
+import {ModelStrategyComponent} from './project-strategy/model-strategy.component';
+import {ModelStrategyEditComponent} from './project-strategy-edit/model-strategy-edit.component';
+import {ModelAdapterComponent} from './project-adapter/model-adapter.component';
+import {ModelAdapterEditComponent} from './project-adapter-edit/model-adapter-edit.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
 
 

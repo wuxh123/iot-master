@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../../../api.service';
+import {ApiService} from '../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
-import {TabRef} from '../../tabs/tabs.component';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-strategy',
-  templateUrl: './model-strategy.component.html',
-  styleUrls: ['./model-strategy.component.scss']
+  selector: 'app-model-adapter',
+  templateUrl: './model-adapter.component.html',
+  styleUrls: ['./model-adapter.component.scss']
 })
-export class ModelStrategyComponent implements OnInit {
+export class ModelAdapterComponent implements OnInit {
 
-  strategies: [];
+  tunnels: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -25,7 +25,7 @@ export class ModelStrategyComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '自动策略';
+    tab.name = '协议适配';
   }
 
   ngOnInit(): void {
@@ -39,7 +39,7 @@ export class ModelStrategyComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('strategies', {
+    this.as.post('tunnels', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -48,7 +48,7 @@ export class ModelStrategyComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.strategies = res.data;
+      this.tunnels = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -58,11 +58,11 @@ export class ModelStrategyComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/strategy-create']);
+    this.router.navigate(['/admin/project-adapter-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/strategy-edit/' + c.id]);
+    this.router.navigate(['/admin/project-project-adapter-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

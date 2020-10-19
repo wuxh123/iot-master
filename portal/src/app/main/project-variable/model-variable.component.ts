@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {ApiService} from '../../../api.service';
+import {ApiService} from '../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
-import {TabRef} from '../../tabs/tabs.component';
+import {TabRef} from '../tabs/tabs.component';
 
 @Component({
   selector: 'app-model-variable',
@@ -58,11 +58,11 @@ export class ModelVariableComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/variable-create']);
+    this.router.navigate(['/admin/project-variable-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/variable-edit/' + c.id]);
+    this.router.navigate(['/admin/project-project-variable-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
