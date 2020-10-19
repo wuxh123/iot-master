@@ -7,13 +7,14 @@ import (
 	"net"
 )
 
-type TcpClient struct {
+type TcpUdpClient struct {
 	baseTunnel
 
+	Net string
 	link *Link //作为客户端的连接
 }
 
-func (c *TcpClient) Open() error {
+func (c *TcpUdpClient) Open() error {
 	conn, err := net.Dial(c.Net, c.Addr)
 	if err != nil {
 		//_ = c.storeError(err)
@@ -25,7 +26,7 @@ func (c *TcpClient) Open() error {
 	return nil
 }
 
-func (c *TcpClient) Close() error {
+func (c *TcpUdpClient) Close() error {
 
 	if c.link != nil {
 		err := c.link.Close()
@@ -38,11 +39,11 @@ func (c *TcpClient) Close() error {
 	return nil
 }
 
-func (c *TcpClient) GetLink(id int64) (*Link, error) {
+func (c *TcpUdpClient) GetLink(id int64) (*Link, error) {
 	return c.link, nil
 }
 
-func (c *TcpClient) receive(conn net.Conn) {
+func (c *TcpUdpClient) receive(conn net.Conn) {
 	//复用地连接
 	if c.link == nil {
 		link := newLink(c, conn)

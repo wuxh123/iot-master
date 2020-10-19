@@ -22,7 +22,7 @@ type PacketServer struct {
 
 func (c *PacketServer) Open() error {
 	var err error
-	c.packetConn, err = net.ListenPacket(c.Net, c.Addr)
+	c.packetConn, err = net.ListenPacket("udp", c.Addr)
 
 	if err != nil {
 		//_ = c.storeError(err)

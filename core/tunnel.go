@@ -46,30 +46,35 @@ func (t *baseTunnel) checkRegister(buf []byte) (string, error) {
 }
 
 func NewTunnel(tunnel *models.Tunnel) (Tunnel, error) {
-	if tunnel.Role == "client" {
-		return &TcpClient{
+	switch tunnel.Type {
+	case "tcp-server":
+		return &TcpServer{
 			baseTunnel: baseTunnel{
 				Tunnel: *tunnel,
 			},
 		}, nil
-	} else if tunnel.Role == "server" {
-		switch tunnel.Net {
-		case "tcp", "tcp4", "tcp6", "unix":
-			return &TcpServer{
-				baseTunnel: baseTunnel{
-					Tunnel: *tunnel,
-				},
-			}, nil
-		case "udp", "udp4", "udp6", "unixgram":
-			return &PacketServer{
-				baseTunnel: baseTunnel{
-					Tunnel: *tunnel,
-				},
-			}, nil
-		default:
-			return nil, fmt.Errorf("未知的网络类型 %s", tunnel.Net)
-		}
-	} else {
-		return nil, fmt.Errorf("未知的角色 %s", tunnel.Role)
+	case "tcp-client":
+		return &TcpUdpClient{
+			baseTunnel: baseTunnel{
+				Tunnel: *tunnel,
+			},
+			Net: "tcp",
+		}, nil
+	case "udp-server":
+		return &PacketServer{
+			baseTunnel: baseTunnel{
+				Tunnel: *tunnel,
+			},
+		}, nil
+	case "udp-client":
+		return &TcpUdpClient{
+			baseTunnel: baseTunnel{
+				Tunnel: *tunnel,
+			},
+			Net: "udp",
+		}, nil
+	case "serial":
+	default:
 	}
+	return nil, fmt.Errorf("未知的网络类型 %s", tunnel.Type)
 }

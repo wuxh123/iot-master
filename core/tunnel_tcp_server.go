@@ -20,7 +20,7 @@ type TcpServer struct {
 
 func (s *TcpServer) Open() error {
 	var err error
-	s.listener, err = net.Listen(s.Net, s.Addr)
+	s.listener, err = net.Listen("tcp", s.Addr)
 	if err != nil {
 		return err
 	}

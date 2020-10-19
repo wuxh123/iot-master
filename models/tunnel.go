@@ -6,8 +6,10 @@ type Tunnel struct {
 	Id      int64 `json:"id"`
 	ModelId int64 `json:"model_id"` //模型ID
 
-	Role    string `json:"role"`
-	Net     string `json:"net"`
+	//Role    string `json:"role"`
+	//Net     string `json:"net"`
+
+	Type    string `json:"type"` //tcp-server tcp-client udp-server udp-client serial
 	Addr    string `json:"addr"`
 	Timeout int    `json:"timeout"`
 
