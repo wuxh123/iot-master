@@ -5,13 +5,12 @@ import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-batch',
-  templateUrl: './model-batch.component.html',
-  styleUrls: ['./model-batch.component.scss']
+  selector: 'app-project-variable',
+  templateUrl: './project-variable.component.html',
+  styleUrls: ['./project-variable.component.scss']
 })
-export class ModelBatchComponent implements OnInit {
-
-  batches: [];
+export class ProjectVariableComponent implements OnInit {
+  variables: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -25,7 +24,8 @@ export class ModelBatchComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '批量采集';
+    tab.name = '变量管理';
+
   }
 
   ngOnInit(): void {
@@ -39,7 +39,7 @@ export class ModelBatchComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('batches', {
+    this.as.post('variables', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -48,7 +48,7 @@ export class ModelBatchComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.batches = res.data;
+      this.variables = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -58,11 +58,11 @@ export class ModelBatchComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-batch-create']);
+    this.router.navigate(['/admin/project-variable-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-project-batch-edit/' + c.id]);
+    this.router.navigate(['/admin/project-project-variable-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

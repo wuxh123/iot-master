@@ -1,21 +1,21 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {ActivatedRoute} from '@angular/router';
-import {TabRef} from '../tabs/tabs.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {TabRef} from "../tabs/tabs.component";
 
 @Component({
-  selector: 'app-model-batch-edit',
-  templateUrl: './model-batch-edit.component.html',
-  styleUrls: ['./model-batch-edit.component.scss']
+  selector: 'app-project-job-edit',
+  templateUrl: './project-job-edit.component.html',
+  styleUrls: ['./project-job-edit.component.scss']
 })
-export class ModelBatchEditComponent implements OnInit {
-  target = 'project-batch';
+export class ProjectJobEditComponent implements OnInit {
+  target = 'project-job';
   id = 0;
 
   data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '批量采集创建';
+    tab.name = '任务创建';
   }
 
   ngOnInit(): void {

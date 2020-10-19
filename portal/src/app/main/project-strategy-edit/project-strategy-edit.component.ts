@@ -4,18 +4,18 @@ import {ActivatedRoute} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-variable-edit',
-  templateUrl: './model-variable-edit.component.html',
-  styleUrls: ['./model-variable-edit.component.scss']
+  selector: 'app-project-strategy-edit',
+  templateUrl: './project-strategy-edit.component.html',
+  styleUrls: ['./project-strategy-edit.component.scss']
 })
-export class ModelVariableEditComponent implements OnInit {
-  target = 'project-variable';
+export class ProjectStrategyEditComponent implements OnInit {
+  target = 'strategy';
   id = 0;
 
   data: any = {};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '变量创建';
+    tab.name = '策略创建';
   }
 
   ngOnInit(): void {

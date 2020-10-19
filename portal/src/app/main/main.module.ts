@@ -33,16 +33,16 @@ import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {ProjectComponent} from './project/project.component';
 import {ProjectEditComponent} from './project-edit/project-edit.component';
-import {ModelVariableComponent} from './project-variable/model-variable.component';
-import {ModelVariableEditComponent} from './project-variable-edit/model-variable-edit.component';
-import {ModelBatchComponent} from './project-batch/model-batch.component';
-import {ModelBatchEditComponent} from './project-batch-edit/model-batch-edit.component';
-import {ModelJobComponent} from './project-job/model-job.component';
-import {ModelJobEditComponent} from './project-job-edit/model-job-edit.component';
-import {ModelStrategyComponent} from './project-strategy/model-strategy.component';
-import {ModelStrategyEditComponent} from './project-strategy-edit/model-strategy-edit.component';
-import {ModelAdapterComponent} from './project-adapter/model-adapter.component';
-import {ModelAdapterEditComponent} from './project-adapter-edit/model-adapter-edit.component';
+import {ProjectVariableComponent} from './project-variable/project-variable.component';
+import {ProjectVariableEditComponent} from './project-variable-edit/project-variable-edit.component';
+import {ProjectBatchComponent} from './project-batch/project-batch.component';
+import {ProjectBatchEditComponent} from './project-batch-edit/project-batch-edit.component';
+import {ProjectJobComponent} from './project-job/project-job.component';
+import {ProjectJobEditComponent} from './project-job-edit/project-job-edit.component';
+import {ProjectStrategyComponent} from './project-strategy/project-strategy.component';
+import {ProjectStrategyEditComponent} from './project-strategy-edit/project-strategy-edit.component';
+import {ProjectAdapterComponent} from './project-adapter/project-adapter.component';
+import {ProjectAdapterEditComponent} from './project-adapter-edit/project-adapter-edit.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
 
 
@@ -52,11 +52,11 @@ import {ProjectDetailComponent} from './project-detail/project-detail.component'
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ProjectComponent, ProjectEditComponent, ProjectDetailComponent,
-    ModelAdapterComponent, ModelAdapterEditComponent,
-    ModelVariableComponent, ModelVariableEditComponent,
-    ModelBatchComponent, ModelBatchEditComponent,
-    ModelJobComponent, ModelJobEditComponent,
-    ModelStrategyComponent, ModelStrategyEditComponent,
+    ProjectAdapterComponent, ProjectAdapterEditComponent,
+    ProjectVariableComponent, ProjectVariableEditComponent,
+    ProjectBatchComponent, ProjectBatchEditComponent,
+    ProjectJobComponent, ProjectJobEditComponent,
+    ProjectStrategyComponent, ProjectStrategyEditComponent,
   ],
   imports: [
     CommonModule,

@@ -75,7 +75,7 @@ export class MainComponent implements OnInit {
         },
         {
           title: '短信通知',
-          router: 'alert-email'
+          router: 'alert-sms'
         }
       ]
     },

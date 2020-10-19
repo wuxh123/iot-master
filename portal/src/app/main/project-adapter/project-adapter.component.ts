@@ -5,12 +5,13 @@ import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-variable',
-  templateUrl: './model-variable.component.html',
-  styleUrls: ['./model-variable.component.scss']
+  selector: 'app-project-adapter',
+  templateUrl: './project-adapter.component.html',
+  styleUrls: ['./project-adapter.component.scss']
 })
-export class ModelVariableComponent implements OnInit {
-  variables: [];
+export class ProjectAdapterComponent implements OnInit {
+
+  tunnels: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -24,8 +25,7 @@ export class ModelVariableComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '变量管理';
-
+    tab.name = '协议适配';
   }
 
   ngOnInit(): void {
@@ -39,7 +39,7 @@ export class ModelVariableComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('variables', {
+    this.as.post('tunnels', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -48,7 +48,7 @@ export class ModelVariableComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.variables = res.data;
+      this.tunnels = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -58,11 +58,11 @@ export class ModelVariableComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-variable-create']);
+    this.router.navigate(['/admin/project-adapter-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-project-variable-edit/' + c.id]);
+    this.router.navigate(['/admin/project-project-adapter-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

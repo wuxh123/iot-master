@@ -5,11 +5,11 @@ import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-strategy',
-  templateUrl: './model-strategy.component.html',
-  styleUrls: ['./model-strategy.component.scss']
+  selector: 'app-project-strategy',
+  templateUrl: './project-strategy.component.html',
+  styleUrls: ['./project-strategy.component.scss']
 })
-export class ModelStrategyComponent implements OnInit {
+export class ProjectStrategyComponent implements OnInit {
 
   strategies: [];
   total = 0;

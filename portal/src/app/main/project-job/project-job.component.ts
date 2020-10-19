@@ -5,13 +5,13 @@ import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-adapter',
-  templateUrl: './model-adapter.component.html',
-  styleUrls: ['./model-adapter.component.scss']
+  selector: 'app-project-job',
+  templateUrl: './project-job.component.html',
+  styleUrls: ['./project-job.component.scss']
 })
-export class ModelAdapterComponent implements OnInit {
+export class ProjectJobComponent implements OnInit {
 
-  tunnels: [];
+  jobs: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -25,7 +25,7 @@ export class ModelAdapterComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '协议适配';
+    tab.name = '定时任务';
   }
 
   ngOnInit(): void {
@@ -39,7 +39,7 @@ export class ModelAdapterComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('tunnels', {
+    this.as.post('jobs', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -48,7 +48,7 @@ export class ModelAdapterComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.tunnels = res.data;
+      this.jobs = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -58,11 +58,11 @@ export class ModelAdapterComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-adapter-create']);
+    this.router.navigate(['/admin/project-job-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-project-adapter-edit/' + c.id]);
+    this.router.navigate(['/admin/project-project-job-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

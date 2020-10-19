@@ -5,13 +5,13 @@ import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
-  selector: 'app-model-job',
-  templateUrl: './model-job.component.html',
-  styleUrls: ['./model-job.component.scss']
+  selector: 'app-project-batch',
+  templateUrl: './project-batch.component.html',
+  styleUrls: ['./project-batch.component.scss']
 })
-export class ModelJobComponent implements OnInit {
+export class ProjectBatchComponent implements OnInit {
 
-  jobs: [];
+  batches: [];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -25,7 +25,7 @@ export class ModelJobComponent implements OnInit {
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
-    tab.name = '定时任务';
+    tab.name = '批量采集';
   }
 
   ngOnInit(): void {
@@ -39,7 +39,7 @@ export class ModelJobComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('jobs', {
+    this.as.post('batches', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -48,7 +48,7 @@ export class ModelJobComponent implements OnInit {
       keyword: this.keyword,
     }).subscribe(res => {
 
-      this.jobs = res.data;
+      this.batches = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -58,11 +58,11 @@ export class ModelJobComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-job-create']);
+    this.router.navigate(['/admin/project-batch-create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-project-job-edit/' + c.id]);
+    this.router.navigate(['/admin/project-project-batch-edit/' + c.id]);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
