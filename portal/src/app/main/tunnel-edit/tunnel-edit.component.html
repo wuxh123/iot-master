@@ -13,13 +13,12 @@
   </div>
   <div nz-col nzSpan="20">
     <nz-input-group style="display: flex">
-      <nz-select [(ngModel)]="data.role">
-        <nz-option nzLabel="服务端" nzValue="server"></nz-option>
-        <nz-option nzLabel="客户端" nzValue="client"></nz-option>
-      </nz-select>
-      <nz-select [(ngModel)]="data.net" style="width:80px;">
-        <nz-option nzLabel="TCP" nzValue="tcp"></nz-option>
-        <nz-option nzLabel="UDP" nzValue="udp"></nz-option>
+      <nz-select [(ngModel)]="data.type" style="width: 120px">
+        <nz-option nzLabel="TCP服务端" nzValue="tcp-server"></nz-option>
+        <nz-option nzLabel="TCP客户端" nzValue="tcp-client"></nz-option>
+        <nz-option nzLabel="UDP服务端" nzValue="udp-server"></nz-option>
+        <nz-option nzLabel="UDP客户端" nzValue="udp-client"></nz-option>
+        <nz-option nzLabel="串口" nzValue="serial"></nz-option>
       </nz-select>
       <input nz-input [(ngModel)]="data.addr" placeholder=":1843" style="flex: 1;">
     </nz-input-group>
@@ -35,7 +34,7 @@
   </div>
 </div>
 
-<div *ngIf="data.role=='server'">
+<div *ngIf="data.type=='tcp-server' || data.type=='udp-server'">
 
   <div class="item" nz-row nzAlign="middle">
     <div nz-col nzSpan="4">

@@ -59,9 +59,13 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	mod := reflect.TypeOf(models.Tunnel{})
 	app.POST("/tunnels", curdApiList(mod))
-	//app.POST("/tunnel", curdApiCreate(mod, nil))
-	app.DELETE("/tunnel/:id", curdApiDelete(mod, nil))
-	app.PUT("/tunnel/:id", curdApiModify(mod, []string{}, nil))
+	app.POST("/tunnel", curdApiCreate(mod, nil))       //TODO 启动
+	app.DELETE("/tunnel/:id", curdApiDelete(mod, nil)) //TODO 停止
+	app.PUT("/tunnel/:id", curdApiModify(mod, []string{
+		"name", "description", "type", "addr", "timeout",
+		"register_enable", "register_regex", "register_min", "register_max",
+		"heart_beat_enable", "heart_beat_interval", "heart_beat_content", "heart_beat_is_hex",
+		"disabled"}, nil)) //TODO 重新启动
 	app.GET("/tunnel/:id", curdApiGet(mod))
 
 	app.GET("/tunnel/:id/start", tunnelStart)
@@ -72,7 +76,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//连接管理
 	mod = reflect.TypeOf(models.Link{})
 	app.POST("/links", curdApiList(mod))
-	app.DELETE("/link/:id", curdApiDelete(mod, nil))
+	app.DELETE("/link/:id", curdApiDelete(mod, nil)) //TODO 停止
 	app.PUT("/link/:id", curdApiModify(mod, []string{}, nil))
 	app.GET("/link/:id", curdApiGet(mod))
 

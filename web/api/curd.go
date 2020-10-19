@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
-//"github.com/modern-go/reflect2"
 )
 
 type hook func(value interface{}) error
@@ -70,27 +69,27 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 
 func curdApiCreate(mod reflect.Type, after hook) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		batch := reflect.New(mod).Interface()
-		if err := ctx.ShouldBindJSON(&batch); err != nil {
+		data := reflect.New(mod).Interface()
+		if err := ctx.ShouldBindJSON(data); err != nil {
 			replyError(ctx, err)
 			return
 		}
 
-		_, err := db.Engine.Insert(&batch)
+		_, err := db.Engine.Insert(data)
 		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 
 		if after != nil {
-			err = after(batch)
+			err = after(data)
 			if err != nil {
 				replyError(ctx, err)
 				return
 			}
 		}
 
-		replyOk(ctx, batch)
+		replyOk(ctx, data)
 	}
 }
 
@@ -102,27 +101,27 @@ func curdApiModify(mod reflect.Type, updateFields []string, after hook) gin.Hand
 			return
 		}
 
-		batch := reflect.New(mod).Interface()
-		if err := ctx.ShouldBindJSON(&batch); err != nil {
+		data := reflect.New(mod).Interface()
+		if err := ctx.ShouldBindJSON(data); err != nil {
 			replyError(ctx, err)
 			return
 		}
 
-		_, err := db.Engine.ID(pid.Id).Cols(updateFields...).Update(batch)
+		_, err := db.Engine.ID(pid.Id).Cols(updateFields...).Update(data)
 		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 
 		if after != nil {
-			err = after(batch)
+			err = after(data)
 			if err != nil {
 				replyError(ctx, err)
 				return
 			}
 		}
 
-		replyOk(ctx, batch)
+		replyOk(ctx, data)
 	}
 }
 
@@ -134,15 +133,15 @@ func curdApiDelete(mod reflect.Type, after hook) gin.HandlerFunc {
 			return
 		}
 
-		batch := reflect.New(mod).Interface()
-		_, err := db.Engine.ID(pid.Id).Delete(batch)
+		data := reflect.New(mod).Interface()
+		_, err := db.Engine.ID(pid.Id).Delete(data)
 		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 
 		if after != nil {
-			err = after(batch)
+			err = after(data)
 			if err != nil {
 				replyError(ctx, err)
 				return
@@ -160,8 +159,8 @@ func curdApiGet(mod reflect.Type) gin.HandlerFunc {
 			replyError(ctx, err)
 			return
 		}
-		batch := reflect.New(mod).Interface()
-		has, err := db.Engine.ID(pid.Id).Get(&batch)
+		data := reflect.New(mod).Interface()
+		has, err := db.Engine.ID(pid.Id).Get(data)
 		if !has {
 			replyFail(ctx, "记录不存在")
 			return
@@ -169,6 +168,6 @@ func curdApiGet(mod reflect.Type) gin.HandlerFunc {
 			replyError(ctx, err)
 			return
 		}
-		replyOk(ctx, batch)
+		replyOk(ctx, data)
 	}
 }

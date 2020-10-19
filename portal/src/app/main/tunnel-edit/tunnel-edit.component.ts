@@ -12,10 +12,10 @@ export class TunnelEditComponent implements OnInit {
   target = 'tunnel';
   id = 0;
 
-  data: any = {is_server: true, type: 'tcp', addr: ':1843'};
+  data: any = {is_server: true, type: 'tcp-server', addr: ':1843'};
 
   constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '批量采集创建';
+    tab.name = '通道创建';
   }
 
   ngOnInit(): void {
