@@ -75,11 +75,11 @@ export class TunnelComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/tunnel-create']);
+    this.router.navigate(['/admin/tunnel/create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/tunnel-edit/' + c.id]);
+    this.router.navigate(['/admin/tunnel/' + c.id + '/edit/']);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

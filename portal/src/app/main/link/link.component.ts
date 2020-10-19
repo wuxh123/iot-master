@@ -72,7 +72,7 @@ export class LinkComponent implements OnInit {
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/link-edit/' + c.id]);
+    this.router.navigate(['/admin/link/' + c.id + '/edit/']);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
