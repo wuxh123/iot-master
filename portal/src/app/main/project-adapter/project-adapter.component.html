@@ -47,7 +47,7 @@
     <td>{{ data.protocol_opts }}</td>
 <!--    <td>{{ data.polling_enable }}</td>-->
 <!--    <td>{{data.polling_interval}}</td>-->
-    <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a (click)="edit(data)" title="编辑">
         <i nz-icon nzType="edit"></i>

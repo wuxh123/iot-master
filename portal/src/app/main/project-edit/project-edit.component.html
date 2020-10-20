@@ -1,19 +1,48 @@
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    名称
+  </div>
+  <div nz-col nzSpan="20">
+    <input nz-input [(ngModel)]="data.name" placeholder="名称"/>
+  </div>
+</div>
 
-<app-form-grid label="名称">
-  <input nz-input [(ngModel)]="data.name" placeholder="名称"/>
-</app-form-grid>
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    说明
+  </div>
+  <div nz-col nzSpan="20">
+    <textarea nz-input [(ngModel)]="data.description" placeholder="说明"></textarea>
+  </div>
+</div>
 
-<app-form-grid label="说明">
-  <textarea nz-input [(ngModel)]="data.description" placeholder="说明"></textarea>
-</app-form-grid>
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    来源
+  </div>
+  <div nz-col nzSpan="20">
+    <input nz-input [(ngModel)]="data.origin" placeholder="来源"/>
+  </div>
+</div>
 
-<app-form-grid label="版本">
-  <input nz-input [(ngModel)]="data.version" placeholder="版本号"/>
-</app-form-grid>
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    版本号
+  </div>
+  <div nz-col nzSpan="20">
+    <input nz-input [(ngModel)]="data.version" placeholder="版本号"/>
+  </div>
+</div>
 
-<app-form-grid label="名称">
-  <input nz-input [(ngModel)]="data.name" placeholder="名称"/>
-</app-form-grid>
+<div class="item" nz-row nzAlign="middle">
+  <div nz-col nzSpan="4">
+    禁用
+  </div>
+  <div nz-col nzSpan="20">
+    <nz-switch [(ngModel)]="data.disabled"></nz-switch>
+  </div>
+</div>
+
 
 <button nz-button nzType="primary" (click)="submit()">保存</button>
 

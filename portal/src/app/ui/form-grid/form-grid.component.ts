@@ -6,7 +6,6 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./form-grid.component.scss']
 })
 export class FormGridComponent implements OnInit {
-  @Input() label = '';
 
   constructor() {
   }

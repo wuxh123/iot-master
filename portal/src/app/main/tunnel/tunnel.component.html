@@ -44,7 +44,7 @@
       {{data.disabled ? '禁用' : ''}}
       <a>启动/停止</a>
     </td>
-    <td>{{ data.created_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a [routerLink]="'/admin/tunnel-monitor/'+data.id" title="监控">
         <i nz-icon nzType="aim"></i>
