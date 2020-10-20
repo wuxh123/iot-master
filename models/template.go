@@ -12,13 +12,8 @@ type Template struct {
 	Strategies []TemplateStrategy `json:"strategies"`
 }
 
-type TemplateBase struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
 type TemplateAdapter struct {
-	TemplateBase `xorm:"extends"`
+	Name string `json:"name"`
 
 	ProtocolName string `json:"protocol_name"`
 	ProtocolOpts string `json:"protocol_opts"`
@@ -29,12 +24,12 @@ type TemplateAdapter struct {
 }
 
 type TemplateVariable struct {
-	TemplateBase `xorm:"extends"`
-
 	Address `xorm:"extends"`
 
-	Type string `json:"type"`
-	Unit string `json:"unit"` //单位
+	Name  string `json:"name"`
+	Alias string `json:"alias"`
+	Type  string `json:"type"`
+	Unit  string `json:"unit"` //单位
 
 	Scale    float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
 	Default  string  `json:"default"`
@@ -47,12 +42,9 @@ type TemplateVariable struct {
 }
 
 type TemplateBatch struct {
-	TemplateBase `xorm:"extends"`
-
 	Address `xorm:"extends"`
 
 	Size int `json:"size"`
-
 	//采样：无、定时、轮询
 	Cron          string `json:"cron"`
 	PollingEnable bool   `json:"polling_enable"` //轮询
@@ -60,15 +52,12 @@ type TemplateBatch struct {
 }
 
 type TemplateJob struct {
-	TemplateBase `xorm:"extends"`
-
+	Name   string `json:"name"`
 	Cron   string `json:"cron"`
 	Script string `json:"script"` //javascript
 }
 
 type TemplateStrategy struct {
-	TemplateBase `xorm:"extends"`
-
+	Name   string `json:"name"`
 	Script string `json:"script"` //javascript
 }
-
