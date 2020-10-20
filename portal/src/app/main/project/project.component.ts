@@ -58,11 +58,11 @@ export class ProjectComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-create']);
+    this.router.navigate(['/admin/project/create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-edit/' + c.id]);
+    this.router.navigate(['/admin/project/' + c.id + '/edit']);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
