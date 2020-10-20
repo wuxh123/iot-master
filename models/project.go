@@ -5,10 +5,10 @@ import "time"
 type Project struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
-	Disabled    bool      `json:"disabled"`
 	Description string    `json:"description"`
 	Origin      string    `json:"origin"` //模板ID
 	Version     string    `json:"version"`
+	Disabled    bool      `json:"disabled"`
 	Created     time.Time `json:"created" xorm:"created"`
 	Updated     time.Time `json:"updated" xorm:"updated"`
 	Deployed    time.Time `json:"deployed"` //如果 deployed < updated，说明有更新，提示重新部署
