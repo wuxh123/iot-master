@@ -3,15 +3,17 @@ package models
 import "time"
 
 type Project struct {
-	Id          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Origin      string    `json:"origin"` //模板ID
-	Version     string    `json:"version"`
-	Disabled    bool      `json:"disabled"`
-	Created     time.Time `json:"created" xorm:"created"`
-	Updated     time.Time `json:"updated" xorm:"updated"`
-	Deployed    time.Time `json:"deployed"` //如果 deployed < updated，说明有更新，提示重新部署
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Origin      string `json:"origin"` //模板ID
+	UUID        string `json:"uuid"`   //唯一码，自动生成
+	
+	Version  string    `json:"version"`
+	Disabled bool      `json:"disabled"`
+	Created  time.Time `json:"created" xorm:"created"`
+	Updated  time.Time `json:"updated" xorm:"updated"`
+	Deployed time.Time `json:"deployed"` //如果 deployed < updated，说明有更新，提示重新部署
 }
 
 type ProjectElement struct {
@@ -26,6 +28,7 @@ type ProjectElement struct {
 	Created time.Time `json:"created" xorm:"created"`
 	Updated time.Time `json:"updated" xorm:"updated"`
 }
+
 //
 //type ProjectElementVariable struct {
 //	Id                int64 `json:"id"` //TODO 去掉ID，用双主键
@@ -34,7 +37,6 @@ type ProjectElement struct {
 //
 //	Created time.Time `json:"created" xorm:"created"`
 //}
-
 
 type ProjectJob struct {
 	Id        int64  `json:"id"`

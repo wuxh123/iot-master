@@ -15,6 +15,7 @@ type Element struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Origin      string `json:"origin"` //来源
+	UUID        string `json:"uuid"`   //唯一码，自动生成
 
 	Manufacturer string `json:"manufacturer"` //厂商
 	Model        string `json:"model"`        //型号

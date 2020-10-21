@@ -5,6 +5,7 @@ type Template struct {
 	Description string `json:"description"`
 	Version     string `json:"version"`
 
+	Elements   []Element          `json:"elements"`
 	Jobs       []TemplateJob      `json:"jobs"`
 	Strategies []TemplateStrategy `json:"strategies"`
 }
@@ -18,4 +19,8 @@ type TemplateJob struct {
 type TemplateStrategy struct {
 	Name   string `json:"name"`
 	Script string `json:"script"` //javascript
+}
+
+type TemplateElement struct {
+
 }
