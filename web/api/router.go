@@ -58,14 +58,15 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	mod := reflect.TypeOf(models.Tunnel{})
-	app.POST("/tunnels", curdApiList(mod))
-	app.POST("/tunnel", curdApiCreate(mod, nil))       //TODO 启动
-	app.DELETE("/tunnel/:id", curdApiDelete(mod, nil)) //TODO 停止
-	app.PUT("/tunnel/:id", curdApiModify(mod, []string{
+	fields := []string{
 		"name", "description", "type", "addr", "timeout",
 		"register_enable", "register_regex", "register_min", "register_max",
 		"heart_beat_enable", "heart_beat_interval", "heart_beat_content", "heart_beat_is_hex",
-		"disabled"}, nil)) //TODO 重新启动
+		"disabled"}
+	app.POST("/tunnels", curdApiList(mod))
+	app.POST("/tunnel", curdApiCreate(mod, nil))            //TODO 启动
+	app.DELETE("/tunnel/:id", curdApiDelete(mod, nil))      //TODO 停止
+	app.PUT("/tunnel/:id", curdApiModify(mod, fields, nil)) //TODO 重新启动
 	app.GET("/tunnel/:id", curdApiGet(mod))
 
 	app.GET("/tunnel/:id/start", tunnelStart)
@@ -75,25 +76,28 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	//连接管理
 	mod = reflect.TypeOf(models.Link{})
+	fields = []string{"name"}
 	app.POST("/links", curdApiList(mod))
 	app.DELETE("/link/:id", curdApiDelete(mod, nil)) //TODO 停止
-	app.PUT("/link/:id", curdApiModify(mod, []string{}, nil))
+	app.PUT("/link/:id", curdApiModify(mod, fields, nil))
 	app.GET("/link/:id", curdApiGet(mod))
 
 	//插件管理
 	mod = reflect.TypeOf(models.Plugin{})
+	fields = []string{"name"}
 	app.POST("/plugins", curdApiList(mod))
 	app.POST("/plugin", curdApiCreate(mod, nil))
 	app.DELETE("/plugin/:id", curdApiDelete(mod, nil))
-	app.PUT("/plugin/:id", curdApiModify(mod, []string{}, nil))
+	app.PUT("/plugin/:id", curdApiModify(mod, fields, nil))
 	app.GET("/plugin/:id", curdApiGet(mod))
 
 	//模型管理
 	mod = reflect.TypeOf(models.Project{})
+	fields = []string{"name"}
 	app.POST("/projects", curdApiList(mod))
 	app.POST("/project", curdApiCreate(mod, nil))
 	app.DELETE("/project/:id", curdApiDelete(mod, nil))
-	app.PUT("/project/:id", curdApiModify(mod, []string{}, nil))
+	app.PUT("/project/:id", curdApiModify(mod, fields, nil))
 	app.GET("/project/:id", curdApiGet(mod))
 
 	//app.GET("/project/:id/tunnels", nop)
@@ -104,43 +108,60 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	app.POST("/project/import", projectImport)
 	app.GET("/project/:id/export", projectExport)
-
 	app.GET("/project/:id/deploy", projectDeploy)
 
-	mod = reflect.TypeOf(models.ProjectAdapter{})
-	app.POST("/project-adapters", curdApiList(mod))
-	app.POST("/project-adapter", curdApiCreate(mod, nil))
-	app.DELETE("/project-adapter/:id", curdApiDelete(mod, nil))
-	app.PUT("/project-adapter/:id", curdApiModify(mod, []string{}, nil))
-	app.GET("/project-adapter/:id", curdApiGet(mod))
-
-	mod = reflect.TypeOf(models.ProjectVariable{})
-	app.POST("/project-variables", curdApiList(mod))
-	app.POST("/project-variable", curdApiCreate(mod, nil))
-	app.DELETE("/project-variable/:id", curdApiDelete(mod, nil))
-	app.PUT("/project-variable/:id", curdApiModify(mod, []string{}, nil))
-	app.GET("/project-variable/:id", curdApiGet(mod))
-
-	mod = reflect.TypeOf(models.ProjectBatch{})
-	app.POST("/project-batches", curdApiList(mod))
-	app.POST("/project-batch", curdApiCreate(mod, nil))
-	app.DELETE("/project-batch/:id", curdApiDelete(mod, nil))
-	app.PUT("/project-batch/:id", curdApiModify(mod, []string{}, nil))
-	app.GET("/project-batch/:id", curdApiGet(mod))
+	mod = reflect.TypeOf(models.ProjectElement{})
+	fields = []string{"name"}
+	app.POST("/project-elements", curdApiList(mod))
+	app.POST("/project-element", curdApiCreate(mod, nil))
+	app.DELETE("/project-element/:id", curdApiDelete(mod, nil))
+	app.PUT("/project-element/:id", curdApiModify(mod, fields, nil))
+	app.GET("/project-element/:id", curdApiGet(mod))
 
 	mod = reflect.TypeOf(models.ProjectJob{})
+	fields = []string{"name"}
 	app.POST("/project-jobs", curdApiList(mod))
 	app.POST("/project-job", curdApiCreate(mod, nil))
 	app.DELETE("/project-job/:id", curdApiDelete(mod, nil))
-	app.PUT("/project-job/:id", curdApiModify(mod, []string{}, nil))
+	app.PUT("/project-job/:id", curdApiModify(mod, fields, nil))
 	app.GET("/project-job/:id", curdApiGet(mod))
 
 	mod = reflect.TypeOf(models.ProjectStrategy{})
+	fields = []string{"name"}
 	app.POST("/project-strategies", curdApiList(mod))
 	app.POST("/project-strategy", curdApiCreate(mod, nil))
 	app.DELETE("/project-strategy/:id", curdApiDelete(mod, nil))
-	app.PUT("/project-strategy/:id", curdApiModify(mod, []string{}, nil))
+	app.PUT("/project-strategy/:id", curdApiModify(mod, fields, nil))
 	app.GET("/project-strategy/:id", curdApiGet(mod))
+
+
+	//元件管理
+	mod = reflect.TypeOf(models.Element{})
+	fields = []string{"name"}
+	app.POST("/elements", curdApiList(mod))
+	app.POST("/element", curdApiCreate(mod, nil))
+	app.DELETE("/element/:id", curdApiDelete(mod, nil))
+	app.PUT("/element/:id", curdApiModify(mod, fields, nil))
+	app.GET("/element/:id", curdApiGet(mod))
+
+	//元件变量
+	mod = reflect.TypeOf(models.ElementVariable{})
+	fields = []string{"name"}
+	app.POST("/element-variables", curdApiList(mod))
+	app.POST("/element-variable", curdApiCreate(mod, nil))
+	app.DELETE("/element-variable/:id", curdApiDelete(mod, nil))
+	app.PUT("/element-variable/:id", curdApiModify(mod, fields, nil))
+	app.GET("/element-variable/:id", curdApiGet(mod))
+
+	//元件批量操作
+	mod = reflect.TypeOf(models.ElementBatch{})
+	fields = []string{"name"}
+	app.POST("/element-batches", curdApiList(mod))
+	app.POST("/element-batch", curdApiCreate(mod, nil))
+	app.DELETE("/element-batch/:id", curdApiDelete(mod, nil))
+	app.PUT("/element-batch/:id", curdApiModify(mod, fields, nil))
+	app.GET("/element-batch/:id", curdApiGet(mod))
+
 }
 
 func replyOk(ctx *gin.Context, data interface{}) {

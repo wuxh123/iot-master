@@ -14,8 +14,11 @@ type Element struct {
 	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Origin      string `json:"origin"` //模板ID
-	Version     string `json:"version"`
+	Origin      string `json:"origin"` //来源
+
+	Manufacturer string `json:"manufacturer"` //厂商
+	Model        string `json:"model"`        //型号
+	Version      string `json:"version"`      //版本
 
 	ProtocolName string `json:"protocol_name"`
 	ProtocolOpts string `json:"protocol_opts"`
