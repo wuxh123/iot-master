@@ -33,17 +33,18 @@ import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {ProjectComponent} from './project/project.component';
 import {ProjectEditComponent} from './project-edit/project-edit.component';
-import {ProjectVariableComponent} from './project-variable/project-variable.component';
-import {ProjectVariableEditComponent} from './project-variable-edit/project-variable-edit.component';
-import {ProjectBatchComponent} from './project-batch/project-batch.component';
-import {ProjectBatchEditComponent} from './project-batch-edit/project-batch-edit.component';
 import {ProjectJobComponent} from './project-job/project-job.component';
 import {ProjectJobEditComponent} from './project-job-edit/project-job-edit.component';
 import {ProjectStrategyComponent} from './project-strategy/project-strategy.component';
 import {ProjectStrategyEditComponent} from './project-strategy-edit/project-strategy-edit.component';
-import {ProjectAdapterComponent} from './project-adapter/project-adapter.component';
-import {ProjectAdapterEditComponent} from './project-adapter-edit/project-adapter-edit.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
+import {ElementComponent} from './element/element.component';
+import {ElementEditComponent} from './element-edit/element-edit.component';
+import {ElementDetailComponent} from './element-detail/element-detail.component';
+import {ElementVariableComponent} from './element-variable/element-variable.component';
+import {ElementVariableEditComponent} from './element-variable-edit/element-variable-edit.component';
+import {ElementBatchComponent} from './element-batch/element-batch.component';
+import {ElementBatchEditComponent} from './element-batch-edit/element-batch-edit.component';
 
 
 @NgModule({
@@ -52,11 +53,11 @@ import {ProjectDetailComponent} from './project-detail/project-detail.component'
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ProjectComponent, ProjectEditComponent, ProjectDetailComponent,
-    ProjectAdapterComponent, ProjectAdapterEditComponent,
-    ProjectVariableComponent, ProjectVariableEditComponent,
-    ProjectBatchComponent, ProjectBatchEditComponent,
     ProjectJobComponent, ProjectJobEditComponent,
     ProjectStrategyComponent, ProjectStrategyEditComponent,
+    ElementComponent, ElementEditComponent, ElementDetailComponent,
+    ElementVariableComponent, ElementVariableEditComponent,
+    ElementBatchComponent, ElementBatchEditComponent,
   ],
   imports: [
     CommonModule,
