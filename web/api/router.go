@@ -10,8 +10,8 @@ import (
 )
 
 type paramFilter struct {
-	Key    string   `form:"key"`
-	Values []string `form:"value"`
+	Key    string        `form:"key"`
+	Values []interface{} `form:"value"`
 }
 
 type paramSearch struct {
@@ -63,6 +63,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 		"register_enable", "register_regex", "register_min", "register_max",
 		"heart_beat_enable", "heart_beat_interval", "heart_beat_content", "heart_beat_is_hex",
 		"disabled"}
+	app.POST("/project/:id/tunnels", curdApiListById(mod, "project_id"))
 	app.POST("/tunnels", curdApiList(mod))
 	app.POST("/tunnel", curdApiCreate(mod, nil))            //TODO 启动
 	app.DELETE("/tunnel/:id", curdApiDelete(mod, nil))      //TODO 停止
@@ -77,6 +78,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//连接管理
 	mod = reflect.TypeOf(models.Link{})
 	fields = []string{"name"}
+	app.POST("/tunnel/:id/links", curdApiListById(mod, "tunnel_id"))
 	app.POST("/links", curdApiList(mod))
 	app.DELETE("/link/:id", curdApiDelete(mod, nil)) //TODO 停止
 	app.PUT("/link/:id", curdApiModify(mod, fields, nil))
@@ -84,6 +86,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	mod = reflect.TypeOf(models.Device{})
 	fields = []string{"name"}
+	app.POST("/project/:id/devices", curdApiListById(mod, "project_id"))
 	app.POST("/devices", curdApiList(mod))
 	app.POST("/device", curdApiCreate(mod, nil))
 	app.DELETE("/device/:id", curdApiDelete(mod, nil))
@@ -92,7 +95,8 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	mod = reflect.TypeOf(models.Location{})
 	fields = []string{"name"}
-	app.POST("/locations", curdApiList(mod))
+	app.POST("/device/:id/locations", curdApiListById(mod, "device_id"))
+	//app.POST("/locations", curdApiList(mod))
 	//app.POST("/location", curdApiCreate(mod, nil))
 	app.DELETE("/location/:id", curdApiDelete(mod, nil))
 	//app.PUT("/location/:id", curdApiModify(mod, fields, nil))
@@ -122,13 +126,15 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//app.GET("/project/:id/jobs", nop)
 	//app.GET("/project/:id/strategies", nop)
 
-	app.POST("/project/import", projectImport)
+	app.POST("/project-import", projectImport)
 	app.GET("/project/:id/export", projectExport)
 	app.GET("/project/:id/deploy", projectDeploy)
 
+	
 	mod = reflect.TypeOf(models.ProjectElement{})
 	fields = []string{"name"}
-	app.POST("/project-elements", curdApiList(mod))
+	app.POST("/project/:id/elements", curdApiListById(mod, "project_id"))
+	//app.POST("/project-elements", curdApiList(mod))
 	app.POST("/project-element", curdApiCreate(mod, nil))
 	app.DELETE("/project-element/:id", curdApiDelete(mod, nil))
 	app.PUT("/project-element/:id", curdApiModify(mod, fields, nil))
@@ -136,7 +142,8 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	mod = reflect.TypeOf(models.ProjectJob{})
 	fields = []string{"name"}
-	app.POST("/project-jobs", curdApiList(mod))
+	app.POST("/project/:id/jobs", curdApiListById(mod, "project_id"))
+	//app.POST("/project-jobs", curdApiList(mod))
 	app.POST("/project-job", curdApiCreate(mod, nil))
 	app.DELETE("/project-job/:id", curdApiDelete(mod, nil))
 	app.PUT("/project-job/:id", curdApiModify(mod, fields, nil))
@@ -144,7 +151,8 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	mod = reflect.TypeOf(models.ProjectStrategy{})
 	fields = []string{"name"}
-	app.POST("/project-strategies", curdApiList(mod))
+	app.POST("/project/:id/strategies", curdApiListById(mod, "project_id"))
+	//app.POST("/project-strategies", curdApiList(mod))
 	app.POST("/project-strategy", curdApiCreate(mod, nil))
 	app.DELETE("/project-strategy/:id", curdApiDelete(mod, nil))
 	app.PUT("/project-strategy/:id", curdApiModify(mod, fields, nil))
@@ -162,7 +170,8 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//元件变量
 	mod = reflect.TypeOf(models.ElementVariable{})
 	fields = []string{"name"}
-	app.POST("/element-variables", curdApiList(mod))
+	app.POST("/element/:id/variables", curdApiListById(mod, "element_id"))
+	//app.POST("/element-variables", curdApiList(mod))
 	app.POST("/element-variable", curdApiCreate(mod, nil))
 	app.DELETE("/element-variable/:id", curdApiDelete(mod, nil))
 	app.PUT("/element-variable/:id", curdApiModify(mod, fields, nil))
@@ -171,7 +180,8 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//元件批量操作
 	mod = reflect.TypeOf(models.ElementBatch{})
 	fields = []string{"name"}
-	app.POST("/element-batches", curdApiList(mod))
+	app.POST("/element/:id/batches", curdApiListById(mod, "element_id"))
+	//app.POST("/element-batches", curdApiList(mod))
 	app.POST("/element-batch", curdApiCreate(mod, nil))
 	app.DELETE("/element-batch/:id", curdApiDelete(mod, nil))
 	app.PUT("/element-batch/:id", curdApiModify(mod, fields, nil))
