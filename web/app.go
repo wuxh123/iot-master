@@ -41,22 +41,7 @@ func Serve() {
 	//注册前端接口
 	api.RegisterRoutes(app.PathPrefix("/api").Subrouter())
 
-	//未登录，访问前端文件，跳转到OAuth2登录
-	if conf.Config.SysAdmin.Enable {
-		//app.Use(func(c iris.Context) {
-		//	//session := sessions.Default(c)
-		//	//if user := session.Get("user"); user != nil {
-		//	//	c.Next()
-		//	//} else {
-		//	//	//TODO 拼接 OAuth2链接，需要AppKey和Secret
-		//	//	url := conf.Config.SysAdmin.Addr + "?redirect_uri="
-		//	//	c.Redirect(http.StatusFound, url)
-		//	//}
-		//})
-	} else if conf.Config.BaseAuth.Enable {
-		//开启基本HTTP认证
-		//app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
-	}
+	//未登录，访问前端文件，跳转到OAuth2登录，或基本HTTP认证
 
 	//前端静态文件
 	//app.PathPrefix("/").Handler(wwwFiles.Handler).Methods("GET")
