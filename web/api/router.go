@@ -82,6 +82,22 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.PUT("/link/:id", curdApiModify(mod, fields, nil))
 	app.GET("/link/:id", curdApiGet(mod))
 
+	mod = reflect.TypeOf(models.Device{})
+	fields = []string{"name"}
+	app.POST("/devices", curdApiList(mod))
+	app.POST("/device", curdApiCreate(mod, nil))
+	app.DELETE("/device/:id", curdApiDelete(mod, nil))
+	app.PUT("/device/:id", curdApiModify(mod, fields, nil))
+	app.GET("/device/:id", curdApiGet(mod))
+
+	mod = reflect.TypeOf(models.Location{})
+	fields = []string{"name"}
+	app.POST("/locations", curdApiList(mod))
+	//app.POST("/location", curdApiCreate(mod, nil))
+	app.DELETE("/location/:id", curdApiDelete(mod, nil))
+	//app.PUT("/location/:id", curdApiModify(mod, fields, nil))
+	app.GET("/location/:id", curdApiGet(mod))
+
 	//插件管理
 	mod = reflect.TypeOf(models.Plugin{})
 	fields = []string{"name"}
@@ -133,7 +149,6 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.DELETE("/project-strategy/:id", curdApiDelete(mod, nil))
 	app.PUT("/project-strategy/:id", curdApiModify(mod, fields, nil))
 	app.GET("/project-strategy/:id", curdApiGet(mod))
-
 
 	//元件管理
 	mod = reflect.TypeOf(models.Element{})
