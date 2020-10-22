@@ -106,16 +106,13 @@ export class MainComponent implements OnInit {
           title: '元件管理',
           router: 'element'
         },
-        {
-          title: '协议管理',
-          router: 'adapter'
-        },
       ]
     },
     {
       title: 'OTA升级',
       icon: 'cloud-upload',
       open: false,
+      disabled: true,
       children: [
         {
           title: '固件管理',

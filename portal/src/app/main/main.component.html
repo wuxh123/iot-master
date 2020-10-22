@@ -14,7 +14,7 @@
     </div>
 
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      <li nz-submenu *ngFor="let menu of menus" [nzTitle]="menu.title" [nzIcon]="menu.icon" [nzOpen]="menu.open">
+      <li nz-submenu *ngFor="let menu of menus" [nzTitle]="menu.title" [nzIcon]="menu.icon" [nzOpen]="menu.open" [nzDisabled]="menu.disabled">
         <ul>
           <li nz-menu-item *ngFor="let m of menu.children" [routerLink]="m.router" [nzDisabled]="m.disabled" nzMatchRouter nzMatchRouterExact>
             <i nz-icon [nzType]="m.icon" nzTheme="outline" *ngIf="m.icon"></i>
