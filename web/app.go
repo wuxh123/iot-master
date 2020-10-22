@@ -13,12 +13,14 @@ import (
 func Serve() {
 	if !conf.Config.Web.Debug {
 		//gin.SetMode(gin.ReleaseMode)
+
 	}
 
 
 	//GIN初始化
 	//app := gin.Default()
 	app := iris.New()
+
 
 	//加入swagger会增加10MB多体积，使用github.com/zgwit/swagger-files，去除Map文件，可以节省7MB左右
 	//Swagger文档，需要先执行swag init生成文档
