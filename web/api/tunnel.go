@@ -2,16 +2,16 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/core"
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 )
 
-func tunnelStart(ctx *gin.Context) {
-	var pid paramId
-	if err := ctx.BindUri(&pid); err != nil {
+func tunnelStart(ctx iris.Context) {
+	id, err := ctx.URLParamInt64("id")
+	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	c, err := core.GetTunnel(pid.Id)
+	c, err := core.GetTunnel(id)
 	if err != nil {
 		replyError(ctx, err)
 		return
@@ -26,13 +26,13 @@ func tunnelStart(ctx *gin.Context) {
 	replyOk(ctx, nil)
 }
 
-func tunnelStop(ctx *gin.Context) {
-	var pid paramId
-	if err := ctx.BindUri(&pid); err != nil {
+func tunnelStop(ctx iris.Context) {
+	id, err := ctx.URLParamInt64("id")
+	if err != nil {
 		replyError(ctx, err)
 		return
 	}
-	c, err := core.GetTunnel(pid.Id)
+	c, err := core.GetTunnel(id)
 	if err != nil {
 		replyError(ctx, err)
 		return

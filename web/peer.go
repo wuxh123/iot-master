@@ -1,13 +1,13 @@
 package web
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 	"golang.org/x/net/websocket"
 	"log"
 )
 
-func peer(ctx *gin.Context)  {
-	key := ctx.Query("key")
+func peer(ctx iris.Context)  {
+	key := ctx.URLParam("key")
 	log.Println(key)
 
 	//TODO 获取链接
@@ -17,7 +17,7 @@ func peer(ctx *gin.Context)  {
 	websocket.Handler(func(ws *websocket.Conn) {
 		//peer := core.NewPeer(ws, nil)
 		//peer.Receive()
-	}).ServeHTTP(ctx.Writer, ctx.Request)
+	}).ServeHTTP(ctx.ResponseWriter(), ctx.Request())
 	//ctx.Abort()
 }
 

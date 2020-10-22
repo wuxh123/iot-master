@@ -2,8 +2,7 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/db"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/kataras/iris/v12"
 	"reflect"
 )
 
@@ -19,12 +18,12 @@ func createSliceFromType(mod reflect.Type) interface{} {
 	return ptr.Interface()
 }
 
-func curdApiList(mod reflect.Type) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func curdApiList(mod reflect.Type) iris.Handler {
+	return func(ctx iris.Context) {
 		datas := createSliceFromType(mod)
 
 		var body paramSearch
-		err := ctx.ShouldBind(&body)
+		err := ctx.ReadJSON(&body)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -62,7 +61,7 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 		}
 
 		//replyOk(ctx, cs)
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(iris.Map{
 			"ok":    true,
 			"data":  datas,
 			"total": cnt,
@@ -70,24 +69,24 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 	}
 }
 
-func curdApiListById(mod reflect.Type, field string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func curdApiListById(mod reflect.Type, field string) iris.Handler {
+	return func(ctx iris.Context) {
 		datas := createSliceFromType(mod)
 
-		var pid paramId
-		if err := ctx.BindUri(&pid); err != nil {
-			replyError(ctx, err)
-			return
-		}
-
-		var body paramSearch
-		err := ctx.ShouldBind(&body)
+		id, err := ctx.URLParamInt64("id")
 		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 
-		op := db.Engine.Where(field+"=?", pid.Id).Limit(body.Length, body.Offset)
+		var body paramSearch
+		err = ctx.ReadJSON(&body)
+		if err != nil {
+			replyError(ctx, err)
+			return
+		}
+
+		op := db.Engine.Where(field+"=?", id).Limit(body.Length, body.Offset)
 
 		for _, filter := range body.Filters {
 			if len(filter.Values) > 0 {
@@ -119,7 +118,7 @@ func curdApiListById(mod reflect.Type, field string) gin.HandlerFunc {
 		}
 
 		//replyOk(ctx, cs)
-		ctx.JSON(http.StatusOK, gin.H{
+		ctx.JSON(iris.Map{
 			"ok":    true,
 			"data":  datas,
 			"total": cnt,
@@ -127,10 +126,10 @@ func curdApiListById(mod reflect.Type, field string) gin.HandlerFunc {
 	}
 }
 
-func curdApiCreate(mod reflect.Type, after hook) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func curdApiCreate(mod reflect.Type, after hook) iris.Handler {
+	return func(ctx iris.Context) {
 		data := reflect.New(mod).Interface()
-		if err := ctx.ShouldBindJSON(data); err != nil {
+		if err := ctx.ReadJSON(data); err != nil {
 			replyError(ctx, err)
 			return
 		}
@@ -153,21 +152,21 @@ func curdApiCreate(mod reflect.Type, after hook) gin.HandlerFunc {
 	}
 }
 
-func curdApiModify(mod reflect.Type, updateFields []string, after hook) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		var pid paramId
-		if err := ctx.BindUri(&pid); err != nil {
+func curdApiModify(mod reflect.Type, updateFields []string, after hook) iris.Handler {
+	return func(ctx iris.Context) {
+		id, err := ctx.URLParamInt64("id")
+		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 
 		data := reflect.New(mod).Interface()
-		if err := ctx.ShouldBindJSON(data); err != nil {
+		if err := ctx.ReadJSON(data); err != nil {
 			replyError(ctx, err)
 			return
 		}
 
-		_, err := db.Engine.ID(pid.Id).Cols(updateFields...).Update(data)
+		_, err = db.Engine.ID(id).Cols(updateFields...).Update(data)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -185,16 +184,16 @@ func curdApiModify(mod reflect.Type, updateFields []string, after hook) gin.Hand
 	}
 }
 
-func curdApiDelete(mod reflect.Type, after hook) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		var pid paramId
-		if err := ctx.BindUri(&pid); err != nil {
+func curdApiDelete(mod reflect.Type, after hook) iris.Handler {
+	return func(ctx iris.Context) {
+		id, err := ctx.URLParamInt64("id")
+		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 
 		data := reflect.New(mod).Interface()
-		_, err := db.Engine.ID(pid.Id).Delete(data)
+		_, err = db.Engine.ID(id).Delete(data)
 		if err != nil {
 			replyError(ctx, err)
 			return
@@ -212,15 +211,15 @@ func curdApiDelete(mod reflect.Type, after hook) gin.HandlerFunc {
 	}
 }
 
-func curdApiGet(mod reflect.Type) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		var pid paramId
-		if err := ctx.BindUri(&pid); err != nil {
+func curdApiGet(mod reflect.Type) iris.Handler {
+	return func(ctx iris.Context) {
+		id, err := ctx.URLParamInt64("id")
+		if err != nil {
 			replyError(ctx, err)
 			return
 		}
 		data := reflect.New(mod).Interface()
-		has, err := db.Engine.ID(pid.Id).Get(data)
+		has, err := db.Engine.ID(id).Get(data)
 		if !has {
 			replyFail(ctx, "记录不存在")
 			return
