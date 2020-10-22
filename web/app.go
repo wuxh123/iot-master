@@ -6,7 +6,6 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/web/open"
 	wwwFiles "git.zgwit.com/zgwit/iot-admin/web/www"
 	"github.com/gorilla/mux"
-	"github.com/quasoft/memstore"
 	"log"
 	"net/http"
 	"time"
@@ -20,12 +19,6 @@ func Serve() {
 
 	app := mux.NewRouter()
 
-
-	//GIN初始化
-	//app := gin.Default()
-	//app := iris.New()
-
-
 	//加入swagger会增加10MB多体积，使用github.com/zgwit/swagger-files，去除Map文件，可以节省7MB左右
 	//Swagger文档，需要先执行swag init生成文档
 	//app.Get("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -37,23 +30,6 @@ func Serve() {
 
 	//开放接口
 	open.RegisterRoutes(app.PathPrefix("/open").Subrouter())
-
-	//启用session
-	store := memstore.NewMemStore([]byte("iot-admin"), []byte("iot-admin"))
-	app.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			//sess.ID
-			sess, err := store.Get(request, "iot-admin")
-			if err != nil {
-				http.Error(writer, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			if sess.IsNew {
-				_ = sess.Save(request, writer)
-			}
-			next.ServeHTTP(writer, request)
-		})
-	})
 
 	//授权检查，启用了SysAdmin的OAuth2，就不能再使用基本HTTP认证了
 	//if conf.Config.SysAdmin.Enable {
@@ -83,23 +59,17 @@ func Serve() {
 	}
 
 	//前端静态文件
-	//app.Get("/*any", func(c iris.Context) {
-	app.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			if request.Method == http.MethodGet {
-				//支持前端框架的无“#”路由
-				if request.RequestURI == "/" {
-					request.URL.Path = "index.html"
-				} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, request.RequestURI); err != nil {
-					request.URL.Path = "index.html"
-				}
-				//TODO 如果未登录，则跳转SysAdmin OAuth2自动授权页面
-
-				//文件失效期已经在Handler中处理
-				wwwFiles.Handler.ServeHTTP(writer, request)
-			}
-		})
-	})
+	//app.PathPrefix("/").Handler(wwwFiles.Handler).Methods("GET")
+	app.PathPrefix("/").HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		//支持前端框架的无“#”路由
+		if request.RequestURI == "/" {
+			request.URL.Path = "index.html"
+		} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, request.RequestURI); err != nil {
+			request.URL.Path = "index.html"
+		}
+		//文件失效期已经在Handler中处理
+		wwwFiles.Handler.ServeHTTP(writer, request)
+	}).Methods("GET")
 
 	//监听HTTP
 	srv := &http.Server{

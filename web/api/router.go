@@ -5,6 +5,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/conf"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gorilla/mux"
+	"github.com/quasoft/memstore"
 	"net/http"
 	"reflect"
 )
@@ -31,6 +32,7 @@ type paramId2 struct {
 	Id  int64 `uri:"id"`
 	Id2 int64 `uri:"id2"`
 }
+
 //
 //var (
 //	cookieNameForSessionID = "iot-admin"
@@ -53,15 +55,40 @@ type paramId2 struct {
 func RegisterRoutes(app *mux.Router) {
 
 	if conf.Config.SysAdmin.Enable {
+		//启用session
+		store := memstore.NewMemStore([]byte("iot-admin"), []byte("iot-admin"))
+		app.Use(func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+				sess, err := store.Get(request, "iot-admin")
+				if err != nil {
+					http.Error(writer, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				if sess.IsNew {
+					_ = sess.Save(request, writer)
+				}
+				//TODO 检查session，及权限
+				next.ServeHTTP(writer, request)
+			})
+		})
 		//检查 session，必须登录
 		//app.Use(mustLogin)
 	} else if conf.Config.BaseAuth.Enable {
 		//检查HTTP认证
+		app.Use(func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+				if username, password, ok := request.BasicAuth(); ok {
+					if pass, ok := conf.Config.BaseAuth.Users[username]; ok && password == pass {
+						next.ServeHTTP(writer, request)
+						return
+					}
+				}
+
+				writer.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password for this site"`)
+				http.Error(writer, "Unauthorised", http.StatusUnauthorized)
+			})
+		})
 		//app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
-		//authConfig := basicauth.Config{
-		//	Users: conf.Config.BaseAuth.Users,
-		//}
-		//app.Use(basicauth.New(authConfig))
 	} else {
 		//支持匿名访问
 	}
@@ -75,7 +102,7 @@ func RegisterRoutes(app *mux.Router) {
 		"disabled"}
 	app.HandleFunc("/project/{id}/tunnels", curdApiListById(mod, "project_id")).Methods("POST")
 	app.HandleFunc("/tunnels", curdApiList(mod)).Methods("POST")
-	app.HandleFunc("/tunnel", curdApiCreate(mod, nil)).Methods("POST")            //TODO 启动
+	app.HandleFunc("/tunnel", curdApiCreate(mod, nil)).Methods("POST")             //TODO 启动
 	app.HandleFunc("/tunnel/{id}", curdApiDelete(mod, nil)).Methods("DELETE")      //TODO 停止
 	app.HandleFunc("/tunnel/{id}", curdApiModify(mod, fields, nil)).Methods("PUT") //TODO 重新启动
 	app.HandleFunc("/tunnel/{id}", curdApiGet(mod)).Methods("GET")
@@ -90,7 +117,7 @@ func RegisterRoutes(app *mux.Router) {
 	fields = []string{"name"}
 	app.HandleFunc("/tunnel/{id}/links", curdApiListById(mod, "tunnel_id")).Methods("POST")
 	app.HandleFunc("/links", curdApiList(mod)).Methods("POST")
-	app.HandleFunc("/link/{id}", curdApiDelete(mod, nil)).Methods("DELETE")    //TODO 停止
+	app.HandleFunc("/link/{id}", curdApiDelete(mod, nil)).Methods("DELETE") //TODO 停止
 	app.HandleFunc("/link/{id}", curdApiModify(mod, fields, nil)).Methods("PUT")
 	app.HandleFunc("/link/{id}", curdApiGet(mod)).Methods("GET")
 
@@ -129,12 +156,6 @@ func RegisterRoutes(app *mux.Router) {
 	app.HandleFunc("/project/{id}", curdApiDelete(mod, nil)).Methods("DELETE")
 	app.HandleFunc("/project/{id}", curdApiModify(mod, fields, nil)).Methods("PUT")
 	app.HandleFunc("/project/{id}", curdApiGet(mod)).Methods("GET")
-
-	//app.HandleFunc("/project/{id}/tunnels", nop)
-	//app.HandleFunc("/project/{id}/variables", nop)
-	//app.HandleFunc("/project/{id}/batches", nop)
-	//app.HandleFunc("/project/{id}/jobs", nop)
-	//app.HandleFunc("/project/{id}/strategies", nop)
 
 	//app.HandleFunc("/project/import", projectImport).Methods("POST")
 	//app.HandleFunc("/project/{id}/export", projectExport).Methods("GET")
