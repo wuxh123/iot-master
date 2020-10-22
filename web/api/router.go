@@ -1,11 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"git.zgwit.com/zgwit/iot-admin/conf"
 	"git.zgwit.com/zgwit/iot-admin/models"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/middleware/basicauth"
-	"github.com/kataras/iris/v12/sessions"
+	"github.com/gorilla/mux"
+	"net/http"
 	"reflect"
 )
 
@@ -31,37 +31,37 @@ type paramId2 struct {
 	Id  int64 `uri:"id"`
 	Id2 int64 `uri:"id2"`
 }
+//
+//var (
+//	cookieNameForSessionID = "iot-admin"
+//	sess                   = sessions.New(sessions.Config{Cookie: cookieNameForSessionID})
+//)
+//
+//func mustLogin(ctx iris.Context) {
+//	session := sess.Start(ctx)
+//	if user := session.Get("user"); user != nil {
+//		ctx.Next()
+//	} else {
+//		//TODO 检查OAuth2返回的code，进一步获取用户信息，放置到session中
+//
+//		ctx.StatusCode(iris.StatusUnauthorized)
+//		ctx.JSON(iris.Map{"ok": false, "error": "Unauthorized"})
+//		//ctx.Abort()
+//	}
+//}
 
-var (
-	cookieNameForSessionID ="iot-admin"
-	sess = sessions.New(sessions.Config{Cookie:cookieNameForSessionID})
-)
-
-func mustLogin(ctx iris.Context) {
-	session := sess.Start(ctx)
-	if user := session.Get("user"); user != nil {
-		ctx.Next()
-	} else {
-		//TODO 检查OAuth2返回的code，进一步获取用户信息，放置到session中
-
-		ctx.StatusCode(iris.StatusUnauthorized)
-		ctx.JSON(iris.Map{"ok": false, "error": "Unauthorized"})
-		//ctx.Abort()
-	}
-}
-
-func RegisterRoutes(app iris.Party) {
+func RegisterRoutes(app *mux.Router) {
 
 	if conf.Config.SysAdmin.Enable {
 		//检查 session，必须登录
-		app.Use(mustLogin)
+		//app.Use(mustLogin)
 	} else if conf.Config.BaseAuth.Enable {
 		//检查HTTP认证
 		//app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
-		authConfig := basicauth.Config{
-			Users: conf.Config.BaseAuth.Users,
-		}
-		app.Use(basicauth.New(authConfig))
+		//authConfig := basicauth.Config{
+		//	Users: conf.Config.BaseAuth.Users,
+		//}
+		//app.Use(basicauth.New(authConfig))
 	} else {
 		//支持匿名访问
 	}
@@ -73,154 +73,174 @@ func RegisterRoutes(app iris.Party) {
 		"register_enable", "register_regex", "register_min", "register_max",
 		"heart_beat_enable", "heart_beat_interval", "heart_beat_content", "heart_beat_is_hex",
 		"disabled"}
-	app.Post("/project/:id/tunnels", curdApiListById(mod, "project_id"))
-	app.Post("/tunnels", curdApiList(mod))
-	app.Post("/tunnel", curdApiCreate(mod, nil))            //TODO 启动
-	app.Delete("/tunnel/:id", curdApiDelete(mod, nil))      //TODO 停止
-	app.Put("/tunnel/:id", curdApiModify(mod, fields, nil)) //TODO 重新启动
-	app.Get("/tunnel/:id", curdApiGet(mod))
+	app.HandleFunc("/project/:id/tunnels", curdApiListById(mod, "project_id")).Methods("POST")
+	app.HandleFunc("/tunnels", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/tunnel", curdApiCreate(mod, nil)).Methods("POST")            //TODO 启动
+	app.HandleFunc("/tunnel/:id", curdApiDelete(mod, nil)).Methods("DELETE")      //TODO 停止
+	app.HandleFunc("/tunnel/:id", curdApiModify(mod, fields, nil)).Methods("PUT") //TODO 重新启动
+	app.HandleFunc("/tunnel/:id", curdApiGet(mod)).Methods("GET")
 
-	app.Get("/tunnel/:id/start", tunnelStart)
-	app.Get("/tunnel/:id/stop", tunnelStop)
+	app.HandleFunc("/tunnel/:id/start", tunnelStart).Methods("GET")
+	app.HandleFunc("/tunnel/:id/stop", tunnelStop).Methods("GET")
 
-	//app.Post("/channel/:id/links")
+	//app.HandleFunc("/channel/:id/links")
 
 	//连接管理
 	mod = reflect.TypeOf(models.Link{})
 	fields = []string{"name"}
-	app.Post("/tunnel/:id/links", curdApiListById(mod, "tunnel_id"))
-	app.Post("/links", curdApiList(mod))
-	app.Delete("/link/:id", curdApiDelete(mod, nil)) //TODO 停止
-	app.Put("/link/:id", curdApiModify(mod, fields, nil))
-	app.Get("/link/:id", curdApiGet(mod))
+	app.HandleFunc("/tunnel/:id/links", curdApiListById(mod, "tunnel_id")).Methods("POST")
+	app.HandleFunc("/links", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/link/:id", curdApiDelete(mod, nil)).Methods("DELETE")    //TODO 停止
+	app.HandleFunc("/link/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/link/:id", curdApiGet(mod)).Methods("GET")
 
 	mod = reflect.TypeOf(models.Device{})
 	fields = []string{"name"}
-	app.Post("/project/:id/devices", curdApiListById(mod, "project_id"))
-	app.Post("/devices", curdApiList(mod))
-	app.Post("/device", curdApiCreate(mod, nil))
-	app.Delete("/device/:id", curdApiDelete(mod, nil))
-	app.Put("/device/:id", curdApiModify(mod, fields, nil))
-	app.Get("/device/:id", curdApiGet(mod))
+	app.HandleFunc("/project/:id/devices", curdApiListById(mod, "project_id")).Methods("POST")
+	app.HandleFunc("/devices", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/device", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/device/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/device/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/device/:id", curdApiGet(mod)).Methods("GET")
 
 	mod = reflect.TypeOf(models.Location{})
 	fields = []string{"name"}
-	app.Post("/device/:id/locations", curdApiListById(mod, "device_id"))
-	//app.Post("/locations", curdApiList(mod))
-	//app.Post("/location", curdApiCreate(mod, nil))
-	app.Delete("/location/:id", curdApiDelete(mod, nil))
-	//app.Put("/location/:id", curdApiModify(mod, fields, nil))
-	app.Get("/location/:id", curdApiGet(mod))
+	app.HandleFunc("/device/:id/locations", curdApiListById(mod, "device_id")).Methods("POST")
+	//app.HandleFunc("/locations", curdApiList(mod)).Methods("POST")
+	//app.HandleFunc("/location", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/location/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	//app.HandleFunc("/location/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/location/:id", curdApiGet(mod)).Methods("GET")
 
 	//插件管理
 	mod = reflect.TypeOf(models.Plugin{})
 	fields = []string{"name"}
-	app.Post("/plugins", curdApiList(mod))
-	app.Post("/plugin", curdApiCreate(mod, nil))
-	app.Delete("/plugin/:id", curdApiDelete(mod, nil))
-	app.Put("/plugin/:id", curdApiModify(mod, fields, nil))
-	app.Get("/plugin/:id", curdApiGet(mod))
+	app.HandleFunc("/plugins", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/plugin", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/plugin/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/plugin/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/plugin/:id", curdApiGet(mod)).Methods("GET")
 
 	//模型管理
 	mod = reflect.TypeOf(models.Project{})
 	fields = []string{"name"}
-	app.Post("/projects", curdApiList(mod))
-	app.Post("/project", curdApiCreate(mod, nil))
-	app.Delete("/project/:id", curdApiDelete(mod, nil))
-	app.Put("/project/:id", curdApiModify(mod, fields, nil))
-	app.Get("/project/:id", curdApiGet(mod))
+	app.HandleFunc("/projects", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/project", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/project/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/project/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/project/:id", curdApiGet(mod)).Methods("GET")
 
-	//app.Get("/project/:id/tunnels", nop)
-	//app.Get("/project/:id/variables", nop)
-	//app.Get("/project/:id/batches", nop)
-	//app.Get("/project/:id/jobs", nop)
-	//app.Get("/project/:id/strategies", nop)
+	//app.HandleFunc("/project/:id/tunnels", nop)
+	//app.HandleFunc("/project/:id/variables", nop)
+	//app.HandleFunc("/project/:id/batches", nop)
+	//app.HandleFunc("/project/:id/jobs", nop)
+	//app.HandleFunc("/project/:id/strategies", nop)
 
-	app.Post("/project/import", projectImport)
-	app.Get("/project/:id/export", projectExport)
-	app.Get("/project/:id/deploy", projectDeploy)
+	//app.HandleFunc("/project/import", projectImport).Methods("POST")
+	//app.HandleFunc("/project/:id/export", projectExport).Methods("GET")
+	//app.HandleFunc("/project/:id/deploy", projectDeploy).Methods("GET")
 
-	
 	mod = reflect.TypeOf(models.ProjectElement{})
 	fields = []string{"name"}
-	app.Post("/project/:id/elements", curdApiListById(mod, "project_id"))
-	//app.Post("/project/elements", curdApiList(mod))
-	app.Post("/project/element", curdApiCreate(mod, nil))
-	app.Delete("/project/element/:id", curdApiDelete(mod, nil))
-	app.Put("/project/element/:id", curdApiModify(mod, fields, nil))
-	app.Get("/project/element/:id", curdApiGet(mod))
+	app.HandleFunc("/project/:id/elements", curdApiListById(mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/elements", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/project/element", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/project/element/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/project/element/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/project/element/:id", curdApiGet(mod)).Methods("GET")
 
 	mod = reflect.TypeOf(models.ProjectJob{})
 	fields = []string{"name"}
-	app.Post("/project/:id/jobs", curdApiListById(mod, "project_id"))
-	//app.Post("/project/jobs", curdApiList(mod))
-	app.Post("/project/job", curdApiCreate(mod, nil))
-	app.Delete("/project/job/:id", curdApiDelete(mod, nil))
-	app.Put("/project/job/:id", curdApiModify(mod, fields, nil))
-	app.Get("/project/job/:id", curdApiGet(mod))
+	app.HandleFunc("/project/:id/jobs", curdApiListById(mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/jobs", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/project/job", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/project/job/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/project/job/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/project/job/:id", curdApiGet(mod)).Methods("GET")
 
 	mod = reflect.TypeOf(models.ProjectStrategy{})
 	fields = []string{"name"}
-	app.Post("/project/:id/strategies", curdApiListById(mod, "project_id"))
-	//app.Post("/project/strategies", curdApiList(mod))
-	app.Post("/project/strategy", curdApiCreate(mod, nil))
-	app.Delete("/project/strategy/:id", curdApiDelete(mod, nil))
-	app.Put("/project/strategy/:id", curdApiModify(mod, fields, nil))
-	app.Get("/project/strategy/:id", curdApiGet(mod))
+	app.HandleFunc("/project/:id/strategies", curdApiListById(mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/strategies", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/project/strategy", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/project/strategy/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/project/strategy/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/project/strategy/:id", curdApiGet(mod)).Methods("GET")
 
 	//元件管理
 	mod = reflect.TypeOf(models.Element{})
 	fields = []string{"name"}
-	app.Post("/elements", curdApiList(mod))
-	app.Post("/element", curdApiCreate(mod, nil))
-	app.Delete("/element/:id", curdApiDelete(mod, nil))
-	app.Put("/element/:id", curdApiModify(mod, fields, nil))
-	app.Get("/element/:id", curdApiGet(mod))
+	app.HandleFunc("/elements", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/element", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/element/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/element/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/element/:id", curdApiGet(mod)).Methods("GET")
 
 	//元件变量
 	mod = reflect.TypeOf(models.ElementVariable{})
 	fields = []string{"name"}
-	app.Post("/element/:id/variables", curdApiListById(mod, "element_id"))
-	//app.Post("/element/variables", curdApiList(mod))
-	app.Post("/element/variable", curdApiCreate(mod, nil))
-	app.Delete("/element/variable/:id", curdApiDelete(mod, nil))
-	app.Put("/element/variable/:id", curdApiModify(mod, fields, nil))
-	app.Get("/element/variable/:id", curdApiGet(mod))
+	app.HandleFunc("/element/:id/variables", curdApiListById(mod, "element_id")).Methods("POST")
+	//app.HandleFunc("/element/variables", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/element/variable", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/element/variable/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/element/variable/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/element/variable/:id", curdApiGet(mod)).Methods("GET")
 
 	//元件批量操作
 	mod = reflect.TypeOf(models.ElementBatch{})
 	fields = []string{"name"}
-	app.Post("/element/:id/batches", curdApiListById(mod, "element_id"))
-	//app.Post("/element/batches", curdApiList(mod))
-	app.Post("/element/batch", curdApiCreate(mod, nil))
-	app.Delete("/element/batch/:id", curdApiDelete(mod, nil))
-	app.Put("/element/batch/:id", curdApiModify(mod, fields, nil))
-	app.Get("/element/batch/:id", curdApiGet(mod))
+	app.HandleFunc("/element/:id/batches", curdApiListById(mod, "element_id")).Methods("POST")
+	//app.HandleFunc("/element/batches", curdApiList(mod)).Methods("POST")
+	app.HandleFunc("/element/batch", curdApiCreate(mod, nil)).Methods("POST")
+	app.HandleFunc("/element/batch/:id", curdApiDelete(mod, nil)).Methods("DELETE")
+	app.HandleFunc("/element/batch/:id", curdApiModify(mod, fields, nil)).Methods("PUT")
+	app.HandleFunc("/element/batch/:id", curdApiGet(mod)).Methods("GET")
 
 }
 
-func replyOk(ctx iris.Context, data interface{}) {
-	ctx.JSON(iris.Map{
-		"ok":   true,
-		"data": data,
-	})
+type Reply struct {
+	Ok    bool        `json:"ok"`
+	Error string      `json:"error,omitempty"`
+	Data  interface{} `json:"data,omitempty"`
+	Total int64       `json:"total,omitempty"`
 }
 
-func replyFail(ctx iris.Context, err string) {
-	ctx.JSON(iris.Map{
-		"ok":    false,
-		"error": err,
-	})
+func replyList(writer http.ResponseWriter, data interface{}, total int64) {
+	r := Reply{
+		Ok:    true,
+		Data:  data,
+		Total: total,
+	}
+	b, _ := json.Marshal(r)
+	_, _ = writer.Write(b)
 }
 
-func replyError(ctx iris.Context, err error) {
-	ctx.JSON(iris.Map{
-		"ok":    false,
-		"error": err.Error(),
-	})
+func replyOk(writer http.ResponseWriter, data interface{}) {
+	r := Reply{
+		Ok:   true,
+		Data: data,
+	}
+	b, _ := json.Marshal(r)
+	_, _ = writer.Write(b)
 }
 
-func nop(ctx iris.Context) {
-	ctx.StatusCode(iris.StatusForbidden)
-	ctx.WriteString("Unsupported")
+func replyFail(writer http.ResponseWriter, err string) {
+	r := Reply{
+		Error: err,
+	}
+	b, _ := json.Marshal(r)
+	_, _ = writer.Write(b)
+}
+
+func replyError(writer http.ResponseWriter, err error) {
+	r := Reply{
+		Error: err.Error(),
+	}
+	b, _ := json.Marshal(r)
+	_, _ = writer.Write(b)
+}
+
+func nop(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(http.StatusForbidden)
+	_, _ = writer.Write([]byte("Unsupported"))
 }

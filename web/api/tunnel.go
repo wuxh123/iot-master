@@ -2,47 +2,49 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/iot-admin/core"
-	"github.com/kataras/iris/v12"
+	"github.com/gorilla/mux"
+	"net/http"
+	"strconv"
 )
 
-func tunnelStart(ctx iris.Context) {
-	id, err := ctx.URLParamInt64("id")
+func tunnelStart(writer http.ResponseWriter, request *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
 	if err != nil {
-		replyError(ctx, err)
+		replyError(writer, err)
 		return
 	}
 	c, err := core.GetTunnel(id)
 	if err != nil {
-		replyError(ctx, err)
+		replyError(writer, err)
 		return
 	}
 
 	err = c.Open()
 	if err != nil {
-		replyError(ctx, err)
+		replyError(writer, err)
 		return
 	}
 
-	replyOk(ctx, nil)
+	replyOk(writer, nil)
 }
 
-func tunnelStop(ctx iris.Context) {
-	id, err := ctx.URLParamInt64("id")
+func tunnelStop(writer http.ResponseWriter, request *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
 	if err != nil {
-		replyError(ctx, err)
+		replyError(writer, err)
 		return
 	}
 	c, err := core.GetTunnel(id)
 	if err != nil {
-		replyError(ctx, err)
+		replyError(writer, err)
 		return
 	}
 
 	err = c.Close()
 	if err != nil {
-		replyError(ctx, err)
+		replyError(writer, err)
 		return
 	}
 
-	replyOk(ctx, nil)
+	replyOk(writer, nil)
 }

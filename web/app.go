@@ -5,9 +5,10 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/web/api"
 	"git.zgwit.com/zgwit/iot-admin/web/open"
 	wwwFiles "git.zgwit.com/zgwit/iot-admin/web/www"
-	"github.com/kataras/iris/v12"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"time"
 )
 
 func Serve() {
@@ -16,10 +17,12 @@ func Serve() {
 
 	}
 
+	app := mux.NewRouter()
+
 
 	//GIN初始化
 	//app := gin.Default()
-	app := iris.New()
+	//app := iris.New()
 
 
 	//加入swagger会增加10MB多体积，使用github.com/zgwit/swagger-files，去除Map文件，可以节省7MB左右
@@ -27,12 +30,13 @@ func Serve() {
 	//app.Get("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//MQTT
-	app.Get("/mqtt", mqtt)
+	app.HandleFunc("/mqtt", mqtt).Methods("GET")
 	//透传
-	app.Get("/peer", peer)
+	app.HandleFunc("/peer", peer).Methods("GET")
 
 	//开放接口
-	open.RegisterRoutes(app.Party("/open"))
+	open.RegisterRoutes(app.PathPrefix("/open").Subrouter())
+
 
 	//启用session
 	//app.Use(sessions.Sessions("core-admin", memstore.NewStore([]byte("core-admin-secret"))))
@@ -45,20 +49,20 @@ func Serve() {
 
 
 	//注册前端接口
-	api.RegisterRoutes(app.Party("/api"))
+	api.RegisterRoutes(app.PathPrefix("/open").Subrouter())
 
 	//未登录，访问前端文件，跳转到OAuth2登录
 	if conf.Config.SysAdmin.Enable {
-		app.Use(func(c iris.Context) {
-			//session := sessions.Default(c)
-			//if user := session.Get("user"); user != nil {
-			//	c.Next()
-			//} else {
-			//	//TODO 拼接 OAuth2链接，需要AppKey和Secret
-			//	url := conf.Config.SysAdmin.Addr + "?redirect_uri="
-			//	c.Redirect(http.StatusFound, url)
-			//}
-		})
+		//app.Use(func(c iris.Context) {
+		//	//session := sessions.Default(c)
+		//	//if user := session.Get("user"); user != nil {
+		//	//	c.Next()
+		//	//} else {
+		//	//	//TODO 拼接 OAuth2链接，需要AppKey和Secret
+		//	//	url := conf.Config.SysAdmin.Addr + "?redirect_uri="
+		//	//	c.Redirect(http.StatusFound, url)
+		//	//}
+		//})
 	} else if conf.Config.BaseAuth.Enable {
 		//开启基本HTTP认证
 		//app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
@@ -66,23 +70,32 @@ func Serve() {
 
 	//前端静态文件
 	//app.Get("/*any", func(c iris.Context) {
-	app.Use(func(c iris.Context) {
-		if c.Method() == http.MethodGet {
-			//支持前端框架的无“#”路由
-			if c.Request().RequestURI == "/" {
-				c.Request().URL.Path = "index.html"
-			} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, c.Request().RequestURI); err != nil {
-				c.Request().URL.Path = "index.html"
-			}
-			//TODO 如果未登录，则跳转SysAdmin OAuth2自动授权页面
+	app.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			if request.Method == http.MethodGet {
+				//支持前端框架的无“#”路由
+				if request.RequestURI == "/" {
+					request.URL.Path = "index.html"
+				} else if _, err := wwwFiles.FS.Stat(wwwFiles.CTX, request.RequestURI); err != nil {
+					request.URL.Path = "index.html"
+				}
+				//TODO 如果未登录，则跳转SysAdmin OAuth2自动授权页面
 
-			//文件失效期已经在Handler中处理
-			wwwFiles.Handler.ServeHTTP(c.ResponseWriter(), c.Request())
-		}
+				//文件失效期已经在Handler中处理
+				wwwFiles.Handler.ServeHTTP(writer, request)
+			}
+		})
 	})
 
 	//监听HTTP
-	if err := app.Listen(conf.Config.Web.Addr); err != nil {
+	srv := &http.Server{
+		Addr:         conf.Config.Web.Addr,
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler: app,
+	}
+	if err := srv.ListenAndServe(); err != nil {
 		log.Fatal("HTTP 服务启动错误", err)
 	}
 }

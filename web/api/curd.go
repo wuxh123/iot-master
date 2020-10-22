@@ -1,9 +1,13 @@
 package api
 
 import (
+	"encoding/json"
 	"git.zgwit.com/zgwit/iot-admin/db"
-	"github.com/kataras/iris/v12"
+	"github.com/gorilla/mux"
+	"io/ioutil"
+	"net/http"
 	"reflect"
+	"strconv"
 )
 
 type hook func(value interface{}) error
@@ -18,14 +22,24 @@ func createSliceFromType(mod reflect.Type) interface{} {
 	return ptr.Interface()
 }
 
-func curdApiList(mod reflect.Type) iris.Handler {
-	return func(ctx iris.Context) {
+func parseBody(request *http.Request, data interface{}) error  {
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(body, data)
+}
+
+type Handler func(writer http.ResponseWriter, request *http.Request)
+
+func curdApiList(mod reflect.Type) Handler {
+	return func(writer http.ResponseWriter, request *http.Request) {
 		datas := createSliceFromType(mod)
 
 		var body paramSearch
-		err := ctx.ReadJSON(&body)
+		err := parseBody(request, &body)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
@@ -56,33 +70,29 @@ func curdApiList(mod reflect.Type) iris.Handler {
 		}
 		cnt, err := op.FindAndCount(datas)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		//replyOk(ctx, cs)
-		ctx.JSON(iris.Map{
-			"ok":    true,
-			"data":  datas,
-			"total": cnt,
-		})
+		replyList(writer, datas, cnt)
 	}
 }
 
-func curdApiListById(mod reflect.Type, field string) iris.Handler {
-	return func(ctx iris.Context) {
+func curdApiListById(mod reflect.Type, field string) Handler {
+	return func(writer http.ResponseWriter, request *http.Request) {
 		datas := createSliceFromType(mod)
 
-		id, err := ctx.URLParamInt64("id")
+		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		var body paramSearch
-		err = ctx.ReadJSON(&body)
+		err = parseBody(request, &body)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
@@ -113,120 +123,116 @@ func curdApiListById(mod reflect.Type, field string) iris.Handler {
 		}
 		cnt, err := op.FindAndCount(datas)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		//replyOk(ctx, cs)
-		ctx.JSON(iris.Map{
-			"ok":    true,
-			"data":  datas,
-			"total": cnt,
-		})
+		replyList(writer, datas, cnt)
 	}
 }
 
-func curdApiCreate(mod reflect.Type, after hook) iris.Handler {
-	return func(ctx iris.Context) {
+func curdApiCreate(mod reflect.Type, after hook) Handler {
+	return func(writer http.ResponseWriter, request *http.Request) {
 		data := reflect.New(mod).Interface()
-		if err := ctx.ReadJSON(data); err != nil {
-			replyError(ctx, err)
+		if err := parseBody(request, data); err != nil {
+			replyError(writer, err)
 			return
 		}
 
 		_, err := db.Engine.Insert(data)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(ctx, err)
+				replyError(writer, err)
 				return
 			}
 		}
 
-		replyOk(ctx, data)
+		replyOk(writer, data)
 	}
 }
 
-func curdApiModify(mod reflect.Type, updateFields []string, after hook) iris.Handler {
-	return func(ctx iris.Context) {
-		id, err := ctx.URLParamInt64("id")
+func curdApiModify(mod reflect.Type, updateFields []string, after hook) Handler {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		data := reflect.New(mod).Interface()
-		if err := ctx.ReadJSON(data); err != nil {
-			replyError(ctx, err)
+		if err := parseBody(request, data); err != nil {
+			replyError(writer, err)
 			return
 		}
 
 		_, err = db.Engine.ID(id).Cols(updateFields...).Update(data)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(ctx, err)
+				replyError(writer, err)
 				return
 			}
 		}
 
-		replyOk(ctx, data)
+		replyOk(writer, data)
 	}
 }
 
-func curdApiDelete(mod reflect.Type, after hook) iris.Handler {
-	return func(ctx iris.Context) {
-		id, err := ctx.URLParamInt64("id")
+func curdApiDelete(mod reflect.Type, after hook) Handler {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		data := reflect.New(mod).Interface()
 		_, err = db.Engine.ID(id).Delete(data)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(ctx, err)
+				replyError(writer, err)
 				return
 			}
 		}
 
-		replyOk(ctx, nil)
+		replyOk(writer, nil)
 	}
 }
 
-func curdApiGet(mod reflect.Type) iris.Handler {
-	return func(ctx iris.Context) {
-		id, err := ctx.URLParamInt64("id")
+func curdApiGet(mod reflect.Type) Handler {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
 		if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
 		data := reflect.New(mod).Interface()
 		has, err := db.Engine.ID(id).Get(data)
 		if !has {
-			replyFail(ctx, "记录不存在")
+			replyFail(writer, "记录不存在")
 			return
 		} else if err != nil {
-			replyError(ctx, err)
+			replyError(writer, err)
 			return
 		}
-		replyOk(ctx, data)
+		replyOk(writer, data)
 	}
 }

@@ -11,9 +11,9 @@ type Project struct {
 
 	Version  string    `json:"version"`
 	Disabled bool      `json:"disabled"`
+
 	Created  time.Time `json:"created" xorm:"created"`
 	Updated  time.Time `json:"updated" xorm:"updated"`
-	Deployed time.Time `json:"deployed"` //如果 deployed < updated，说明有更新，提示重新部署
 }
 
 type ProjectElement struct {
