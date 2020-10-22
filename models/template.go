@@ -5,7 +5,7 @@ type Template struct {
 	Description string `json:"description"`
 	Version     string `json:"version"`
 
-	Elements   []Element          `json:"elements"`
+	Elements   []TemplateElement  `json:"elements"`
 	Jobs       []TemplateJob      `json:"jobs"`
 	Strategies []TemplateStrategy `json:"strategies"`
 }
@@ -22,5 +22,4 @@ type TemplateStrategy struct {
 }
 
 type TemplateElement struct {
-
 }

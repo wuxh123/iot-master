@@ -20,8 +20,10 @@ type ProjectElement struct {
 	Id        int64 `json:"id"`
 	ProjectId int64 `json:"project_id"`
 	ElementId int64 `json:"element_id"`
+	TunnelId  int64 `json:"tunnel_id"`
 
-	Name  string `json:"name"`
+	Name string `json:"name"`
+
 	Slave uint8  `json:"slave"` //从站号
 	Alias string `json:"alias"` //别名，用于编程
 

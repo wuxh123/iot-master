@@ -21,13 +21,6 @@ type Element struct {
 	Model        string `json:"model"`        //型号
 	Version      string `json:"version"`      //版本
 
-	ProtocolName string `json:"protocol_name"`
-	ProtocolOpts string `json:"protocol_opts"`
-
-	PollingEnable   bool `json:"polling_enable"`   //轮询
-	PollingInterval int  `json:"polling_interval"` //轮询间隔 ms
-	PollingCycle    int  `json:"polling_cycle"`    //轮询周期 s
-
 	Created time.Time `json:"created" xorm:"created"`
 	Updated time.Time `json:"updated" xorm:"updated"`
 }
@@ -36,7 +29,9 @@ type ElementVariable struct {
 	Id        int64 `json:"id"`
 	ElementId int64 `json:"element_id"`
 
-	Address `xorm:"extends"` //地址
+	Offset    uint16 `json:"offset"`
+	ReadCode  uint8  `json:"read_code"`
+	WriteCode uint8  `json:"write_code"`
 
 	Name  string `json:"name"`
 	Alias string `json:"alias"` //别名，用于编程
@@ -57,9 +52,10 @@ type ElementBatch struct {
 	Id        int64 `json:"id"`
 	ElementId int64 `json:"element_id"`
 
-	Address `xorm:"extends"`
-
-	Size int `json:"size"`
+	Type   string `json:"type"` //read write
+	Code   uint8  `json:"code"` //功能码 3,4
+	Offset uint16 `json:"offset"`
+	Size   uint16 `json:"size"`
 
 	Created time.Time `json:"created" xorm:"created"`
 	Updated time.Time `json:"updated" xorm:"updated"`
