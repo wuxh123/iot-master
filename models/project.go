@@ -8,7 +8,7 @@ type Project struct {
 	Description string `json:"description"`
 	Origin      string `json:"origin"` //模板ID
 	UUID        string `json:"uuid"`   //唯一码，自动生成
-	
+
 	Version  string    `json:"version"`
 	Disabled bool      `json:"disabled"`
 	Created  time.Time `json:"created" xorm:"created"`
