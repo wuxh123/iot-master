@@ -25,8 +25,10 @@ func Open() error {
 
 	//同步表
 	return Engine.Sync2(
-		models.Tunnel{}, models.Link{}, models.Device{}, models.Plugin{},
-		models.Project{},  models.ProjectJob{}, models.ProjectStrategy{},
+		models.Tunnel{}, models.Link{},
+		models.Device{}, models.Location{},
+		models.Plugin{},
+		models.Project{}, models.ProjectElement{}, models.ProjectJob{}, models.ProjectStrategy{},
 		models.Element{}, models.ElementVariable{}, models.ElementBatch{},
 	)
 }

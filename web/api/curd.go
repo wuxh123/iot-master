@@ -30,11 +30,11 @@ func curdApiList(mod reflect.Type) gin.HandlerFunc {
 		op := db.Engine.Limit(body.Length, body.Offset)
 
 		for _, filter := range body.Filters {
-			if len(filter.Value) > 0 {
-				if len(filter.Value) == 1 {
-					op.And(filter.Key+"=?", filter.Value[0])
+			if len(filter.Values) > 0 {
+				if len(filter.Values) == 1 {
+					op.And(filter.Key+"=?", filter.Values[0])
 				} else {
-					op.In(filter.Key, filter.Value)
+					op.In(filter.Key, filter.Values)
 				}
 			}
 		}

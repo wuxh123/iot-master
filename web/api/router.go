@@ -10,8 +10,8 @@ import (
 )
 
 type paramFilter struct {
-	Key   string   `form:"key"`
-	Value []string `form:"value"`
+	Key    string   `form:"key"`
+	Values []string `form:"value"`
 }
 
 type paramSearch struct {
