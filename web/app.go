@@ -6,6 +6,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/web/open"
 	wwwFiles "git.zgwit.com/zgwit/iot-admin/web/www"
 	"github.com/gorilla/mux"
+	"github.com/quasoft/memstore"
 	"log"
 	"net/http"
 	"time"
@@ -37,9 +38,22 @@ func Serve() {
 	//开放接口
 	open.RegisterRoutes(app.PathPrefix("/open").Subrouter())
 
-
 	//启用session
-	//app.Use(sessions.Sessions("core-admin", memstore.NewStore([]byte("core-admin-secret"))))
+	store := memstore.NewMemStore([]byte("iot-admin"), []byte("iot-admin"))
+	app.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			//sess.ID
+			sess, err := store.Get(request, "iot-admin")
+			if err != nil {
+				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if sess.IsNew {
+				_ = sess.Save(request, writer)
+			}
+			next.ServeHTTP(writer, request)
+		})
+	})
 
 	//授权检查，启用了SysAdmin的OAuth2，就不能再使用基本HTTP认证了
 	//if conf.Config.SysAdmin.Enable {
@@ -49,7 +63,7 @@ func Serve() {
 
 
 	//注册前端接口
-	api.RegisterRoutes(app.PathPrefix("/open").Subrouter())
+	api.RegisterRoutes(app.PathPrefix("/api").Subrouter())
 
 	//未登录，访问前端文件，跳转到OAuth2登录
 	if conf.Config.SysAdmin.Enable {
