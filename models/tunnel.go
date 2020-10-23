@@ -3,8 +3,8 @@ package models
 import "time"
 
 type Tunnel struct {
-	ID      int `json:"id"`
-	ModelId int `json:"model_id"` //模型ID
+	ID        int `json:"id"`
+	ProjectId int `json:"project_id"` //模型ID
 
 	Name    string `json:"name"`
 	Type    string `json:"type"` //tcp-server tcp-client udp-server udp-client serial
@@ -22,21 +22,22 @@ type Tunnel struct {
 	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
 
 	Disabled bool `json:"disabled"`
-	Active   bool `json:"active"` //系统启动要全部置置为false
 
+	Active  bool      `json:"active"`
 	Created time.Time `json:"created" storm:"created"`
 	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type Link struct {
-	ID       int `json:"id"`
-	TunnelId int `json:"tunnel_id"`
-	ModelId  int `json:"model_id"` //模型ID，默认继承自Tunnel
+	ID        int `json:"id"`
+	TunnelId  int `json:"tunnel_id"`
+	ProjectId int `json:"project_id"` //模型ID，默认继承自Tunnel
 
 	Serial string `json:"serial" storm:"index"`
+	Addr   string `json:"addr"`
 
-	Active bool `json:"active"` //系统启动倒置置false
-
+	Active  bool      `json:"active"`
+	Online  time.Time `json:"online"`
 	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
 }
+

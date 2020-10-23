@@ -21,8 +21,13 @@ export class TunnelComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  roleFilters = [{text: '服务器', value: true}, {text: '客户端', value: false}];
-  netFilters = [{text: 'TCP', value: 'tcp'}, {text: 'UDP', value: 'udp'}];
+  netFilters = [
+    {text: '串口', value: 'serial'},
+    {text: 'TCP服务端', value: 'tcp-server'},
+    {text: 'TCP客户端', value: 'tcp-client'},
+    {text: 'UDP服务端', value: 'udp-server'},
+    {text: 'UDP客户端', value: 'udp-client'},
+  ];
   statusFilters = [{text: '启动', value: 1}];
 
 
@@ -48,7 +53,11 @@ export class TunnelComponent implements OnInit {
       sortKey: this.sortField,
       sortOrder: this.sortOrder,
       filters: this.filters,
-      keyword: this.keyword,
+      keywords: [
+        {key: 'Name', value: this.keyword},
+        {key: 'Type', value: this.keyword},
+        {key: 'Addr', value: this.keyword},
+      ]
     }).subscribe(res => {
 
       this.channels = res.data;

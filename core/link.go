@@ -151,9 +151,9 @@ func newLink(ch Tunnel, conn net.Conn) *Link {
 	c := ch.GetTunnel()
 	return &Link{
 		Link: models.Link{
-			TunnelId: c.ID,
-			ModelId:  c.ModelId,
-			Active:   true,
+			TunnelId:  c.ID,
+			ProjectId: c.ProjectId,
+			Active:    true,
 		},
 		tunnel: ch,
 		conn:   conn,
@@ -165,9 +165,9 @@ func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 	c := ch.GetTunnel()
 	return &Link{
 		Link: models.Link{
-			TunnelId: c.ID,
-			ModelId:  c.ModelId,
-			Active:   true,
+			TunnelId:  c.ID,
+			ProjectId: c.ProjectId,
+			Active:    true,
 		},
 		tunnel: ch,
 		conn:   base.NewPackConn(conn, addr),
