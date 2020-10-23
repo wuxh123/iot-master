@@ -21,8 +21,6 @@ export class ElementComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  statusFilters = [{text: '启动', value: 1}];
-
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {
     tab.name = '元件管理';

@@ -1,8 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from '../tabs/tabs.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-element',
@@ -22,12 +21,10 @@ export class ProjectElementComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  constructor(private as: ApiService, private router: Router, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '定时任务';
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
-    this.tab.name = '项目【' + this.project.name + '】定时任务';
   }
 
   reload(): void {
@@ -38,7 +35,7 @@ export class ProjectElementComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('/project/' + this.project.id + '/elements', {
+    this.as.post('project/' + this.project.id + '/elements', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,

@@ -1,8 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TabRef} from '../tabs/tabs.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-project-strategy',
@@ -22,12 +21,10 @@ export class ProjectStrategyComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  constructor(private as: ApiService, private router: Router, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '自动策略';
+  constructor(private as: ApiService, private router: Router) {
   }
 
   ngOnInit(): void {
-    this.tab.name = '项目【' + this.project.name + '】自动策略';
   }
 
   reload(): void {
@@ -38,7 +35,7 @@ export class ProjectStrategyComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('/project/' + this.project.id + '/strategies', {
+    this.as.post('project/' + this.project.id + '/strategies', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
