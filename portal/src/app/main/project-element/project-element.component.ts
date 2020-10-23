@@ -11,6 +11,9 @@ import {Router} from '@angular/router';
 export class ProjectElementComponent implements OnInit {
   @Input() project: any = {};
 
+  inited = false;
+  tableQuery: any;
+
   elements: [];
   total = 0;
   pageIndex = 1;
@@ -25,6 +28,10 @@ export class ProjectElementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.inited = true;
+    if (this.tableQuery) {
+      this.onTableQuery(this.tableQuery)
+    }
   }
 
   reload(): void {
@@ -62,6 +69,10 @@ export class ProjectElementComponent implements OnInit {
   }
 
   onTableQuery(params: NzTableQueryParams): void {
+    if (!this.inited) {
+      this.tableQuery = params;
+      return;
+    }
     const {pageSize, pageIndex, sort, filter} = params;
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
