@@ -62,7 +62,9 @@ func curdApiList(model string, mod reflect.Type) Handler {
 		//关键字搜索
 		kws := make([]q.Matcher, 0)
 		for _, keyword := range body.Keywords {
-			kws = append(kws, q.Re(keyword.Key, keyword.Value))
+			if keyword.Value != "" {
+				kws = append(kws, q.Re(keyword.Key, keyword.Value))
+			}
 		}
 		if len(kws) > 0 {
 			cond = append(cond, q.Or(kws...))
@@ -88,7 +90,7 @@ func curdApiList(model string, mod reflect.Type) Handler {
 				query = query.OrderBy(body.SortKey)
 			}
 		} else {
-			query = query.OrderBy("Id").Reverse()
+			query = query.OrderBy("ID").Reverse()
 		}
 
 		err = query.Find(datas)
@@ -163,7 +165,7 @@ func curdApiListById(model string, mod reflect.Type, field string) Handler {
 				query = query.OrderBy(body.SortKey)
 			}
 		} else {
-			query = query.OrderBy("Id").Reverse()
+			query = query.OrderBy("ID").Reverse()
 		}
 
 		err = query.Find(datas)
