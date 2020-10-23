@@ -16,8 +16,8 @@ type Device struct {
 	Longitude float64 `json:"longitude"`
 	Latitude  float64 `json:"latitude"`
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 //默认WGS84标准，GCJ02、BD09都需要转换
@@ -27,5 +27,5 @@ type Location struct {
 	Latitude  float64 `json:"latitude"`  //纬度
 	Longitude float64 `json:"longitude"` //经度
 	//Altitude  float64   `json:"altitude"`  //高度 单位m
-	Created time.Time `json:"created" xorm:"created"`
+	Created time.Time `json:"created" storm:"created"`
 }

@@ -24,8 +24,8 @@ type Tunnel struct {
 	Disabled bool `json:"disabled"`
 	Active   bool `json:"active"` //系统启动要全部置置为false
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type Link struct {
@@ -33,10 +33,10 @@ type Link struct {
 	TunnelId int `json:"tunnel_id"`
 	ModelId  int `json:"model_id"` //模型ID，默认继承自Tunnel
 
-	Serial string `json:"serial" xorm:"index"`
+	Serial string `json:"serial" storm:"index"`
 
 	Active bool `json:"active"` //系统启动倒置置false
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }

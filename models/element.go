@@ -21,8 +21,8 @@ type Element struct {
 	Model        string `json:"model"`        //型号
 	Version      string `json:"version"`      //版本
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type ElementVariable struct {
@@ -44,8 +44,8 @@ type ElementVariable struct {
 	Default  string `json:"default"`
 	Writable bool   `json:"writable"` //可写，用于输出（如开关）
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type ElementBatch struct {
@@ -57,6 +57,6 @@ type ElementBatch struct {
 	Offset uint16 `json:"offset"`
 	Size   uint16 `json:"size"`
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }

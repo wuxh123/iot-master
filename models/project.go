@@ -12,8 +12,8 @@ type Project struct {
 	Version  string `json:"version"`
 	Disabled bool   `json:"disabled"`
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type ProjectElement struct {
@@ -27,8 +27,8 @@ type ProjectElement struct {
 	Slave uint8  `json:"slave"` //从站号
 	Alias string `json:"alias"` //别名，用于编程
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 //
@@ -37,7 +37,7 @@ type ProjectElement struct {
 //	ProjectElementId  int `json:"project_element_id"`
 //	ElementVariableId int `json:"element_variable_id"`
 //
-//	Created time.Time `json:"created" xorm:"created"`
+//	Created time.Time `json:"created" storm:"created"`
 //}
 
 type ProjectJob struct {
@@ -47,8 +47,8 @@ type ProjectJob struct {
 	Cron      string `json:"cron"`
 	Script    string `json:"script"` //javascript
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type ProjectStrategy struct {
@@ -57,6 +57,6 @@ type ProjectStrategy struct {
 	Name      string `json:"name"`
 	Script    string `json:"script"` //javascript
 
-	Created time.Time `json:"created" xorm:"created"`
-	Updated time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" storm:"created"`
+	Updated time.Time `json:"updated" storm:"updated"`
 }
