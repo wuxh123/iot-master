@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"git.zgwit.com/zgwit/iot-admin/db"
 	"github.com/gorilla/mux"
+	"github.com/zgwit/storm/v3"
+	"github.com/zgwit/storm/v3/q"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -22,7 +24,7 @@ func createSliceFromType(mod reflect.Type) interface{} {
 	return ptr.Interface()
 }
 
-func parseBody(request *http.Request, data interface{}) error  {
+func parseBody(request *http.Request, data interface{}) error {
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		return err
@@ -32,9 +34,10 @@ func parseBody(request *http.Request, data interface{}) error  {
 
 type Handler func(writer http.ResponseWriter, request *http.Request)
 
-func curdApiList(mod reflect.Type) Handler {
+func curdApiList(model string, mod reflect.Type) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		datas := createSliceFromType(mod)
+		data := reflect.New(mod).Interface()
 
 		var body paramSearch
 		err := parseBody(request, &body)
@@ -43,33 +46,53 @@ func curdApiList(mod reflect.Type) Handler {
 			return
 		}
 
-		op := db.Engine.Limit(body.Length, body.Offset)
+		cond := make([]q.Matcher, 0)
 
+		//过滤
 		for _, filter := range body.Filters {
 			if len(filter.Values) > 0 {
 				if len(filter.Values) == 1 {
-					op.And(filter.Key+"=?", filter.Values[0])
+					cond = append(cond, q.Eq(filter.Key, filter.Values[0]))
 				} else {
-					op.In(filter.Key, filter.Values)
+					cond = append(cond, q.In(filter.Key, filter.Values))
 				}
 			}
 		}
-		if body.Keyword != "" {
-			kw := "%" + body.Keyword + "%"
-			op.And("user like ? or text like ? or file like ?", kw, kw, kw)
+
+		//关键字搜索
+		kws := make([]q.Matcher, 0)
+		for _, keyword := range body.Keywords {
+			kws = append(kws, q.Re(keyword.Key, keyword.Value))
+		}
+		if len(kws) > 0 {
+			cond = append(cond, q.Or(kws...))
 		}
 
+		query := db.DB(model).Select(cond...)
+
+		//计算总数
+		cnt, err := query.Count(data)
+		if err != nil && err != storm.ErrNotFound {
+			replyError(writer, err)
+			return
+		}
+
+		//分页
+		query = query.Skip(body.Offset).Limit(body.Length)
+
+		//排序
 		if body.SortKey != "" {
 			if body.SortOrder == "desc" {
-				op.Desc(body.SortKey)
+				query = query.OrderBy(body.SortKey).Reverse()
 			} else {
-				op.Asc(body.SortKey)
+				query = query.OrderBy(body.SortKey)
 			}
 		} else {
-			op.Desc("id")
+			query = query.OrderBy("Id").Reverse()
 		}
-		cnt, err := op.FindAndCount(datas)
-		if err != nil {
+
+		err = query.Find(datas)
+		if err != nil && err != storm.ErrNotFound {
 			replyError(writer, err)
 			return
 		}
@@ -79,11 +102,12 @@ func curdApiList(mod reflect.Type) Handler {
 	}
 }
 
-func curdApiListById(mod reflect.Type, field string) Handler {
+func curdApiListById(model string, mod reflect.Type, field string) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		datas := createSliceFromType(mod)
+		data := reflect.New(mod).Interface()
 
-		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -96,33 +120,54 @@ func curdApiListById(mod reflect.Type, field string) Handler {
 			return
 		}
 
-		op := db.Engine.Where(field+"=?", id).Limit(body.Length, body.Offset)
+		cond := make([]q.Matcher, 0)
+		cond = append(cond, q.Eq(field, id))
 
+		//过滤
 		for _, filter := range body.Filters {
 			if len(filter.Values) > 0 {
 				if len(filter.Values) == 1 {
-					op.And(filter.Key+"=?", filter.Values[0])
+					cond = append(cond, q.Eq(filter.Key, filter.Values[0]))
 				} else {
-					op.In(filter.Key, filter.Values)
+					cond = append(cond, q.In(filter.Key, filter.Values))
 				}
 			}
 		}
-		if body.Keyword != "" {
-			kw := "%" + body.Keyword + "%"
-			op.And("user like ? or text like ? or file like ?", kw, kw, kw)
+
+		//关键字搜索
+		kws := make([]q.Matcher, 0)
+		for _, keyword := range body.Keywords {
+			kws = append(kws, q.Re(keyword.Key, keyword.Value))
+		}
+		if len(kws) > 0 {
+			cond = append(cond, q.Or(kws...))
 		}
 
+		query := db.DB(model).Select(cond...)
+
+		//计算总数
+		cnt, err := query.Count(data)
+		if err != nil && err != storm.ErrNotFound {
+			replyError(writer, err)
+			return
+		}
+
+		//分页
+		query = query.Skip(body.Offset).Limit(body.Length)
+
+		//排序
 		if body.SortKey != "" {
 			if body.SortOrder == "desc" {
-				op.Desc(body.SortKey)
+				query = query.OrderBy(body.SortKey).Reverse()
 			} else {
-				op.Asc(body.SortKey)
+				query = query.OrderBy(body.SortKey)
 			}
 		} else {
-			op.Desc("id")
+			query = query.OrderBy("Id").Reverse()
 		}
-		cnt, err := op.FindAndCount(datas)
-		if err != nil {
+
+		err = query.Find(datas)
+		if err != nil && err != storm.ErrNotFound {
 			replyError(writer, err)
 			return
 		}
@@ -132,7 +177,7 @@ func curdApiListById(mod reflect.Type, field string) Handler {
 	}
 }
 
-func curdApiCreate(mod reflect.Type, after hook) Handler {
+func curdApiCreate(model string, mod reflect.Type, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		data := reflect.New(mod).Interface()
 		if err := parseBody(request, data); err != nil {
@@ -140,7 +185,7 @@ func curdApiCreate(mod reflect.Type, after hook) Handler {
 			return
 		}
 
-		_, err := db.Engine.Insert(data)
+		err := db.DB(model).Save(data)
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -158,21 +203,24 @@ func curdApiCreate(mod reflect.Type, after hook) Handler {
 	}
 }
 
-func curdApiModify(mod reflect.Type, updateFields []string, after hook) Handler {
+func curdApiModify(model string, mod reflect.Type, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			replyError(writer, err)
 			return
 		}
 
-		data := reflect.New(mod).Interface()
+		val := reflect.New(mod)
+		data := val.Interface()
 		if err := parseBody(request, data); err != nil {
 			replyError(writer, err)
 			return
 		}
 
-		_, err = db.Engine.ID(id).Cols(updateFields...).Update(data)
+		val.FieldByName("ID").Set(reflect.ValueOf(id))
+
+		err = db.DB(model).Update(data)
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -190,16 +238,18 @@ func curdApiModify(mod reflect.Type, updateFields []string, after hook) Handler 
 	}
 }
 
-func curdApiDelete(mod reflect.Type, after hook) Handler {
+func curdApiDelete(model string, mod reflect.Type, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			replyError(writer, err)
 			return
 		}
 
-		data := reflect.New(mod).Interface()
-		_, err = db.Engine.ID(id).Delete(data)
+		val := reflect.New(mod)
+		data := val.Interface()
+		val.FieldByName("ID").Set(reflect.ValueOf(id))
+		err = db.DB(model).DeleteStruct(data)
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -217,19 +267,16 @@ func curdApiDelete(mod reflect.Type, after hook) Handler {
 	}
 }
 
-func curdApiGet(mod reflect.Type) Handler {
+func curdApiGet(model string, mod reflect.Type) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
+		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
 			replyError(writer, err)
 			return
 		}
 		data := reflect.New(mod).Interface()
-		has, err := db.Engine.ID(id).Get(data)
-		if !has {
-			replyFail(writer, "记录不存在")
-			return
-		} else if err != nil {
+		err = db.DB(model).One("ID", id, data)
+		if err != nil {
 			replyError(writer, err)
 			return
 		}

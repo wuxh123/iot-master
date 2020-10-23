@@ -3,7 +3,6 @@ package main
 import (
 	"git.zgwit.com/zgwit/iot-admin/conf"
 	"git.zgwit.com/zgwit/iot-admin/core"
-	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/flag"
 	"git.zgwit.com/zgwit/iot-admin/web"
 	"github.com/denisbrodbeck/machineid"
@@ -52,11 +51,11 @@ func main() {
 		log.Println("系统使用HTTP简单认证，有泄露密码的风险，请采用安全的SysAdmin方式！！！")
 	}
 
-	err = db.Open()
-	if err != nil {
-		log.Println("数据库错误：", err)
-		return
-	}
+	//err = db.Open()
+	//if err != nil {
+	//	log.Println("数据库错误：", err)
+	//	return
+	//}
 
 	//启动总线
 	err = core.StartDBus(conf.Config.DBus.Addr)

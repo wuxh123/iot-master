@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
+	"github.com/zgwit/storm/v3"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net"
 	"sync"
@@ -48,7 +50,7 @@ func (s *TcpServer) Close() error {
 	return nil
 }
 
-func (s *TcpServer) GetLink(id int64) (*Link, error) {
+func (s *TcpServer) GetLink(id int) (*Link, error) {
 	v, ok := s.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
@@ -98,9 +100,8 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
 		var lnk models.Link
-		has, err := db.Engine.Where("tunnel_id", s.Id).And("serial", serial).Get(&lnk)
-		//err = db.DB("link").Select(q.Eq("ChannelId", s.Id), q.Eq("Serial", serial)).First(&lnk)
-		if !has {
+		err = db.DB("link").Select(q.Eq("TunnelId", s.ID), q.Eq("Serial", serial)).First(&link)
+		if err == storm.ErrNotFound {
 			//找不到
 		} else if err != nil {
 			_ = link.Write([]byte(err.Error()))
@@ -108,7 +109,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 			return
 		} else {
 			//复用连接，更新地址，状态，等
-			l, _ := s.GetLink(lnk.Id)
+			l, _ := s.GetLink(lnk.ID)
 			if l != nil {
 				//如果同序号连接还在正常通讯，则关闭当前连接
 				if l.conn != nil {
@@ -125,7 +126,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 				link.Resume()
 			}
 
-			link.Id = lnk.Id
+			link.ID = lnk.ID
 			//link.Name = lnk.Name
 		}
 
@@ -137,7 +138,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 	//保存链接
 	//s.storeLink(link)
-	s.clients.Store(link.Id, link)
+	s.clients.Store(link.ID, link)
 
 	for link.conn != nil {
 		n, e := conn.Read(buf)
@@ -156,14 +157,14 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 	//无序号，直接删除
 	if link.Serial != "" {
-		s.clients.Delete(link.Id)
+		s.clients.Delete(link.ID)
 	} else {
 		//有序号，等待5分钟，之后设为离线
 		time.AfterFunc(time.Minute*5, func() {
-			lnk, _ := s.GetLink(link.Id)
+			lnk, _ := s.GetLink(link.ID)
 			//判断指针地址也行
 			if lnk != nil && lnk.conn == nil {
-				s.clients.Delete(link.Id)
+				s.clients.Delete(link.ID)
 			}
 		})
 	}

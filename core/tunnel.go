@@ -11,7 +11,7 @@ type Tunnel interface {
 	Open() error
 	Close() error
 	GetTunnel() *models.Tunnel
-	GetLink(id int64) (*Link, error)
+	GetLink(id int) (*Link, error)
 }
 
 type baseTunnel struct {

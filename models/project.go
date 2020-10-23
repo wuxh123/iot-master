@@ -3,24 +3,24 @@ package models
 import "time"
 
 type Project struct {
-	Id          int64  `json:"id"`
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Origin      string `json:"origin"` //模板ID
-	UUID        string `json:"uuid"`   //唯一码，自动生成
+	UUId        string `json:"uuId"`   //唯一码，自动生成
 
-	Version  string    `json:"version"`
-	Disabled bool      `json:"disabled"`
+	Version  string `json:"version"`
+	Disabled bool   `json:"disabled"`
 
-	Created  time.Time `json:"created" xorm:"created"`
-	Updated  time.Time `json:"updated" xorm:"updated"`
+	Created time.Time `json:"created" xorm:"created"`
+	Updated time.Time `json:"updated" xorm:"updated"`
 }
 
 type ProjectElement struct {
-	Id        int64 `json:"id"`
-	ProjectId int64 `json:"project_id"`
-	ElementId int64 `json:"element_id"`
-	TunnelId  int64 `json:"tunnel_id"`
+	ID        int `json:"id"`
+	ProjectId int `json:"project_id"`
+	ElementId int `json:"element_id"`
+	TunnelId  int `json:"tunnel_id"`
 
 	Name string `json:"name"`
 
@@ -33,16 +33,16 @@ type ProjectElement struct {
 
 //
 //type ProjectElementVariable struct {
-//	Id                int64 `json:"id"` //TODO 去掉ID，用双主键
-//	ProjectElementId  int64 `json:"project_element_id"`
-//	ElementVariableId int64 `json:"element_variable_id"`
+//	ID                int `json:"id"` //TODO 去掉ID，用双主键
+//	ProjectElementId  int `json:"project_element_id"`
+//	ElementVariableId int `json:"element_variable_id"`
 //
 //	Created time.Time `json:"created" xorm:"created"`
 //}
 
 type ProjectJob struct {
-	Id        int64  `json:"id"`
-	ProjectId int64  `json:"project_id"`
+	ID        int    `json:"id"`
+	ProjectId int    `json:"project_id"`
 	Name      string `json:"name"`
 	Cron      string `json:"cron"`
 	Script    string `json:"script"` //javascript
@@ -52,8 +52,8 @@ type ProjectJob struct {
 }
 
 type ProjectStrategy struct {
-	Id        int64  `json:"id"`
-	ProjectId int64  `json:"project_id"`
+	ID        int    `json:"id"`
+	ProjectId int    `json:"project_id"`
 	Name      string `json:"name"`
 	Script    string `json:"script"` //javascript
 

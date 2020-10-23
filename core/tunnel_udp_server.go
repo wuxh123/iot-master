@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
+	"github.com/zgwit/storm/v3"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net"
 	"sync"
@@ -45,7 +47,7 @@ func (c *PacketServer) Close() error {
 	return nil
 }
 
-func (c *PacketServer) GetLink(id int64) (*Link, error) {
+func (c *PacketServer) GetLink(id int) (*Link, error) {
 	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
@@ -89,9 +91,9 @@ func (c *PacketServer) receive() {
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
 				var lnk models.Link
 
-				has, err := db.Engine.Where("tunnel_id", c.Id).And("serial", serial).Get(&lnk)
-				//err = db.DB("link").Select(q.Eq("ChannelId", c.Id), q.Eq("Serial", serial)).First(&lnk)
-				if !has {
+				//has, err := db.Engine.Where("tunnel_id", c.ID).And("serial", serial).Get(&lnk)
+				err = db.DB("link").Select(q.Eq("TunnelId", c.ID), q.Eq("Serial", serial)).First(&lnk)
+				if err == storm.ErrNotFound {
 					//找不到
 				} else if err != nil {
 					_ = link.Write([]byte(err.Error()))
@@ -99,7 +101,7 @@ func (c *PacketServer) receive() {
 					return
 				} else {
 					//复用连接，更新地址，状态，等
-					l, _ := c.GetLink(lnk.Id)
+					l, _ := c.GetLink(lnk.ID)
 					if l != nil {
 						//如果同序号连接还在正常通讯，则关闭当前连接
 						if l.conn != nil {
@@ -115,7 +117,7 @@ func (c *PacketServer) receive() {
 						link.Resume()
 					}
 
-					link.Id = lnk.Id
+					link.ID = lnk.ID
 					//link.Name = lnk.Name
 				}
 
@@ -129,7 +131,7 @@ func (c *PacketServer) receive() {
 
 			//保存链接
 			//c.storeLink(link)
-			c.clients.Store(link.Id, link)
+			c.clients.Store(link.ID, link)
 
 			//根据地址保存，收到UDP包之后，方便索引
 			c.packetIndexes.Store(key, link)

@@ -8,7 +8,7 @@ import (
 )
 
 func tunnelStart(writer http.ResponseWriter, request *http.Request) {
-	id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
+	id, err := strconv.Atoi(mux.Vars(request)["id"])
 	if err != nil {
 		replyError(writer, err)
 		return
@@ -29,7 +29,7 @@ func tunnelStart(writer http.ResponseWriter, request *http.Request) {
 }
 
 func tunnelStop(writer http.ResponseWriter, request *http.Request) {
-	id, err := strconv.ParseInt(mux.Vars(request)["id"], 10, 64)
+	id, err := strconv.Atoi(mux.Vars(request)["id"])
 	if err != nil {
 		replyError(writer, err)
 		return

@@ -3,6 +3,8 @@ package core
 import (
 	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
+	"github.com/zgwit/storm/v3"
+	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net"
 )
@@ -39,7 +41,7 @@ func (c *TcpUdpClient) Close() error {
 	return nil
 }
 
-func (c *TcpUdpClient) GetLink(id int64) (*Link, error) {
+func (c *TcpUdpClient) GetLink(id int) (*Link, error) {
 	return c.link, nil
 }
 
@@ -49,9 +51,9 @@ func (c *TcpUdpClient) receive(conn net.Conn) {
 		link := newLink(c, conn)
 
 		var lnk models.Link
-		has, err := db.Engine.Where("tunnel_id", c.Id).Get(&lnk)
-		//err := db.DB("link").Select(q.Eq("ChannelId", c.Id)).First(&lnk)
-		if !has {
+		//has, err := db.Engine.Where("tunnel_id", c.ID).Get(&lnk)
+		err := db.DB("link").Select(q.Eq("TunnelId", c.ID)).First(&lnk)
+		if err == storm.ErrNotFound {
 			//找不到，新建
 		} else if err != nil {
 			_ = link.Write([]byte(err.Error()))
@@ -60,7 +62,7 @@ func (c *TcpUdpClient) receive(conn net.Conn) {
 		} else {
 			//复用连接，更新地址，状态，等
 			c.link.Link = lnk
-			//c.link.Id = lnk.Id
+			//c.link.ID = lnk.ID
 		}
 
 		c.link = link

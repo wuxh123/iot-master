@@ -3,8 +3,8 @@ package models
 import "time"
 
 type Tunnel struct {
-	Id      int64 `json:"id"`
-	ModelId int64 `json:"model_id"` //模型ID
+	ID      int `json:"id"`
+	ModelId int `json:"model_id"` //模型ID
 
 	Name    string `json:"name"`
 	Type    string `json:"type"` //tcp-server tcp-client udp-server udp-client serial
@@ -29,9 +29,9 @@ type Tunnel struct {
 }
 
 type Link struct {
-	Id       int64 `json:"id"`
-	TunnelId int64 `json:"tunnel_id"`
-	ModelId  int64 `json:"model_id"` //模型ID，默认继承自Tunnel
+	ID       int `json:"id"`
+	TunnelId int `json:"tunnel_id"`
+	ModelId  int `json:"model_id"` //模型ID，默认继承自Tunnel
 
 	Serial string `json:"serial" xorm:"index"`
 

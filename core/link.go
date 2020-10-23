@@ -73,7 +73,7 @@ func (l *Link) onData(buf []byte) {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.TunnelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.TunnelId, l.ID)))
 	pub.SetPayload(buf)
 	hive.Publish(pub)
 }
@@ -103,7 +103,7 @@ func (l *Link) Write(buf []byte) error {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.TunnelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.TunnelId, l.ID)))
 	pub.SetPayload(buf)
 	Hive().Publish(pub)
 
@@ -126,7 +126,7 @@ func (l *Link) Close() error {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.TunnelId, l.Id)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.TunnelId, l.ID)))
 	pub.SetPayload([]byte("close"))
 	Hive().Publish(pub)
 
@@ -151,7 +151,7 @@ func newLink(ch Tunnel, conn net.Conn) *Link {
 	c := ch.GetTunnel()
 	return &Link{
 		Link: models.Link{
-			TunnelId: c.Id,
+			TunnelId: c.ID,
 			ModelId:  c.ModelId,
 			Active:   true,
 		},
@@ -165,7 +165,7 @@ func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 	c := ch.GetTunnel()
 	return &Link{
 		Link: models.Link{
-			TunnelId: c.Id,
+			TunnelId: c.ID,
 			ModelId:  c.ModelId,
 			Active:   true,
 		},

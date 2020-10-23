@@ -21,18 +21,19 @@ func Tunnels() []Tunnel {
 
 func Recovery() error {
 	var cs []models.Tunnel
-	err := db.Engine.Find(&cs)
+	err := db.DB("tunnel").All(&cs)
 	if err != nil {
 		return err
 	}
 
 	for _, c := range cs {
-		//if !c.Disabled {
+		if c.Disabled {
+			continue
+		}
 		_, err = StartTunnel(&c)
 		if err != nil {
 			log.Println(err)
 		}
-		//}
 	}
 
 	return nil
@@ -48,7 +49,7 @@ func StartTunnel(c *models.Tunnel) (Tunnel, error) {
 	if err != nil {
 		return nil, err
 	}
-	channels.Store(c.Id, tunnel)
+	channels.Store(c.ID, tunnel)
 	return tunnel, err
 }
 
@@ -61,7 +62,7 @@ func DeleteTunnel(id int) error {
 	return v.(Tunnel).Close()
 }
 
-func GetTunnel(id int64) (Tunnel, error) {
+func GetTunnel(id int) (Tunnel, error) {
 	v, ok := channels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
@@ -69,7 +70,7 @@ func GetTunnel(id int64) (Tunnel, error) {
 	return v.(Tunnel), nil
 }
 
-func GetLink(channelId, linkId int64) (*Link, error) {
+func GetLink(channelId, linkId int) (*Link, error) {
 	channel, err := GetTunnel(channelId)
 	if err != nil {
 		return nil, err

@@ -3,17 +3,17 @@ package conf
 import (
 	"git.zgwit.com/zgwit/iot-admin/base"
 	"git.zgwit.com/zgwit/iot-admin/flag"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 )
 
-type _database struct {
-	Desc    string `json:"desc" yaml:"desc"`
-	Type    string `json:"type" yaml:"type"`
-	Url     string `json:"url" yaml:"url"`
-	ShowSQL bool   `json:"showSQL" yaml:"showSQL"`
+type _data struct {
+	Desc  string `yaml:"desc"`
+	Path  string `yaml:"path"`
+	Debug bool   `yaml:"debug"`
 }
+
 
 type _web struct {
 	Desc string `yaml:"desc"`
@@ -44,7 +44,7 @@ type _dbus struct {
 }
 
 type _config struct {
-	Database _database `yaml:"database"`
+	Data _data `yaml:"data"`
 	Web      _web      `yaml:"web"`
 	BaseAuth _baseAuth `yaml:"basicAuth"`
 	SysAdmin _sysAdmin `yaml:"sysAdmin"`
@@ -52,11 +52,9 @@ type _config struct {
 }
 
 var Config = _config{
-	Database: _database{
+	Data: _data{
 		Desc:    "数据库配置",
-		Type:    "mysql",
-		Url:     "root:root@tcp(127.0.0.1:3306)/iot?charset=utf8",
-		ShowSQL: false,
+		Path:    "data",
 	},
 	Web: _web{
 		Desc: "Web服务配置",

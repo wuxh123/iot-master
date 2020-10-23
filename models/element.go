@@ -11,11 +11,11 @@ type Address struct {
 }
 
 type Element struct {
-	Id          int64  `json:"id"`
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Origin      string `json:"origin"` //来源
-	UUID        string `json:"uuid"`   //唯一码，自动生成
+	UUId        string `json:"uuId"`   //唯一码，自动生成
 
 	Manufacturer string `json:"manufacturer"` //厂商
 	Model        string `json:"model"`        //型号
@@ -26,8 +26,8 @@ type Element struct {
 }
 
 type ElementVariable struct {
-	Id        int64 `json:"id"`
-	ElementId int64 `json:"element_id"`
+	ID        int `json:"id"`
+	ElementId int `json:"element_id"`
 
 	Offset    uint16 `json:"offset"`
 	ReadCode  uint8  `json:"read_code"`
@@ -49,8 +49,8 @@ type ElementVariable struct {
 }
 
 type ElementBatch struct {
-	Id        int64 `json:"id"`
-	ElementId int64 `json:"element_id"`
+	ID        int `json:"id"`
+	ElementId int `json:"element_id"`
 
 	Type   string `json:"type"` //read write
 	Code   uint8  `json:"code"` //功能码 3,4
