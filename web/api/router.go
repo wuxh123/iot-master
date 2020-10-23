@@ -126,7 +126,7 @@ func RegisterRoutes(app *mux.Router) {
 	mod = reflect.TypeOf(models.Project{})
 	model = "project"
 	app.HandleFunc("/projects", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/project", curdApiCreate(model, mod, nil)).Methods("POST")
+	app.HandleFunc("/project", curdApiCreate(model, mod, projectAfterCreate)).Methods("POST")
 	app.HandleFunc("/project/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
 	app.HandleFunc("/project/{id}", curdApiModify(model, mod, nil)).Methods("PUT")
 	app.HandleFunc("/project/{id}", curdApiGet(model, mod)).Methods("GET")
@@ -166,7 +166,7 @@ func RegisterRoutes(app *mux.Router) {
 	mod = reflect.TypeOf(models.Element{})
 	model = "element"
 	app.HandleFunc("/elements", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/element", curdApiCreate(model, mod, nil)).Methods("POST")
+	app.HandleFunc("/element", curdApiCreate(model, mod, elementAfterCreated)).Methods("POST")
 	app.HandleFunc("/element/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
 	app.HandleFunc("/element/{id}", curdApiModify(model, mod, nil)).Methods("PUT")
 	app.HandleFunc("/element/{id}", curdApiGet(model, mod)).Methods("GET")
