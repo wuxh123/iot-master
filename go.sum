@@ -87,6 +87,8 @@ github.com/vmihailenco/msgpack v4.0.4+incompatible/go.mod h1:fy3FlTQTDXWkZ7Bh6Ac
 github.com/zgwit/storm/v3 v3.3.0/go.mod h1:gcnJPmtfzQfP44pEebJJehM2hFai4Q/HR9cuQvMI4zA=
 github.com/zgwit/storm/v3 v3.3.1 h1:ZSXd/PiS/9UdII3psRnU8cr2jtxHX2Bh2nlwTLlGEcM=
 github.com/zgwit/storm/v3 v3.3.1/go.mod h1:gcnJPmtfzQfP44pEebJJehM2hFai4Q/HR9cuQvMI4zA=
+github.com/zgwit/storm/v3 v3.3.2 h1:cXEWY4Y7tYYRP8I6dmC+cXHZr/BdDHvm97cMOTw8SS8=
+github.com/zgwit/storm/v3 v3.3.2/go.mod h1:gcnJPmtfzQfP44pEebJJehM2hFai4Q/HR9cuQvMI4zA=
 github.com/ziutek/mymysql v1.5.4/go.mod h1:LMSpPZ6DbqWFxNCHW77HeMg9I646SAhApZ/wKdgO/C0=
 go.etcd.io/bbolt v1.3.4 h1:hi1bXHMVrlQh6WwxAy+qZCV/SYIlqo+Ushwdpa4tAKg=
 go.etcd.io/bbolt v1.3.4/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=

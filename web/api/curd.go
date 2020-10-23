@@ -218,7 +218,7 @@ func curdApiModify(model string, mod reflect.Type, after hook) Handler {
 			return
 		}
 
-		val.FieldByName("ID").Set(reflect.ValueOf(id))
+		val.Elem().FieldByName("ID").Set(reflect.ValueOf(id))
 
 		err = db.DB(model).Update(data)
 		if err != nil {
@@ -248,7 +248,7 @@ func curdApiDelete(model string, mod reflect.Type, after hook) Handler {
 
 		val := reflect.New(mod)
 		data := val.Interface()
-		val.FieldByName("ID").Set(reflect.ValueOf(id))
+		val.Elem().FieldByName("ID").Set(reflect.ValueOf(id))
 		err = db.DB(model).DeleteStruct(data)
 		if err != nil {
 			replyError(writer, err)

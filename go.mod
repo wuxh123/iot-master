@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b
 	github.com/stretchr/testify v1.6.1 // indirect
-	github.com/zgwit/storm/v3 v3.3.1
+	github.com/zgwit/storm/v3 v3.3.2
 	go.etcd.io/bbolt v1.3.5 // indirect
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/sys v0.0.0-20201022201747-fb209a7c41cd // indirect
