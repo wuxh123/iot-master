@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
@@ -10,6 +10,7 @@ import {TabRef} from '../tabs/tabs.component';
   styleUrls: ['./project-job.component.scss']
 })
 export class ProjectJobComponent implements OnInit {
+  @Input() project: any = {};
 
   jobs: [];
   total = 0;
@@ -21,14 +22,12 @@ export class ProjectJobComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  statusFilters = [{text: '启动', value: 1}];
-
-
-  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+  constructor(private as: ApiService, private router: Router, private routeInfo: ActivatedRoute, private tab: TabRef) {
     tab.name = '定时任务';
   }
 
   ngOnInit(): void {
+    this.tab.name = '项目【' + this.project.name + '】定时任务';
   }
 
   reload(): void {
@@ -39,7 +38,7 @@ export class ProjectJobComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('jobs', {
+    this.as.post('/project/' + this.project.id + '/jobs', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -58,11 +57,11 @@ export class ProjectJobComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-job-create']);
+    this.router.navigate(['/admin/project/' + this.project.id + '/job/create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-project-job-edit/' + c.id]);
+    this.router.navigate(['/admin/project/' + this.project.id + '/job/' + c.id + '/edit']);
   }
 
   onTableQuery(params: NzTableQueryParams): void {

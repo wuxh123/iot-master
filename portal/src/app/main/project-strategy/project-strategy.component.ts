@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {NzTableQueryParams} from 'ng-zorro-antd';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
 
 @Component({
@@ -10,6 +10,7 @@ import {TabRef} from '../tabs/tabs.component';
   styleUrls: ['./project-strategy.component.scss']
 })
 export class ProjectStrategyComponent implements OnInit {
+  @Input() project: any = {};
 
   strategies: [];
   total = 0;
@@ -21,14 +22,12 @@ export class ProjectStrategyComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  statusFilters = [{text: '启动', value: 1}];
-
-
-  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+  constructor(private as: ApiService, private router: Router, private routeInfo: ActivatedRoute, private tab: TabRef) {
     tab.name = '自动策略';
   }
 
   ngOnInit(): void {
+    this.tab.name = '项目【' + this.project.name + '】自动策略';
   }
 
   reload(): void {
@@ -39,7 +38,7 @@ export class ProjectStrategyComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.as.post('strategies', {
+    this.as.post('/project/' + this.project.id + '/strategies', {
       offset: (this.pageIndex - 1) * this.pageSize,
       length: this.pageSize,
       sortKey: this.sortField,
@@ -58,11 +57,11 @@ export class ProjectStrategyComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/project-strategy-create']);
+    this.router.navigate(['/admin/project/' + this.project.id + '/strategy/create']);
   }
 
   edit(c): void {
-    this.router.navigate(['/admin/project-project-strategy-edit/' + c.id]);
+    this.router.navigate(['/admin/project/' + this.project.id + '/strategy/' + c.id + '/edit']);
   }
 
   onTableQuery(params: NzTableQueryParams): void {
