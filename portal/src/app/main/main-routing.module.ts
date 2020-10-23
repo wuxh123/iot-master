@@ -30,6 +30,8 @@ import {ElementBatchEditComponent} from './element-batch-edit/element-batch-edit
 import {HistoryComponent} from './history/history.component';
 import {AlgorithmComponent} from './algorithm/algorithm.component';
 import {AlertComponent} from './alert/alert.component';
+import {ProjectElementComponent} from "./project-element/project-element.component";
+import {ProjectElementEditComponent} from './project-element-edit/project-element-edit.component';
 
 const routes: Routes = [
   {
@@ -68,21 +70,24 @@ const routes: Routes = [
       {path: 'element/:id/detail', component: ElementDetailComponent},
       {path: 'element/:id/variable', component: ElementVariableComponent},
       {path: 'element/:id/variable/create', component: ElementVariableEditComponent},
-      {path: 'element/:id/variable/:id/edit', component: ElementVariableEditComponent},
+      {path: 'element/:id/variable/:id2/edit', component: ElementVariableEditComponent},
       {path: 'element/:id/batch', component: ElementBatchComponent},
       {path: 'element/:id/batch/create', component: ElementBatchEditComponent},
-      {path: 'element/:id/batch/:id/edit', component: ElementBatchEditComponent},
+      {path: 'element/:id/batch/:id2/edit', component: ElementBatchEditComponent},
 
       {path: 'project', component: ProjectComponent},
       {path: 'project/create', component: ProjectEditComponent},
       {path: 'project/:id/edit', component: ProjectEditComponent},
       {path: 'project/:id/detail', component: ProjectDetailComponent},
+      {path: 'project/:id/element', component: ProjectElementComponent},
+      {path: 'project/:id/element/create', component: ProjectElementEditComponent},
+      {path: 'project/:id/element/:id2/edit', component: ProjectElementEditComponent},
       {path: 'project/:id/job', component: ProjectJobComponent},
       {path: 'project/:id/job/create', component: ProjectJobEditComponent},
-      {path: 'project/:id/job/:id/edit', component: ProjectJobEditComponent},
+      {path: 'project/:id/job/:id2/edit', component: ProjectJobEditComponent},
       {path: 'project/:id/strategy', component: ProjectStrategyComponent},
       {path: 'project/:id/strategy/create', component: ProjectStrategyEditComponent},
-      {path: 'project/:id/strategy/:id/edit', component: ProjectStrategyEditComponent},
+      {path: 'project/:id/strategy/:id2/edit', component: ProjectStrategyEditComponent},
 
       {path: '**', redirectTo: 'dash'},
     ]

@@ -1,15 +1,4 @@
 <p>基本信息</p>
-<nz-collapse>
-  <nz-collapse-panel nzHeader="基本信息">
-  </nz-collapse-panel>
-  <nz-collapse-panel nzHeader="协议">
-  </nz-collapse-panel>
-  <nz-collapse-panel nzHeader="变量">
-  </nz-collapse-panel>
-  <nz-collapse-panel nzHeader="批量采集">
-  </nz-collapse-panel>
-  <nz-collapse-panel nzHeader="自动控制策略">
-  </nz-collapse-panel>
-  <nz-collapse-panel nzHeader="定时任务">
-  </nz-collapse-panel>
-</nz-collapse>
+
+<a [routerLink]="'/admin/project/'+id+'/job'">任务</a>
+<a [routerLink]="'/admin/project/'+id+'/strategy'">策略</a>

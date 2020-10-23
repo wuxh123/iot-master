@@ -45,6 +45,8 @@ import {ElementVariableComponent} from './element-variable/element-variable.comp
 import {ElementVariableEditComponent} from './element-variable-edit/element-variable-edit.component';
 import {ElementBatchComponent} from './element-batch/element-batch.component';
 import {ElementBatchEditComponent} from './element-batch-edit/element-batch-edit.component';
+import {ProjectElementComponent} from './project-element/project-element.component';
+import {ProjectElementEditComponent} from './project-element-edit/project-element-edit.component';
 
 
 @NgModule({
@@ -53,6 +55,7 @@ import {ElementBatchEditComponent} from './element-batch-edit/element-batch-edit
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ProjectComponent, ProjectEditComponent, ProjectDetailComponent,
+    ProjectElementComponent, ProjectElementEditComponent,
     ProjectJobComponent, ProjectJobEditComponent,
     ProjectStrategyComponent, ProjectStrategyEditComponent,
     ElementComponent, ElementEditComponent, ElementDetailComponent,

@@ -41,8 +41,7 @@
     <td>{{ data.type }}</td>
     <td>{{data.addr}}</td>
     <td>
-      {{data.disabled ? '禁用' : ''}}
-      <a>启动/停止</a>
+      {{data.disabled ? '禁用' : (data.active ? '活跃' : '-')}}
     </td>
     <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>

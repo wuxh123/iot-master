@@ -32,14 +32,14 @@
   <tbody>
   <tr *ngFor="let data of tbl.data">
     <td>{{ data.id }}</td>
-    <td>{{ data.channel_id }}</td>
+    <td>{{ data.tunnel_id }}</td>
     <td>{{ data.name }}</td>
     <td>{{ data.serial }}</td>
     <td>{{ data.addr}}</td>
     <td>
-      {{data.online ? '在线' : '离线'}}
+      {{ data.active ? '活跃' : '-' }}
     </td>
-    <td>{{ data.online_at | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>{{ data.online | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
       <a [routerLink]="'/admin/link-monitor/'+data.id" title="监控">
         <i nz-icon nzType="aim"></i>

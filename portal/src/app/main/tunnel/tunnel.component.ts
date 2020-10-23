@@ -28,7 +28,7 @@ export class TunnelComponent implements OnInit {
     {text: 'UDP服务端', value: 'udp-server'},
     {text: 'UDP客户端', value: 'udp-client'},
   ];
-  statusFilters = [{text: '启动', value: 1}];
+  statusFilters = [{text: '启动', value: true}];
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {

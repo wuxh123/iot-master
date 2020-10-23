@@ -20,7 +20,7 @@ export class LinkComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  statusFilters = [{text: '启动', value: 1}];
+  statusFilters = [{text: '启动', value: true}];
 
 
   constructor(private as: ApiService, private router: Router, private tab: TabRef) {

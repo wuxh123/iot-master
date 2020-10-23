@@ -65,6 +65,10 @@ export class ProjectComponent implements OnInit {
     this.router.navigate(['/admin/project/' + c.id + '/edit']);
   }
 
+  detail(c): void {
+    this.router.navigate(['/admin/project/' + c.id + '/detail']);
+  }
+
   onTableQuery(params: NzTableQueryParams): void {
     const {pageSize, pageIndex, sort, filter} = params;
     this.pageSize = pageSize;

@@ -100,7 +100,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
 		var lnk models.Link
-		err = db.DB("link").Select(q.Eq("TunnelId", s.ID), q.Eq("Serial", serial)).First(&link)
+		err = db.DB("link").Select(q.Eq("TunnelId", s.ID), q.Eq("Serial", serial)).First(&lnk)
 		if err == storm.ErrNotFound {
 			//找不到
 		} else if err != nil {
