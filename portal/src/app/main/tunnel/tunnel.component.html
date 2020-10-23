@@ -25,7 +25,7 @@
           [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>
-    <th nzColumnKey="Id" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="ID" [nzSortFn]="true">ID</th>
     <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
     <th nzColumnKey="Type" nzShowFilter [nzFilterFn]="true" [nzFilters]="netFilters">类型</th>
     <th nzColumnKey="Addr" [nzSortFn]="true">地址</th>

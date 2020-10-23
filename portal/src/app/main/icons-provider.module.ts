@@ -13,7 +13,14 @@ import {
   DeleteOutline,
   AppstoreOutline,
   AimOutline,
-  SwapOutline, ClusterOutline, AlertOutline, CloudUploadOutline, ProjectOutline, BlockOutline, DatabaseOutline
+  SwapOutline,
+  ClusterOutline,
+  AlertOutline,
+  CloudUploadOutline,
+  ProjectOutline,
+  BlockOutline,
+  DatabaseOutline,
+  EyeOutline,
 } from '@ant-design/icons-angular/icons';
 import {CommonModule} from '@angular/common';
 
@@ -22,7 +29,7 @@ const icons = [
   MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, ApiOutline, SettingOutline, AppstoreOutline,
   // 表格操作
   ReloadOutline, PlusOutline, DeleteOutline, AimOutline, SwapOutline,
-  LogoutOutline, ClusterOutline, AlertOutline, CloudUploadOutline, ProjectOutline, BlockOutline, DatabaseOutline
+  LogoutOutline, ClusterOutline, AlertOutline, CloudUploadOutline, ProjectOutline, BlockOutline, DatabaseOutline, EyeOutline
 ];
 
 @NgModule({
