@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
 import {ActivatedRoute} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
+import {NzModalRef} from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-tunnel-edit',
@@ -14,8 +15,8 @@ export class TunnelEditComponent implements OnInit {
 
   data: any = {is_server: true, type: 'tcp-server', addr: ':1843'};
 
-  constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '通道创建';
+  constructor(private as: ApiService, private routeInfo: ActivatedRoute, private mr: NzModalRef) {
+    //tab.name = '通道创建';
   }
 
   ngOnInit(): void {
@@ -32,13 +33,15 @@ export class TunnelEditComponent implements OnInit {
       this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
         console.log(res);
         // TODO 修改成功
-        this.tab.Close();
+        // this.tab.Close();
+        this.mr.close();
       });
     } else {
       this.as.post(this.target, this.data).subscribe(res => {
         console.log(res);
         // TODO 保存成功
-        this.tab.Close();
+        // this.tab.Close();
+        this.mr.close();
       });
     }
   }

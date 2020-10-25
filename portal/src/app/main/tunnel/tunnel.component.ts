@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzTableQueryParams} from 'ng-zorro-antd';
+import {NzModalService, NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
+import {TunnelEditComponent} from "../tunnel-edit/tunnel-edit.component";
 
 @Component({
   selector: 'app-tunnel',
@@ -31,7 +32,7 @@ export class TunnelComponent implements OnInit {
   statusFilters = [{text: '启动', value: true}];
 
 
-  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+  constructor(private as: ApiService, private router: Router, private tab: TabRef, private ms: NzModalService) {
     tab.name = '通道管理';
   }
 
@@ -84,7 +85,14 @@ export class TunnelComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/admin/tunnel/create']);
+    // this.router.navigate(['/admin/tunnel/create']);
+    const modal = this.ms.create({
+      nzTitle: '创建',
+      nzContent: TunnelEditComponent,
+      // nzViewContainerRef: this.viewContainerRef,
+      nzComponentParams: {
+      },
+    });
   }
 
   edit(c): void {
