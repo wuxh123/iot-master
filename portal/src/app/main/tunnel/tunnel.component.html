@@ -21,7 +21,7 @@
     </ng-template>
   </nz-space-item>
 </nz-space>
-<nz-table #tbl [nzData]="channels" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
+<nz-table #tbl [nzData]="datum" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
           [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>

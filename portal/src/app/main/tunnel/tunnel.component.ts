@@ -12,7 +12,7 @@ import {TunnelEditComponent} from '../tunnel-edit/tunnel-edit.component';
 })
 export class TunnelComponent implements OnInit {
 
-  channels: any[];
+  datum: any[];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -61,7 +61,7 @@ export class TunnelComponent implements OnInit {
       ]
     }).subscribe(res => {
 
-      this.channels = res.data;
+      this.datum = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -99,14 +99,14 @@ export class TunnelComponent implements OnInit {
         return;
       }
       if (id) {
-        this.channels.forEach((c: any, i, a: any[]) => {
+        this.datum.forEach((c: any, i, a: any[]) => {
             if (c.id === data.id) {
               a[i] = data;
             }
           }
         );
       } else {
-        this.channels.unshift(data);
+        this.datum.unshift(data);
       }
     });
   }
