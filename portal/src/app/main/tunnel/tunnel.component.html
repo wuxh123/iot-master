@@ -6,7 +6,7 @@
     </button>
   </nz-space-item>
   <nz-space-item>
-    <button nz-button (click)="create()">
+    <button nz-button (click)="edit()">
       <i nz-icon nzType="plus"></i>
       创建
     </button>
@@ -49,7 +49,7 @@
         <i nz-icon nzType="aim"></i>
       </a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="edit(data)" title="编辑">
+      <a (click)="edit(data.id)" title="编辑">
         <i nz-icon nzType="edit"></i>
       </a>
     </td>

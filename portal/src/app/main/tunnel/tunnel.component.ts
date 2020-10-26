@@ -3,7 +3,7 @@ import {ApiService} from '../../api.service';
 import {NzModalService, NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
-import {TunnelEditComponent} from "../tunnel-edit/tunnel-edit.component";
+import {TunnelEditComponent} from '../tunnel-edit/tunnel-edit.component';
 
 @Component({
   selector: 'app-tunnel',
@@ -12,7 +12,7 @@ import {TunnelEditComponent} from "../tunnel-edit/tunnel-edit.component";
 })
 export class TunnelComponent implements OnInit {
 
-  channels: [];
+  channels: any[];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -84,19 +84,31 @@ export class TunnelComponent implements OnInit {
     // });
   }
 
-  create(): void {
-    // this.router.navigate(['/admin/tunnel/create']);
+  edit(id?): void {
     const modal = this.ms.create({
-      nzTitle: '创建',
+      nzTitle: id ? '编辑通道' : '创建通道',
       nzContent: TunnelEditComponent,
+      nzFooter: null,
+      nzMaskClosable: false,
       // nzViewContainerRef: this.viewContainerRef,
-      nzComponentParams: {
-      },
+      nzComponentParams: {id},
     });
-  }
-
-  edit(c): void {
-    this.router.navigate(['/admin/tunnel/' + c.id + '/edit/']);
+    // insert/update after close
+    modal.afterClose.subscribe(data => {
+      if (!data) {
+        return;
+      }
+      if (id) {
+        this.channels.forEach((c: any, i, a: any[]) => {
+            if (c.id === data.id) {
+              a[i] = data;
+            }
+          }
+        );
+      } else {
+        this.channels.unshift(data);
+      }
+    });
   }
 
   onTableQuery(params: NzTableQueryParams): void {
