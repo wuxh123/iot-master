@@ -12,53 +12,30 @@ type Project struct {
 	Version  string `json:"version"`
 	Disabled bool   `json:"disabled"`
 
-	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
-}
+	Elements []struct {
+		ElementId int    `json:"element_id"`
+		LinkId    int    `json:"link_id"`
+		Slave     uint8  `json:"slave"` //从站号
+		Name      string `json:"name"`
+		Alias     string `json:"alias"` //别名，用于编程
 
-type ProjectElement struct {
-	ID        int `json:"id"`
-	ProjectId int `json:"project_id"`
-	ElementId int `json:"element_id"`
-	//TunnelId  int `json:"tunnel_id"`
-	LinkId    int `json:"link_id"`
+		Variables []struct {
+			VariableId int     `json:"variable_id"`
+			Alias      string  `json:"alias"`   //别名，用于编程
+			Correct    float32 `json:"correct"` //校准
+		}
+	}
 
-	Name string `json:"name"`
+	Jobs []struct {
+		Name   string `json:"name"`
+		Cron   string `json:"cron"`
+		Script string `json:"script"` //javascript
+	}
 
-	Slave uint8  `json:"slave"` //从站号
-	Alias string `json:"alias"` //别名，用于编程
-
-	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
-}
-
-type ProjectVariable struct {
-	ID                int `json:"id"` //TODO 去掉ID，用双主键
-	ProjectElementId  int `json:"project_element_id"`
-	ElementVariableId int `json:"element_variable_id"`
-
-	Alias   string  `json:"alias"`   //别名，用于编程
-	Correct float32 `json:"correct"` //校准
-
-	Created time.Time `json:"created" storm:"created"`
-}
-
-type ProjectJob struct {
-	ID        int    `json:"id"`
-	ProjectId int    `json:"project_id"`
-	Name      string `json:"name"`
-	Cron      string `json:"cron"`
-	Script    string `json:"script"` //javascript
-
-	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
-}
-
-type ProjectStrategy struct {
-	ID        int    `json:"id"`
-	ProjectId int    `json:"project_id"`
-	Name      string `json:"name"`
-	Script    string `json:"script"` //javascript
+	Strategies []struct {
+		Name   string `json:"name"`
+		Script string `json:"script"` //javascript
+	}
 
 	Created time.Time `json:"created" storm:"created"`
 	Updated time.Time `json:"updated" storm:"updated"`
