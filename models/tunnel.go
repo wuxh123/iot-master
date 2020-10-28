@@ -3,9 +3,7 @@ package models
 import "time"
 
 type Tunnel struct {
-	ID        int `json:"id"`
-	ProjectId int `json:"project_id"` //模型ID
-
+	ID      int    `json:"id"`
 	Name    string `json:"name"`
 	Type    string `json:"type"` //tcp-server tcp-client udp-server udp-client serial
 	Addr    string `json:"addr"`
@@ -23,7 +21,10 @@ type Tunnel struct {
 
 	Disabled bool `json:"disabled"`
 
-	Active  bool      `json:"active"`
+	Active bool `json:"active"`
+
+	TemplateId int `json:"template_id"` //模板ID
+
 	Created time.Time `json:"created" storm:"created"`
 	Updated time.Time `json:"updated" storm:"updated"`
 }
@@ -31,7 +32,8 @@ type Tunnel struct {
 type Link struct {
 	ID        int `json:"id"`
 	TunnelId  int `json:"tunnel_id"`
-	ProjectId int `json:"project_id"` //模型ID，默认继承自Tunnel
+
+	ProjectId int `json:"project_id"` //项目ID
 
 	Serial string `json:"serial" storm:"index"`
 	Addr   string `json:"addr"`
@@ -40,4 +42,3 @@ type Link struct {
 	Online  time.Time `json:"online"`
 	Created time.Time `json:"created" storm:"created"`
 }
-
