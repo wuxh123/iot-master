@@ -4,10 +4,10 @@ import "time"
 
 type Element struct {
 	ID          int    `json:"id"`
+	UUID        string `json:"uuid"` //唯一码，自动生成
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Origin      string `json:"origin"` //来源
-	UUID        string `json:"uuid"`   //唯一码，自动生成
 
 	Manufacturer string `json:"manufacturer"` //厂商
 	Model        string `json:"model"`        //型号
@@ -26,8 +26,8 @@ type Element struct {
 // hold 保持寄存器（3读多个、6写单个、16写多个，--23读写多个--）
 
 type ElementVariable struct {
-	Name string `json:"name"`
-	//Alias  string `json:"alias"` //别名，用于编程
+	Name   string `json:"name"`
+	Alias  string `json:"alias"` //默认别名，用于编程
 	Area   string `json:"area"`
 	Offset uint16 `json:"offset"`
 	Type   string `json:"type"`
