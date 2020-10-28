@@ -20,7 +20,8 @@ type ProjectElement struct {
 	ID        int `json:"id"`
 	ProjectId int `json:"project_id"`
 	ElementId int `json:"element_id"`
-	TunnelId  int `json:"tunnel_id"`
+	//TunnelId  int `json:"tunnel_id"`
+	LinkId    int `json:"link_id"`
 
 	Name string `json:"name"`
 
@@ -31,14 +32,16 @@ type ProjectElement struct {
 	Updated time.Time `json:"updated" storm:"updated"`
 }
 
-//
-//type ProjectElementVariable struct {
-//	ID                int `json:"id"` //TODO 去掉ID，用双主键
-//	ProjectElementId  int `json:"project_element_id"`
-//	ElementVariableId int `json:"element_variable_id"`
-//
-//	Created time.Time `json:"created" storm:"created"`
-//}
+type ProjectVariable struct {
+	ID                int `json:"id"` //TODO 去掉ID，用双主键
+	ProjectElementId  int `json:"project_element_id"`
+	ElementVariableId int `json:"element_variable_id"`
+
+	Alias   string  `json:"alias"`   //别名，用于编程
+	Correct float32 `json:"correct"` //校准
+
+	Created time.Time `json:"created" storm:"created"`
+}
 
 type ProjectJob struct {
 	ID        int    `json:"id"`

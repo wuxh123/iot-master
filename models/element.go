@@ -25,39 +25,27 @@ type Element struct {
 	Updated time.Time `json:"updated" storm:"updated"`
 }
 
-type ElementDataArea struct {
+//Modbus Area
+// discrete 离散输入 触点（2读多个）
+// coil 离散输出 线圈（1读多个、5写单个、15写多个）
+// input 输入寄存器（4读多个）
+// hold 保持寄存器（3读多个、6写单个、16写多个，--23读写多个--）
+
+type ElementVariable struct {
 	ID        int `json:"id"`
 	ElementId int `json:"element_id"`
 
-	Name    string `json:"name"`
-	Address uint16 `json:"address"`
-	Type    string `json:"type"`
-	//Modbus
-	// discrete 输入离散量（2读多个）
-	// coil 线圈（1读多个、5写单个、15写多个）
-	// input 输入寄存器（4读多个）
-	// hold 保持寄存器（3读多个、6写单个、16写多个，--23读写多个--）
-
-	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
-}
-
-type ElementVariable struct {
-	ID         int `json:"id"`
-	ElementId  int `json:"element_id"`
-	DataAreaId int `json:"data_area_id"`
-
+	Name string `json:"name"`
+	//Alias  string `json:"alias"` //别名，用于编程
+	Area   string `json:"area"`
 	Offset uint16 `json:"offset"`
-	Name   string `json:"name"`
-	Alias  string `json:"alias"` //别名，用于编程
 	Type   string `json:"type"`
 	Unit   string `json:"unit"` //单位
 
 	Scale   float32 `json:"scale"`   //倍率，比如一般是 整数÷10，得到
-	Correct float32 `json:"correct"` //校准
 
 	Default  string `json:"default"`
-	Writable bool   `json:"writable"` //可写，用于输出（如开关）
+	ReadOnly bool   `json:"read_only"` //只读
 
 	Created time.Time `json:"created" storm:"created"`
 	Updated time.Time `json:"updated" storm:"updated"`
