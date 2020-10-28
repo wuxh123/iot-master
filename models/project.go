@@ -8,6 +8,7 @@ import (
 type Project struct {
 	ProjectTemplate `storm:"inline"`
 
+	//Disabled   bool  `json:"disabled"`
 	TemplateId int   `json:"template_id"`
 	LinkBinds  []int `json:"link_binds"`
 }
@@ -17,9 +18,7 @@ type ProjectTemplate struct {
 	UUID        string `json:"uuid"` //唯一码，自动生成
 	Name        string `json:"name"`
 	Description string `json:"description"`
-
-	Version  string `json:"version"`
-	Disabled bool   `json:"disabled"`
+	Version     string `json:"version"`
 
 	Links      []ProjectLink      `json:"links"`
 	Jobs       []ProjectJob       `json:"jobs"`
