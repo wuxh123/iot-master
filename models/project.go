@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"time"
+	"github.com/robertkrimen/otto"
+)
 
 type Project struct {
 	ProjectTemplate `storm:"inline"`
@@ -18,10 +21,10 @@ type ProjectTemplate struct {
 	Version  string `json:"version"`
 	Disabled bool   `json:"disabled"`
 
-	Links      []ProjectLink     `json:"links"`
-	Elements   []ProjectElement  `json:"elements"`
-	Jobs       []ProjectJob      `json:"jobs"`
-	Strategies []ProjectStrategy `json:"strategies"`
+	Links      []ProjectLink      `json:"links"`
+	Jobs       []ProjectJob       `json:"jobs"`
+	Strategies []ProjectStrategy  `json:"strategies"`
+	Validators []ProjectValidator `json:"validators"`
 
 	Created time.Time `json:"created" storm:"created"`
 	Updated time.Time `json:"updated" storm:"updated"`
@@ -30,26 +33,30 @@ type ProjectTemplate struct {
 type ProjectLink struct {
 	Name     string `json:"name"`
 	Protocol string `json:"protocol"`
+
+	Elements []ProjectElement `json:"elements"`
 }
 
 type ProjectElement struct {
 	ElementId int `json:"element_id"`
 
-	Link int `json:"link"` //链接号：0,1,2,3
-
-	Slave uint8  `json:"slave"` //从站号
 	Name  string `json:"name"`
-	Alias string `json:"alias"` //别名，用于编程
+	Slave uint8  `json:"slave"` //从站号
 
-	Variables []ProjectElementVariable `json:"variables"`
+	Variables []ProjectVariable `json:"variables"`
 }
 
-type ProjectElementVariable struct {
+type ProjectVariable struct {
 	ElementVariable `storm:"inline"`
 
 	Name    string  `json:"name"`
 	Alias   string  `json:"alias"`   //别名，用于编程
 	Correct float32 `json:"correct"` //校准
+}
+
+type ProjectValidator struct {
+	Message string `json:"message"`
+	Script  string `json:"script"`
 }
 
 type ProjectJob struct {
@@ -62,4 +69,10 @@ type ProjectStrategy struct {
 	Name   string `json:"name"`
 	Script string `json:"script"` //javascript
 
+}
+
+type Script struct {
+	source    string
+	variables []string
+	script    *otto.Script
 }
