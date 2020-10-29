@@ -152,7 +152,7 @@ func newLink(ch Tunnel, conn net.Conn) *Link {
 	return &Link{
 		Link: models.Link{
 			TunnelId:  c.ID,
-			ProjectId: c.ProjectId,
+			//ProjectId: c.ProjectId,
 			Active:    true,
 		},
 		tunnel: ch,
@@ -166,7 +166,7 @@ func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 	return &Link{
 		Link: models.Link{
 			TunnelId:  c.ID,
-			ProjectId: c.ProjectId,
+			//ProjectId: c.ProjectId,
 			Active:    true,
 		},
 		tunnel: ch,

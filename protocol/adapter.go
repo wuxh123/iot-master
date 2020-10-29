@@ -1,13 +1,18 @@
 package protocol
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/models"
 	"sync"
 )
 
+type Address struct {
+	Slave  uint8
+	Offset uint16
+	Area   string
+}
+
 type AdapterListener interface {
-	OnAdapterRead(addr *models.Address, buf []byte)
-	OnAdapterWrite(addr *models.Address, size int)
+	OnAdapterRead(addr *Address, buf []byte)
+	OnAdapterWrite(addr *Address, size int)
 	OnAdapterError(err error)
 }
 
@@ -17,8 +22,8 @@ type Adapter interface {
 	Name() string
 	Version() string
 
-	Read(addr *models.Address, size int) error
-	Write(addr *models.Address, buf []byte) error
+	Read(addr *Address, size int) error
+	Write(addr *Address, buf []byte) error
 }
 
 //可以改为普通map
