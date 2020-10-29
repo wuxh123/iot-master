@@ -104,18 +104,28 @@ func RegisterRoutes(app *mux.Router) {
 	app.HandleFunc("/plugin/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/plugin/{id}", curdApiGet(model, mod)).Methods("GET")
 
-	//模型管理
+	//项目管理
 	mod = reflect.TypeOf(models.Project{})
 	model = "project"
 	app.HandleFunc("/projects", curdApiList(model, mod)).Methods("POST")
 	app.HandleFunc("/project", curdApiCreate(model, mod, projectAfterCreate)).Methods("POST")
-	app.HandleFunc("/project/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
-	app.HandleFunc("/project/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/{id}", curdApiDelete(model, mod, projectAfterDelete)).Methods("DELETE")
+	app.HandleFunc("/project/{id}", curdApiModify(model, mod, projectAfterModify)).Methods("PUT", "POST")
 	app.HandleFunc("/project/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	//app.HandleFunc("/project/import", projectImport).Methods("POST")
 	//app.HandleFunc("/project/{id}/export", projectExport).Methods("GET")
 	//app.HandleFunc("/project/{id}/deploy", projectDeploy).Methods("GET")
+
+
+	//模板管理
+	mod = reflect.TypeOf(models.ProjectTemplate{})
+	model = "template"
+	app.HandleFunc("/templates", curdApiList(model, mod)).Methods("POST")
+	app.HandleFunc("/template", curdApiCreate(model, mod, nil)).Methods("POST")
+	app.HandleFunc("/template/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
+	app.HandleFunc("/template/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/template/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	//元件管理
 	mod = reflect.TypeOf(models.Element{})

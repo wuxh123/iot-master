@@ -4,7 +4,7 @@ import "time"
 
 type Element struct {
 	ID          int    `json:"id"`
-	UUID        string `json:"uuid"` //唯一码，自动生成
+	UUID        string `json:"uuid" storm:"unique"` //唯一码，自动生成
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Origin      string `json:"origin"` //来源
@@ -27,7 +27,7 @@ type Element struct {
 
 type ElementVariable struct {
 	Name   string `json:"name"`
-	Alias  string `json:"alias"` //默认别名，用于编程
+	Alias  string `json:"alias"` //别名，用于编程
 	Area   string `json:"area"`
 	Offset uint16 `json:"offset"`
 	Type   string `json:"type"`

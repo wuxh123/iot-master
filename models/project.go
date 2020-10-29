@@ -1,8 +1,8 @@
 package models
 
 import (
-	"time"
 	"github.com/robertkrimen/otto"
+	"time"
 )
 
 type Project struct {
@@ -15,7 +15,7 @@ type Project struct {
 
 type ProjectTemplate struct {
 	ID          int    `json:"id"`
-	UUID        string `json:"uuid"` //唯一码，自动生成
+	UUID        string `json:"uuid" storm:"unique"` //唯一码，自动生成
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Version     string `json:"version"`
@@ -45,20 +45,11 @@ type ProjectElement struct {
 	Element string `json:"element"` //uuid
 
 	Name  string `json:"name"`
+	Alias string `json:"alias"`
 	Slave uint8  `json:"slave"` //从站号
 
 	//轮询
 	LoopTimes int `json:"loop_times"` //轮询多少次，才会检查一次
-
-	Variables []ProjectVariable `json:"variables"`
-}
-
-type ProjectVariable struct {
-	ElementVariable `storm:"inline"`
-
-	Name    string  `json:"name"`
-	Alias   string  `json:"alias"`   //别名，用于编程（从站号如果不是1，则自动添加前缀 s2xxx
-	Correct float32 `json:"correct"` //校准
 }
 
 type ProjectValidator struct {
