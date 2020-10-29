@@ -22,31 +22,24 @@ import {
 import {DashComponent} from './dash/dash.component';
 import {MomentModule} from 'ngx-moment';
 import {UiModule} from '../ui/ui.module';
+import {TabsComponent} from './tabs/tabs.component';
 import {TunnelComponent} from './tunnel/tunnel.component';
-import {LinkComponent} from './link/link.component';
 import {TunnelEditComponent} from './tunnel-edit/tunnel-edit.component';
-import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
-import {NzSpaceModule} from 'ng-zorro-antd/space';
+import {LinkComponent} from './link/link.component';
 import {LinkEditComponent} from './link-edit/link-edit.component';
+import {LinkMonitorComponent} from './link-monitor/link-monitor.component';
 import {PluginComponent} from './plugin/plugin.component';
 import {PluginEditComponent} from './plugin-edit/plugin-edit.component';
-import {TabsComponent} from './tabs/tabs.component';
 import {ProjectComponent} from './project/project.component';
 import {ProjectEditComponent} from './project-edit/project-edit.component';
-import {ProjectJobComponent} from './project-job/project-job.component';
-import {ProjectJobEditComponent} from './project-job-edit/project-job-edit.component';
-import {ProjectStrategyComponent} from './project-strategy/project-strategy.component';
-import {ProjectStrategyEditComponent} from './project-strategy-edit/project-strategy-edit.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
+import {TemplateComponent} from './template/template.component';
+import {TemplateEditComponent} from './template-edit/template-edit.component';
+import {TemplateDetailComponent} from './template-detail/template-detail.component';
 import {ElementComponent} from './element/element.component';
 import {ElementEditComponent} from './element-edit/element-edit.component';
 import {ElementDetailComponent} from './element-detail/element-detail.component';
-import {ElementVariableComponent} from './element-variable/element-variable.component';
-import {ElementVariableEditComponent} from './element-variable-edit/element-variable-edit.component';
-import {ElementBatchComponent} from './element-batch/element-batch.component';
-import {ElementBatchEditComponent} from './element-batch-edit/element-batch-edit.component';
-import {ProjectElementComponent} from './project-element/project-element.component';
-import {ProjectElementEditComponent} from './project-element-edit/project-element-edit.component';
+import {NzSpaceModule} from 'ng-zorro-antd/space';
 
 
 @NgModule({
@@ -55,12 +48,8 @@ import {ProjectElementEditComponent} from './project-element-edit/project-elemen
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ProjectComponent, ProjectEditComponent, ProjectDetailComponent,
-    ProjectElementComponent, ProjectElementEditComponent,
-    ProjectJobComponent, ProjectJobEditComponent,
-    ProjectStrategyComponent, ProjectStrategyEditComponent,
+    TemplateComponent, TemplateEditComponent, TemplateDetailComponent,
     ElementComponent, ElementEditComponent, ElementDetailComponent,
-    ElementVariableComponent, ElementVariableEditComponent,
-    ElementBatchComponent, ElementBatchEditComponent,
   ],
   imports: [
     CommonModule,
