@@ -33,11 +33,6 @@ type ProjectLink struct {
 	Name     string `json:"name"`
 	Protocol string `json:"protocol"`
 
-	//轮询
-	LoopEnable   bool `json:"loop_enable"`
-	LoopPeriod   int  `json:"loop_period"`   //ms
-	LoopInterval int  `json:"loop_interval"` //ms
-
 	Elements []ProjectElement `json:"elements"`
 }
 
@@ -48,11 +43,12 @@ type ProjectElement struct {
 	Alias string `json:"alias"`
 	Slave uint8  `json:"slave"` //从站号
 
-	//轮询
-	LoopTimes int `json:"loop_times"` //轮询多少次，才会检查一次
+	//采样周期，使用定时器。如果空闲，则读取， 如果忙，则排队， 如果已经排队，则跳过
+	Sampling int `json:"sampling"` //采样周期 ms
 }
 
 type ProjectValidator struct {
+	Title   string `json:"title"`
 	Message string `json:"message"`
 	Script  string `json:"script"`
 }
@@ -66,7 +62,6 @@ type ProjectJob struct {
 type ProjectStrategy struct {
 	Name   string `json:"name"`
 	Script string `json:"script"` //javascript
-
 }
 
 type Script struct {
