@@ -67,7 +67,7 @@ type ProjectStrategy struct {
 
 type ProjectFunction struct {
 	Name   string `json:"name"`
-	Alias  string `json:"alias"`  //项目功能脚本唯一
+	Alias  string `json:"alias"`  //项目功能脚本唯一，供外部调用
 	Script string `json:"script"` //javascript
 }
 
