@@ -76,9 +76,9 @@ func RegisterRoutes(app *mux.Router) {
 	model := "tunnel"
 	app.HandleFunc("/project/{id}/tunnels", curdApiListById(model, mod, "project_id")).Methods("POST")
 	app.HandleFunc("/tunnels", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/tunnel", curdApiCreate(model, mod, nil)).Methods("POST")             //TODO 启动
-	app.HandleFunc("/tunnel/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")      //TODO 停止
-	app.HandleFunc("/tunnel/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST") //TODO 重新启动
+	app.HandleFunc("/tunnel", curdApiCreate(model, mod, nil, nil)).Methods("POST")             //TODO 启动
+	app.HandleFunc("/tunnel/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE")      //TODO 停止
+	app.HandleFunc("/tunnel/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST") //TODO 重新启动
 	app.HandleFunc("/tunnel/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	app.HandleFunc("/tunnel/{id}/start", tunnelStart).Methods("GET")
@@ -91,26 +91,26 @@ func RegisterRoutes(app *mux.Router) {
 	model = "link"
 	app.HandleFunc("/tunnel/{id}/links", curdApiListById(model, mod, "tunnel_id")).Methods("POST")
 	app.HandleFunc("/links", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/link/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE") //TODO 停止
-	app.HandleFunc("/link/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/link/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE") //TODO 停止
+	app.HandleFunc("/link/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/link/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	//插件管理
 	mod = reflect.TypeOf(models.Plugin{})
 	model = "plugin"
 	app.HandleFunc("/plugins", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/plugin", curdApiCreate(model, mod, nil)).Methods("POST")
-	app.HandleFunc("/plugin/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
-	app.HandleFunc("/plugin/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/plugin", curdApiCreate(model, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/plugin/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/plugin/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/plugin/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	//项目管理
 	mod = reflect.TypeOf(models.Project{})
 	model = "project"
 	app.HandleFunc("/projects", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/project", curdApiCreate(model, mod, projectAfterCreate)).Methods("POST")
-	app.HandleFunc("/project/{id}", curdApiDelete(model, mod, projectAfterDelete)).Methods("DELETE")
-	app.HandleFunc("/project/{id}", curdApiModify(model, mod, projectAfterModify)).Methods("PUT", "POST")
+	app.HandleFunc("/project", curdApiCreate(model, mod, projectBeforeCreate, projectAfterCreate)).Methods("POST")
+	app.HandleFunc("/project/{id}", curdApiDelete(model, mod, nil, projectAfterDelete)).Methods("DELETE")
+	app.HandleFunc("/project/{id}", curdApiModify(model, mod, nil, projectAfterModify)).Methods("PUT", "POST")
 	app.HandleFunc("/project/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	//app.HandleFunc("/project/import", projectImport).Methods("POST")
@@ -122,20 +122,19 @@ func RegisterRoutes(app *mux.Router) {
 	mod = reflect.TypeOf(models.ProjectTemplate{})
 	model = "template"
 	app.HandleFunc("/templates", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/template", curdApiCreate(model, mod, nil)).Methods("POST")
-	app.HandleFunc("/template/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
-	app.HandleFunc("/template/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/template", curdApiCreate(model, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/template/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/template/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/template/{id}", curdApiGet(model, mod)).Methods("GET")
 
 	//元件管理
 	mod = reflect.TypeOf(models.Element{})
 	model = "element"
 	app.HandleFunc("/elements", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/element", curdApiCreate(model, mod, elementAfterCreated)).Methods("POST")
-	app.HandleFunc("/element/{id}", curdApiDelete(model, mod, nil)).Methods("DELETE")
-	app.HandleFunc("/element/{id}", curdApiModify(model, mod, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/element", curdApiCreate(model, mod, elementBeforeCreate, nil)).Methods("POST")
+	app.HandleFunc("/element/{id}", curdApiDelete(model, mod, elementBeforeDelete, nil)).Methods("DELETE")
+	app.HandleFunc("/element/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/element/{id}", curdApiGet(model, mod)).Methods("GET")
-
 }
 
 type Reply struct {

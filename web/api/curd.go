@@ -179,7 +179,7 @@ func curdApiListById(model string, mod reflect.Type, field string) Handler {
 	}
 }
 
-func curdApiCreate(model string, mod reflect.Type, after hook) Handler {
+func curdApiCreate(model string, mod reflect.Type, before hook, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		data := reflect.New(mod).Interface()
 		if err := parseBody(request, data); err != nil {
@@ -205,7 +205,7 @@ func curdApiCreate(model string, mod reflect.Type, after hook) Handler {
 	}
 }
 
-func curdApiModify(model string, mod reflect.Type, after hook) Handler {
+func curdApiModify(model string, mod reflect.Type, before hook, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
@@ -240,7 +240,7 @@ func curdApiModify(model string, mod reflect.Type, after hook) Handler {
 	}
 }
 
-func curdApiDelete(model string, mod reflect.Type, after hook) Handler {
+func curdApiDelete(model string, mod reflect.Type, before hook, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {

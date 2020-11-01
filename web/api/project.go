@@ -1,16 +1,22 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/db"
+	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/google/uuid"
 	"net/http"
 )
 
+func projectBeforeCreate(data interface{}) error {
+	project := data.(*models.Project)
+	project.UUID = uuid.New().String()
+	return nil
+}
+
 func projectAfterCreate(data interface{}) error {
 	//project := data.(*models.Project)
-	return db.DB("project").UpdateField(data, "UUID", uuid.New().String())
 
 	//TODO 加载实例
+	return nil
 }
 
 func projectAfterModify(data interface{}) error {
