@@ -6,7 +6,7 @@
     </button>
   </nz-space-item>
   <nz-space-item>
-    <button nz-button (click)="create()">
+    <button nz-button (click)="edit()">
       <i nz-icon nzType="plus"></i>
       创建
     </button>
@@ -21,7 +21,7 @@
     </ng-template>
   </nz-space-item>
 </nz-space>
-<nz-table #tbl [nzData]="models" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
+<nz-table #tbl [nzData]="datum" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
           [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>
@@ -43,13 +43,12 @@
     <td>{{ data.manufacturer }}</td>
     <td>{{ data.model }}</td>
     <td>{{ data.version }}</td>
-    <td>{{ data.disabled ? '禁用' : '启用' }}</td>
     <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
-      <a (click)="detail(data)" title="说明">
+      <a (click)="detail(data)" title="详情">
         <i nz-icon nzType="eye"></i>
       </a>
-      <a (click)="edit(data)" title="编辑">
+      <a (click)="edit(data.id)" title="编辑">
         <i nz-icon nzType="edit"></i>
       </a>
     </td>

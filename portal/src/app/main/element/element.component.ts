@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzTableQueryParams} from 'ng-zorro-antd';
+import {NzModalService, NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
 import {TabRef} from '../tabs/tabs.component';
+import {ElementEditComponent} from "../element-edit/element-edit.component";
 
 @Component({
   selector: 'app-element',
@@ -11,7 +12,7 @@ import {TabRef} from '../tabs/tabs.component';
 })
 export class ElementComponent implements OnInit {
 
-  models: [];
+  datum: any[];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -22,7 +23,8 @@ export class ElementComponent implements OnInit {
   loading = false;
 
 
-  constructor(private as: ApiService, private router: Router, private tab: TabRef) {
+
+  constructor(private as: ApiService, private router: Router, private tab: TabRef, private ms: NzModalService) {
     tab.name = '元件管理';
   }
 
@@ -43,10 +45,12 @@ export class ElementComponent implements OnInit {
       sortKey: this.sortField,
       sortOrder: this.sortOrder,
       filters: this.filters,
-      keyword: this.keyword,
+      keywords: [
+        {key: 'Name', value: this.keyword},
+      ]
     }).subscribe(res => {
 
-      this.models = res.data;
+      this.datum = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -55,13 +59,35 @@ export class ElementComponent implements OnInit {
     });
   }
 
-  create(): void {
-    this.router.navigate(['/admin/element/create']);
+
+  edit(id?): void {
+    const modal = this.ms.create({
+      nzTitle: id ? '编辑元件' : '创建元件',
+      nzContent: ElementEditComponent,
+      nzFooter: null,
+      nzMaskClosable: false,
+      // nzViewContainerRef: this.viewContainerRef,
+      nzComponentParams: {id},
+    });
+    // insert/update after close
+    modal.afterClose.subscribe(data => {
+      if (!data) {
+        return;
+      }
+      if (id) {
+        this.datum.forEach((c: any, i, a: any[]) => {
+            if (c.id === data.id) {
+              a[i] = data;
+            }
+          }
+        );
+      } else {
+        this.datum.unshift(data);
+      }
+    });
   }
 
-  edit(c): void {
-    this.router.navigate(['/admin/element/' + c.id + '/edit']);
-  }
+
 
   detail(c): void {
     this.router.navigate(['/admin/element/' + c.id + '/detail']);
