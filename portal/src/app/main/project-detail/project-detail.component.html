@@ -1,8 +1,14 @@
 <p>TODO：项目基本信息</p>
 
+<p>TODO：链接平铺，包含元件， </p>
+
+<app-project-link [project]="project"></app-project-link>
+
+<app-project-element [project]="project"></app-project-element>
+
 <nz-tabset>
-  <nz-tab nzTitle="元件">
-    <app-project-element [project]="project"></app-project-element>
+  <nz-tab nzTitle="功能">
+    <app-project-function [project]="project"></app-project-function>
   </nz-tab>
   <nz-tab nzTitle="任务">
     <app-project-job [project]="project"></app-project-job>

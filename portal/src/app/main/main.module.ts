@@ -48,6 +48,10 @@ import {ProjectStrategyComponent} from './project-strategy/project-strategy.comp
 import {ProjectStrategyEditComponent} from './project-strategy-edit/project-strategy-edit.component';
 import {ElementVariableComponent} from './element-variable/element-variable.component';
 import {ElementVariableEditComponent} from './element-variable-edit/element-variable-edit.component';
+import {ProjectLinkComponent} from './project-link/project-link.component';
+import {ProjectLinkEditComponent} from './project-link-edit/project-link-edit.component';
+import {ProjectFunctionComponent} from './project-function/project-function.component';
+import {ProjectFunctionEditComponent} from './project-function-edit/project-function-edit.component';
 
 
 @NgModule({
@@ -59,6 +63,8 @@ import {ElementVariableEditComponent} from './element-variable-edit/element-vari
     ProjectElementComponent, ProjectElementEditComponent,
     ProjectJobComponent, ProjectJobEditComponent,
     ProjectStrategyComponent, ProjectStrategyEditComponent,
+    ProjectLinkComponent, ProjectLinkEditComponent,
+    ProjectFunctionComponent, ProjectFunctionEditComponent,
     ElementComponent, ElementEditComponent, ElementDetailComponent,
     ElementVariableComponent, ElementVariableEditComponent,
   ],
