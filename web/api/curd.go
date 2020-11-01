@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"git.zgwit.com/zgwit/iot-admin/db"
 	"github.com/gorilla/mux"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
@@ -34,7 +33,7 @@ func parseBody(request *http.Request, data interface{}) error {
 
 type Handler func(writer http.ResponseWriter, request *http.Request)
 
-func curdApiList(model string, mod reflect.Type) Handler {
+func curdApiList(store storm.Node, mod reflect.Type) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		datas := createSliceFromType(mod)
 		data := reflect.New(mod).Interface()
@@ -70,7 +69,7 @@ func curdApiList(model string, mod reflect.Type) Handler {
 			cond = append(cond, q.Or(kws...))
 		}
 
-		query := db.DB(model).Select(cond...)
+		query := store.Select(cond...)
 
 		//计算总数
 		cnt, err := query.Count(data)
@@ -104,7 +103,7 @@ func curdApiList(model string, mod reflect.Type) Handler {
 	}
 }
 
-func curdApiListById(model string, mod reflect.Type, field string) Handler {
+func curdApiListById(store storm.Node,mod reflect.Type, field string) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		datas := createSliceFromType(mod)
 		data := reflect.New(mod).Interface()
@@ -145,7 +144,7 @@ func curdApiListById(model string, mod reflect.Type, field string) Handler {
 			cond = append(cond, q.Or(kws...))
 		}
 
-		query := db.DB(model).Select(cond...)
+		query := store.Select(cond...)
 
 		//计算总数
 		cnt, err := query.Count(data)
@@ -179,7 +178,7 @@ func curdApiListById(model string, mod reflect.Type, field string) Handler {
 	}
 }
 
-func curdApiCreate(model string, mod reflect.Type, before hook, after hook) Handler {
+func curdApiCreate(store storm.Node,mod reflect.Type, before hook, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		data := reflect.New(mod).Interface()
 		if err := parseBody(request, data); err != nil {
@@ -187,7 +186,14 @@ func curdApiCreate(model string, mod reflect.Type, before hook, after hook) Hand
 			return
 		}
 
-		err := db.DB(model).Save(data)
+		if before != nil {
+			if err := before(data); err != nil {
+				replyError(writer, err)
+				return
+			}
+		}
+
+		err := store.Save(data)
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -205,7 +211,7 @@ func curdApiCreate(model string, mod reflect.Type, before hook, after hook) Hand
 	}
 }
 
-func curdApiModify(model string, mod reflect.Type, before hook, after hook) Handler {
+func curdApiModify(store storm.Node,mod reflect.Type, before hook, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
@@ -222,7 +228,14 @@ func curdApiModify(model string, mod reflect.Type, before hook, after hook) Hand
 
 		val.Elem().FieldByName("ID").Set(reflect.ValueOf(id))
 
-		err = db.DB(model).Update(data)
+		if before != nil {
+			if err := before(data); err != nil {
+				replyError(writer, err)
+				return
+			}
+		}
+
+		err = store.Update(data)
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -240,7 +253,7 @@ func curdApiModify(model string, mod reflect.Type, before hook, after hook) Hand
 	}
 }
 
-func curdApiDelete(model string, mod reflect.Type, before hook, after hook) Handler {
+func curdApiDelete(store storm.Node,mod reflect.Type, before hook, after hook) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
@@ -251,7 +264,16 @@ func curdApiDelete(model string, mod reflect.Type, before hook, after hook) Hand
 		val := reflect.New(mod)
 		data := val.Interface()
 		val.Elem().FieldByName("ID").Set(reflect.ValueOf(id))
-		err = db.DB(model).DeleteStruct(data)
+
+
+		if before != nil {
+			if err := before(id); err != nil {
+				replyError(writer, err)
+				return
+			}
+		}
+
+		err = store.DeleteStruct(data)
 		if err != nil {
 			replyError(writer, err)
 			return
@@ -269,7 +291,7 @@ func curdApiDelete(model string, mod reflect.Type, before hook, after hook) Hand
 	}
 }
 
-func curdApiGet(model string, mod reflect.Type) Handler {
+func curdApiGet(store storm.Node,mod reflect.Type) Handler {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(request)["id"])
 		if err != nil {
@@ -277,7 +299,7 @@ func curdApiGet(model string, mod reflect.Type) Handler {
 			return
 		}
 		data := reflect.New(mod).Interface()
-		err = db.DB(model).One("ID", id, data)
+		err = store.One("ID", id, data)
 		if err != nil {
 			replyError(writer, err)
 			return

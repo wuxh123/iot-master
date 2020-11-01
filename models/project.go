@@ -6,39 +6,33 @@ import (
 )
 
 type Project struct {
-	ProjectTemplate `storm:"inline"`
-
-	//Disabled   bool  `json:"disabled"`
-	TemplateId int   `json:"template_id"`
-	LinkBinds  []int `json:"link_binds"`
-}
-
-type ProjectTemplate struct {
 	ID          int    `json:"id"`
 	UUID        string `json:"uuid" storm:"unique"` //唯一码，自动生成
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Version     string `json:"version"`
 
-	Links      []ProjectLink      `json:"links"`
-	Jobs       []ProjectJob       `json:"jobs"`       //定时任务
-	Strategies []ProjectStrategy  `json:"strategies"` //策略
-	Functions  []ProjectFunction  `json:"functions"`  //功能脚本，比如：批量开启/关闭，修改模式
-	Validators []ProjectValidator `json:"validators"` //报警检查
+	Disabled bool `json:"disabled"`
 
 	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 type ProjectLink struct {
-	Name     string `json:"name"`
-	Protocol string `json:"protocol"`
+	ID        int    `json:"id"`
+	ProjectId int    `json:"project_id"`
+	LinkId    int    `json:"link_id"`
+	Name      string `json:"name"`
+	Protocol  string `json:"protocol"`
 
-	Elements []ProjectElement `json:"elements"`
+	//Elements []ProjectElement `json:"elements"`
+	Created time.Time `json:"created" storm:"created"`
 }
 
 type ProjectElement struct {
-	Element string `json:"element"` //uuid
+	ID        int `json:"id"`
+	ProjectId int `json:"project_id"`
+	ElementId int `json:"element_id"`
+	//Element string `json:"element"` //uuid
 
 	Name  string `json:"name"`
 	Alias string `json:"alias"` //项目元件唯一
@@ -46,29 +40,43 @@ type ProjectElement struct {
 
 	//采样周期，使用定时器。如果空闲，则读取， 如果忙，则排队， 如果已经排队，则跳过
 	Sampling int `json:"sampling"` //采样周期 ms
+
+	Created time.Time `json:"created" storm:"created"`
 }
 
 type ProjectValidator struct {
-	Title   string `json:"title"`
-	Message string `json:"message"`
-	Script  string `json:"script"`
+	ID        int       `json:"id"`
+	ProjectId int       `json:"project_id"`
+	Title     string    `json:"title"`
+	Message   string    `json:"message"`
+	Script    string    `json:"script"`
+	Created   time.Time `json:"created" storm:"created"`
 }
 
 type ProjectJob struct {
-	Name   string `json:"name"`
-	Cron   string `json:"cron"`
-	Script string `json:"script"` //javascript
+	ID        int       `json:"id"`
+	ProjectId int       `json:"project_id"`
+	Name      string    `json:"name"`
+	Cron      string    `json:"cron"`
+	Script    string    `json:"script"` //javascript
+	Created   time.Time `json:"created" storm:"created"`
 }
 
 type ProjectStrategy struct {
-	Name   string `json:"name"`
-	Script string `json:"script"` //javascript
+	ID        int       `json:"id"`
+	ProjectId int       `json:"project_id"`
+	Name      string    `json:"name"`
+	Script    string    `json:"script"` //javascript
+	Created   time.Time `json:"created" storm:"created"`
 }
 
 type ProjectFunction struct {
-	Name   string `json:"name"`
-	Alias  string `json:"alias"`  //项目功能脚本唯一，供外部调用
-	Script string `json:"script"` //javascript
+	ID        int       `json:"id"`
+	ProjectId int       `json:"project_id"`
+	Name      string    `json:"name"`
+	Alias     string    `json:"alias"`  //项目功能脚本唯一，供外部调用
+	Script    string    `json:"script"` //javascript
+	Created   time.Time `json:"created" storm:"created"`
 }
 
 type Script struct {

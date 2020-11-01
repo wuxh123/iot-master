@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"git.zgwit.com/zgwit/iot-admin/conf"
+	"git.zgwit.com/zgwit/iot-admin/db"
 	"git.zgwit.com/zgwit/iot-admin/models"
 	"github.com/gorilla/mux"
 	"github.com/quasoft/memstore"
@@ -73,13 +74,13 @@ func RegisterRoutes(app *mux.Router) {
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	mod := reflect.TypeOf(models.Tunnel{})
-	model := "tunnel"
-	app.HandleFunc("/project/{id}/tunnels", curdApiListById(model, mod, "project_id")).Methods("POST")
-	app.HandleFunc("/tunnels", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/tunnel", curdApiCreate(model, mod, nil, nil)).Methods("POST")             //TODO 启动
-	app.HandleFunc("/tunnel/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE")      //TODO 停止
-	app.HandleFunc("/tunnel/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST") //TODO 重新启动
-	app.HandleFunc("/tunnel/{id}", curdApiGet(model, mod)).Methods("GET")
+	store := db.DB("tunnel")
+	app.HandleFunc("/project/{id}/tunnels", curdApiListById(store, mod, "project_id")).Methods("POST")
+	app.HandleFunc("/tunnels", curdApiList(store, mod)).Methods("POST")
+	app.HandleFunc("/tunnel", curdApiCreate(store, mod, nil, nil)).Methods("POST")             //TODO 启动
+	app.HandleFunc("/tunnel/{id}", curdApiDelete(store, mod, nil, nil)).Methods("DELETE")      //TODO 停止
+	app.HandleFunc("/tunnel/{id}", curdApiModify(store, mod, nil, nil)).Methods("PUT", "POST") //TODO 重新启动
+	app.HandleFunc("/tunnel/{id}", curdApiGet(store, mod)).Methods("GET")
 
 	app.HandleFunc("/tunnel/{id}/start", tunnelStart).Methods("GET")
 	app.HandleFunc("/tunnel/{id}/stop", tunnelStop).Methods("GET")
@@ -88,53 +89,125 @@ func RegisterRoutes(app *mux.Router) {
 
 	//连接管理
 	mod = reflect.TypeOf(models.Link{})
-	model = "link"
-	app.HandleFunc("/tunnel/{id}/links", curdApiListById(model, mod, "tunnel_id")).Methods("POST")
-	app.HandleFunc("/links", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/link/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE") //TODO 停止
-	app.HandleFunc("/link/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
-	app.HandleFunc("/link/{id}", curdApiGet(model, mod)).Methods("GET")
+	store = db.DB("link")
+	app.HandleFunc("/tunnel/{id}/links", curdApiListById(store, mod, "tunnel_id")).Methods("POST")
+	app.HandleFunc("/links", curdApiList(store, mod)).Methods("POST")
+	app.HandleFunc("/link/{id}", curdApiDelete(store, mod, nil, nil)).Methods("DELETE") //TODO 停止
+	app.HandleFunc("/link/{id}", curdApiModify(store, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/link/{id}", curdApiGet(store, mod)).Methods("GET")
+
+	//设备管理
+	mod = reflect.TypeOf(models.Device{})
+	store = db.DB("device")
+	app.HandleFunc("/project/{id}/devices", curdApiListById(store, mod, "project_id")).Methods("POST")
+	app.HandleFunc("/devices", curdApiList(store, mod)).Methods("POST")
+	app.HandleFunc("/device", curdApiCreate(store, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/device/{id}", curdApiDelete(store, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/device/{id}", curdApiModify(store, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/device/{id}", curdApiGet(store, mod)).Methods("GET")
 
 	//插件管理
 	mod = reflect.TypeOf(models.Plugin{})
-	model = "plugin"
-	app.HandleFunc("/plugins", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/plugin", curdApiCreate(model, mod, nil, nil)).Methods("POST")
-	app.HandleFunc("/plugin/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE")
-	app.HandleFunc("/plugin/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
-	app.HandleFunc("/plugin/{id}", curdApiGet(model, mod)).Methods("GET")
+	store = db.DB("plugin")
+	app.HandleFunc("/plugins", curdApiList(store, mod)).Methods("POST")
+	app.HandleFunc("/plugin", curdApiCreate(store, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/plugin/{id}", curdApiDelete(store, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/plugin/{id}", curdApiModify(store, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/plugin/{id}", curdApiGet(store, mod)).Methods("GET")
 
 	//项目管理
 	mod = reflect.TypeOf(models.Project{})
-	model = "project"
-	app.HandleFunc("/projects", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/project", curdApiCreate(model, mod, projectBeforeCreate, projectAfterCreate)).Methods("POST")
-	app.HandleFunc("/project/{id}", curdApiDelete(model, mod, nil, projectAfterDelete)).Methods("DELETE")
-	app.HandleFunc("/project/{id}", curdApiModify(model, mod, nil, projectAfterModify)).Methods("PUT", "POST")
-	app.HandleFunc("/project/{id}", curdApiGet(model, mod)).Methods("GET")
+	store = db.DB("project")
+	app.HandleFunc("/projects", curdApiList(store, mod)).Methods("POST")
+	app.HandleFunc("/project", curdApiCreate(store, mod, projectBeforeCreate, projectAfterCreate)).Methods("POST")
+	app.HandleFunc("/project/{id}", curdApiDelete(store, mod, nil, projectAfterDelete)).Methods("DELETE")
+	app.HandleFunc("/project/{id}", curdApiModify(store, mod, nil, projectAfterModify)).Methods("PUT", "POST")
+	app.HandleFunc("/project/{id}", curdApiGet(store, mod)).Methods("GET")
 
 	//app.HandleFunc("/project/import", projectImport).Methods("POST")
 	//app.HandleFunc("/project/{id}/export", projectExport).Methods("GET")
 	//app.HandleFunc("/project/{id}/deploy", projectDeploy).Methods("GET")
 
+	//项目链接
+	mod = reflect.TypeOf(models.ProjectLink{})
+	node := store.From("link")
+	app.HandleFunc("/project/{id}/links", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/links", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/link", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/link/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/link/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/link/{id}", curdApiGet(node, mod)).Methods("GET")
 
-	//模板管理
-	mod = reflect.TypeOf(models.ProjectTemplate{})
-	model = "template"
-	app.HandleFunc("/templates", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/template", curdApiCreate(model, mod, nil, nil)).Methods("POST")
-	app.HandleFunc("/template/{id}", curdApiDelete(model, mod, nil, nil)).Methods("DELETE")
-	app.HandleFunc("/template/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
-	app.HandleFunc("/template/{id}", curdApiGet(model, mod)).Methods("GET")
+	//项目元件
+	mod = reflect.TypeOf(models.ProjectElement{})
+	node = store.From("element")
+	app.HandleFunc("/project/{id}/elements", curdApiListById(node, mod, "project_id")).Methods("POST")
+	app.HandleFunc("/project/link/{id}/elements", curdApiListById(node, mod, "link_id")).Methods("POST")
+	//app.HandleFunc("/project/elements", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/element", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/element/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/element/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/element/{id}", curdApiGet(node, mod)).Methods("GET")
+
+	//项目任务
+	mod = reflect.TypeOf(models.ProjectJob{})
+	node = store.From("job")
+	app.HandleFunc("/project/{id}/jobs", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/jobs", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/job", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/job/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/job/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/job/{id}", curdApiGet(node, mod)).Methods("GET")
+
+	//项目策略
+	mod = reflect.TypeOf(models.ProjectStrategy{})
+	node = store.From("strategy")
+	app.HandleFunc("/project/{id}/strategies", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/strategies", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/strategy", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/strategy/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/strategy/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/strategy/{id}", curdApiGet(node, mod)).Methods("GET")
+
+	//项目检查
+	mod = reflect.TypeOf(models.ProjectValidator{})
+	node = store.From("validator")
+	app.HandleFunc("/project/{id}/validators", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/validators", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/validator", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/validator/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/validator/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/validator/{id}", curdApiGet(node, mod)).Methods("GET")
+
+	//项目功能
+	mod = reflect.TypeOf(models.ProjectFunction{})
+	node = store.From("function")
+	app.HandleFunc("/project/{id}/functions", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/functions", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/function", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/function/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/function/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/function/{id}", curdApiGet(node, mod)).Methods("GET")
 
 	//元件管理
 	mod = reflect.TypeOf(models.Element{})
-	model = "element"
-	app.HandleFunc("/elements", curdApiList(model, mod)).Methods("POST")
-	app.HandleFunc("/element", curdApiCreate(model, mod, elementBeforeCreate, nil)).Methods("POST")
-	app.HandleFunc("/element/{id}", curdApiDelete(model, mod, elementBeforeDelete, nil)).Methods("DELETE")
-	app.HandleFunc("/element/{id}", curdApiModify(model, mod, nil, nil)).Methods("PUT", "POST")
-	app.HandleFunc("/element/{id}", curdApiGet(model, mod)).Methods("GET")
+	store = db.DB("element")
+	app.HandleFunc("/elements", curdApiList(store, mod)).Methods("POST")
+	app.HandleFunc("/element", curdApiCreate(store, mod, elementBeforeCreate, nil)).Methods("POST")
+	app.HandleFunc("/element/{id}", curdApiDelete(store, mod, elementBeforeDelete, nil)).Methods("DELETE")
+	app.HandleFunc("/element/{id}", curdApiModify(store, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/element/{id}", curdApiGet(store, mod)).Methods("GET")
+
+	//元件变量
+	mod = reflect.TypeOf(models.ElementVariable{})
+	node = store.From("variable")
+	app.HandleFunc("/element/{id}/variables", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/element/variables", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/element/variable", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/element/variable/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/element/variable/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/element/variable/{id}", curdApiGet(node, mod)).Methods("GET")
+
 }
 
 type Reply struct {

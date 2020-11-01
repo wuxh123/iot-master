@@ -13,10 +13,8 @@ type Element struct {
 	Model        string `json:"model"`        //型号
 	Version      string `json:"version"`      //版本
 
-	Variables []ElementVariable `json:"variables"`
-
+	//Variables []ElementVariable `json:"variables"`
 	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
 }
 
 //Modbus Area
@@ -26,6 +24,7 @@ type Element struct {
 // hold 保持寄存器（3读多个、6写单个、16写多个，--23读写多个--）
 
 type ElementVariable struct {
+	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Alias  string `json:"alias"` //别名，用于编程
 	Area   string `json:"area"`
@@ -37,4 +36,6 @@ type ElementVariable struct {
 
 	Default  string `json:"default"`
 	ReadOnly bool   `json:"read_only"` //只读
+
+	Created time.Time `json:"created" storm:"created"`
 }
