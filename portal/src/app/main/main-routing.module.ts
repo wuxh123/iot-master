@@ -18,9 +18,10 @@ import {ElementEditComponent} from './element-edit/element-edit.component';
 import {HistoryComponent} from './history/history.component';
 import {AlgorithmComponent} from './algorithm/algorithm.component';
 import {AlertComponent} from './alert/alert.component';
-import {TemplateComponent} from "./template/template.component";
-import {TemplateEditComponent} from "./template-edit/template-edit.component";
-import {TemplateDetailComponent} from "./template-detail/template-detail.component";
+import {DeviceComponent} from './device/device.component';
+import {DeviceMapComponent} from './device-map/device-map.component';
+import {DeviceLogComponent} from './device-log/device-log.component';
+import {DeviceDetailComponent} from './device-detail/device-detail.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,12 @@ const routes: Routes = [
     children: [
       {path: '', redirectTo: 'dash'},
       {path: 'dash', component: DashComponent},
+
+      {path: 'device', component: DeviceComponent},
+      {path: 'device/map', component: DeviceMapComponent},
+      {path: 'device/log', component: DeviceLogComponent},
+      {path: 'device/:id/detail', component: DeviceDetailComponent},
+      {path: 'device/:id/log', component: DeviceLogComponent},
 
       {path: 'history', component: HistoryComponent},
       {path: 'algorithm', component: AlgorithmComponent},
@@ -48,11 +55,6 @@ const routes: Routes = [
       {path: 'project/create', component: ProjectEditComponent},
       {path: 'project/:id/edit', component: ProjectEditComponent},
       {path: 'project/:id/detail', component: ProjectDetailComponent},
-
-      {path: 'template', component: TemplateComponent},
-      {path: 'template/create', component: TemplateEditComponent},
-      {path: 'template/:id/edit', component: TemplateEditComponent},
-      {path: 'template/:id/detail', component: TemplateDetailComponent},
 
       {path: 'element', component: ElementComponent},
       {path: 'element/create', component: ElementEditComponent},

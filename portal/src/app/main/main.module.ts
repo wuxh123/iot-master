@@ -40,6 +40,14 @@ import {ElementComponent} from './element/element.component';
 import {ElementEditComponent} from './element-edit/element-edit.component';
 import {ElementDetailComponent} from './element-detail/element-detail.component';
 import {NzSpaceModule} from 'ng-zorro-antd/space';
+import {ProjectElementComponent} from './project-element/project-element.component';
+import {ProjectElementEditComponent} from './project-element-edit/project-element-edit.component';
+import {ProjectJobComponent} from './project-job/project-job.component';
+import {ProjectJobEditComponent} from './project-job-edit/project-job-edit.component';
+import {ProjectStrategyComponent} from './project-strategy/project-strategy.component';
+import {ProjectStrategyEditComponent} from './project-strategy-edit/project-strategy-edit.component';
+import {ElementVariableComponent} from './element-variable/element-variable.component';
+import {ElementVariableEditComponent} from './element-variable-edit/element-variable-edit.component';
 
 
 @NgModule({
@@ -48,8 +56,11 @@ import {NzSpaceModule} from 'ng-zorro-antd/space';
     LinkComponent, LinkEditComponent, LinkMonitorComponent,
     PluginComponent, PluginEditComponent,
     ProjectComponent, ProjectEditComponent, ProjectDetailComponent,
-    TemplateComponent, TemplateEditComponent, TemplateDetailComponent,
+    ProjectElementComponent, ProjectElementEditComponent,
+    ProjectJobComponent, ProjectJobEditComponent,
+    ProjectStrategyComponent, ProjectStrategyEditComponent,
     ElementComponent, ElementEditComponent, ElementDetailComponent,
+    ElementVariableComponent, ElementVariableEditComponent,
   ],
   imports: [
     CommonModule,

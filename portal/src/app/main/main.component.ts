@@ -26,6 +26,24 @@ export class MainComponent implements OnInit {
       ]
     },
     {
+      title: '设备中心',
+      icon: 'block',
+      children: [
+        {
+          title: '设备管理',
+          router: 'device'
+        },
+        {
+          title: '地图模式',
+          router: 'device/map'
+        },
+        {
+          title: '操作日志',
+          router: 'device/log'
+        },
+      ]
+    },
+    {
       title: '通道管理',
       icon: 'api',
       children: [
