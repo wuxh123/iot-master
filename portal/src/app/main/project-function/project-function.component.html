@@ -1,1 +1,52 @@
-<p>project-function works!</p>
+<nz-space>
+  <nz-space-item>
+    <button nz-button (click)="load()" [nzLoading]="loading">
+      <i nz-icon nzType="reload"></i>
+      刷新
+    </button>
+  </nz-space-item>
+  <nz-space-item>
+    <button nz-button (click)="edit()">
+      <i nz-icon nzType="plus"></i>
+      创建
+    </button>
+  </nz-space-item>
+  <nz-space-item>
+    <nz-input-group nzSearch nzCompact [nzAddOnAfter]="suffixButton">
+      <input type="text" nz-input [(ngModel)]="keyword" placeholder="名称、地址"/>
+    </nz-input-group>
+
+    <ng-template #suffixButton>
+      <button nz-button nzSearch (click)="search()">搜索</button>
+    </ng-template>
+  </nz-space-item>
+</nz-space>
+<nz-table #tbl [nzData]="datum" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
+          [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
+  <thead>
+  <tr>
+    <th nzColumnKey="ID" [nzSortFn]="true">ID</th>
+    <th nzColumnKey="ProjectId" [nzSortFn]="true">项目ID</th>
+    <th nzColumnKey="Name" [nzSortFn]="true">名称</th>
+    <th nzColumnKey="Cron" [nzSortFn]="true">定时</th>
+    <th nzColumnKey="Script" [nzSortFn]="true">脚本</th>
+    <th nzColumnKey="Created" [nzSortFn]="true">创建时间</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let data of tbl.data">
+    <td>{{ data.id }}</td>
+    <td>{{ data.project_id }}</td>
+    <td>{{ data.name }}</td>
+    <td>{{ data.cron }}</td>
+    <td>{{ data.script }}</td>
+    <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
+    <td>
+      <a (click)="edit(data.id)" title="编辑">
+        <i nz-icon nzType="edit"></i>
+      </a>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>

@@ -6,7 +6,7 @@
     </button>
   </nz-space-item>
   <nz-space-item>
-    <button nz-button (click)="create()">
+    <button nz-button (click)="edit()">
       <i nz-icon nzType="plus"></i>
       创建
     </button>
@@ -21,7 +21,7 @@
     </ng-template>
   </nz-space-item>
 </nz-space>
-<nz-table #tbl [nzData]="jobs" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
+<nz-table #tbl [nzData]="datum" nzTableLayout="fixed" [nzFrontPagination]="false" [nzPageSize]="pageSize"
           [nzPageIndex]="pageIndex" [nzTotal]="total" [nzLoading]="loading" (nzQueryParams)="onTableQuery($event)">
   <thead>
   <tr>
@@ -43,7 +43,7 @@
     <td>{{ data.script }}</td>
     <td>{{ data.created | amDateFormat:'YYYY-MM-DD HH:mm:ss'  }}</td>
     <td>
-      <a (click)="edit(data)" title="编辑">
+      <a (click)="edit(data.id)" title="编辑">
         <i nz-icon nzType="edit"></i>
       </a>
     </td>

@@ -1,7 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {ActivatedRoute} from '@angular/router';
-import {TabRef} from '../tabs/tabs.component';
+import {NzMessageService, NzModalRef} from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-project-strategy-edit',
@@ -9,17 +8,16 @@ import {TabRef} from '../tabs/tabs.component';
   styleUrls: ['./project-strategy-edit.component.scss']
 })
 export class ProjectStrategyEditComponent implements OnInit {
-  target = 'strategy';
-  id = 0;
+  target = 'project/strategy';
+  @Input() id = 0;
 
   data: any = {};
 
-  constructor(private as: ApiService, private routeInfo: ActivatedRoute, private tab: TabRef) {
-    tab.name = '策略创建';
+  constructor(private as: ApiService, private mr: NzModalRef, private ms: NzMessageService) {
+
   }
 
   ngOnInit(): void {
-    this.id = this.routeInfo.snapshot.params.id || 0;
     if (this.id > 0) {
       this.as.get(this.target + '/' + this.id).subscribe(res => {
         this.data = res.data;
@@ -28,18 +26,15 @@ export class ProjectStrategyEditComponent implements OnInit {
   }
 
   submit(): void {
+    let uri = this.target;
     if (this.data.id) {
-      this.as.put(this.target + '/' + this.data.id, this.data).subscribe(res => {
-        console.log(res);
-        // TODO 修改成功
-        this.tab.Close();
-      });
-    } else {
-      this.as.post(this.target, this.data).subscribe(res => {
-        console.log(res);
-        // TODO 保存成功
-        this.tab.Close();
-      });
+      uri += '/' + this.data.id;
     }
+    this.as.post(uri, this.data).subscribe(res => {
+      if (res.ok) {
+        this.ms.success('保存成功');
+        this.mr.close(res.data);
+      }
+    });
   }
 }

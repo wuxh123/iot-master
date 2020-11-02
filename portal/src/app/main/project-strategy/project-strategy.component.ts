@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ApiService} from '../../api.service';
-import {NzTableQueryParams} from 'ng-zorro-antd';
+import {NzModalService, NzTableQueryParams} from 'ng-zorro-antd';
 import {Router} from '@angular/router';
+import {ProjectStrategyEditComponent} from '../project-strategy-edit/project-strategy-edit.component';
 
 @Component({
   selector: 'app-project-strategy',
@@ -14,7 +15,7 @@ export class ProjectStrategyComponent implements OnInit {
   inited = false;
   tableQuery: any;
 
-  strategies: [];
+  datum: any[];
   total = 0;
   pageIndex = 1;
   pageSize = 10;
@@ -24,13 +25,13 @@ export class ProjectStrategyComponent implements OnInit {
   keyword = '';
   loading = false;
 
-  constructor(private as: ApiService, private router: Router) {
+  constructor(private as: ApiService, private router: Router, private ms: NzModalService) {
   }
 
   ngOnInit(): void {
     this.inited = true;
     if (this.tableQuery) {
-      this.onTableQuery(this.tableQuery)
+      this.onTableQuery(this.tableQuery);
     }
   }
 
@@ -48,10 +49,12 @@ export class ProjectStrategyComponent implements OnInit {
       sortKey: this.sortField,
       sortOrder: this.sortOrder,
       filters: this.filters,
-      keyword: this.keyword,
+      keywords: [
+        {key: 'Name', value: this.keyword},
+      ]
     }).subscribe(res => {
 
-      this.strategies = res.data;
+      this.datum = res.data;
       this.total = res.total;
     }, error => {
       console.log('error', error);
@@ -60,13 +63,34 @@ export class ProjectStrategyComponent implements OnInit {
     });
   }
 
-  create(): void {
-    this.router.navigate(['/admin/project/' + this.project.id + '/strategy/create']);
+
+  edit(id?): void {
+    const modal = this.ms.create({
+      nzTitle: id ? '编辑策略' : '创建策略',
+      nzContent: ProjectStrategyEditComponent,
+      nzFooter: null,
+      nzMaskClosable: false,
+      // nzViewContainerRef: this.viewContainerRef,
+      nzComponentParams: {id},
+    });
+    // insert/update after close
+    modal.afterClose.subscribe(data => {
+      if (!data) {
+        return;
+      }
+      if (id) {
+        this.datum.forEach((c: any, i, a: any[]) => {
+            if (c.id === data.id) {
+              a[i] = data;
+            }
+          }
+        );
+      } else {
+        this.datum.unshift(data);
+      }
+    });
   }
 
-  edit(c): void {
-    this.router.navigate(['/admin/project/' + this.project.id + '/strategy/' + c.id + '/edit']);
-  }
 
   onTableQuery(params: NzTableQueryParams): void {
     if (!this.inited) {
