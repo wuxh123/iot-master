@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, ActivationEnd, NavigationEnd, Router, RouterLinkWithHref} from '@angular/router';
 import {Subscription} from 'rxjs';
+import {MainComponent} from "../main.component";
 
 @Component({
   selector: 'app-tabs',
@@ -123,19 +124,25 @@ export class TabsComponent implements OnInit, OnDestroy, AfterViewInit {
       route = route.firstChild;
     }
     // TODO 如果route.component为空，则找不到内容
-    if (route.component) {
-      const factory = this.resolver.resolveComponentFactory(route.component);
-      const injector = new TabsInjector(this.event, this.location.injector, this.tabs[index]);
-
-      const container = this.containers.toArray()[index];
-      container.clear();
-      this.tabs[index].component = container.createComponent(factory, this.location.length, injector);
-      // TODO setTitle
-
-      this.tabs[index].component.instance.closeTab = () => {
-        this.onTabClose(index);
-      };
+    if (!route.component) {
+      return;
     }
+    // 避免初次打开，页面一直嵌套的问题，但是页面会一直处于加载中
+    if (route.component === MainComponent) {
+      return;
+    }
+
+    const factory = this.resolver.resolveComponentFactory(route.component);
+    const injector = new TabsInjector(this.event, this.location.injector, this.tabs[index]);
+
+    const container = this.containers.toArray()[index];
+    container.clear();
+    this.tabs[index].component = container.createComponent(factory, this.location.length, injector);
+    // TODO setTitle
+
+    this.tabs[index].component.instance.closeTab = () => {
+      this.onTabClose(index);
+    };
   }
 
 }
