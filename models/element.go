@@ -26,9 +26,10 @@ type Element struct {
 type ElementVariable struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
-	Alias  string `json:"alias"` //别名，用于编程
-	Area   string `json:"area"`
-	Offset uint16 `json:"offset"`
+	Alias  string `json:"alias"`  //别名，用于编程
+	Code   uint8  `json:"code"`   //功能码
+	Offset uint16 `json:"offset"` //偏移
+	Length uint16 `json:"length"` //连续长度 //默认1
 	Type   string `json:"type"`
 	Unit   string `json:"unit"` //单位
 
