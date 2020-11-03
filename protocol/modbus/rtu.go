@@ -13,7 +13,7 @@ func init() {
 		"Modbus RTU",
 		adapter.Area{
 			"线圈":    1,
-			"触点":    2,
+			"离散量":   2,
 			"保持寄存器": 3,
 			"输入寄存器": 4,
 		},
@@ -59,13 +59,13 @@ func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte,
 	}
 
 	//解析错误码
-	if buf[1] & 0x80 > 0 {
+	if buf[1]&0x80 > 0 {
 		return nil, fmt.Errorf("错误码：%d", buf[2])
 	}
 
 	//解析数据
 	length := 4
-	count := int(helper.ParseUint16(buf[4:]))
+	count := int(helper.ParseUint16(buf[1:]))
 	switch buf[1] {
 	case FuncCodeReadDiscreteInputs,
 		FuncCodeReadCoils:
@@ -78,20 +78,19 @@ func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte,
 			//长度不够
 			return nil, errors.New("长度不够")
 		}
-		b := buf[6 : l-2]
+		b := buf[2 : l-2]
 		//解析开关
 		bb := helper.ExpandBool(b, count)
 		return bb, nil
 	case FuncCodeReadInputRegisters,
 		FuncCodeReadHoldingRegisters,
 		FuncCodeReadWriteMultipleRegisters:
-		count := int(helper.ParseUint16(buf[4:]))
 		length += 1 + count*2
 		if l < length {
 			//长度不够
 			return nil, errors.New("长度不够")
 		}
-		b := buf[6 : l-2]
+		b := buf[2 : l-2]
 		return b, nil
 	default:
 		return nil, errors.New("不支持的指令")
@@ -116,7 +115,7 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 				area = 15 //0x0F
 				b := helper.ShrinkBool(buf)
 				count := len(b)
-				buf = make([]byte, 3 + count)
+				buf = make([]byte, 3+count)
 				helper.WriteUint16(buf, uint16(length))
 				buf[2] = uint8(count)
 				copy(buf[3:], b)
@@ -126,8 +125,8 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 				area = 6
 			} else {
 				area = 16 //0x10
-				b := make([]byte, 3 + length)
-				helper.WriteUint16(b, uint16(length / 2))
+				b := make([]byte, 3+length)
+				helper.WriteUint16(b, uint16(length/2))
 				b[2] = uint8(length)
 				copy(b[3:], buf)
 				buf = b
@@ -138,7 +137,7 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 	l := 6 + len(buf)
 	b := make([]byte, l)
 	b[0] = slave
-	b[1] = area //TODO 转写指令，并且考虑单个还是批量
+	b[1] = area
 	helper.WriteUint16(b[2:], offset)
 	copy(b[4:], buf)
 	helper.WriteUint16(b[l-2:], CRC16(b[:l-2]))
@@ -158,7 +157,7 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 	}
 
 	//解析错误码
-	if buf[1] & 0x80 > 0 {
+	if buf[1]&0x80 > 0 {
 		return fmt.Errorf("错误码：%d", buf[2])
 	}
 
