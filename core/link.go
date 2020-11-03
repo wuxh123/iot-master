@@ -25,9 +25,8 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	peer base.Link
-
-	response chan []byte
+	peer     base.Listener
+	listener base.Listener
 
 	lastTime time.Time
 }
@@ -60,12 +59,14 @@ func (l *Link) onData(buf []byte) {
 
 	//透传
 	if l.peer != nil {
-		_ = l.peer.Write(buf)
+		l.peer(buf)
 		return
 	}
 
 	//响应数据
-	l.response <- buf
+	if l.listener != nil {
+		l.listener(buf)
+	}
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
@@ -79,7 +80,6 @@ func (l *Link) Resume() {
 		_ = l.Write(b)
 	}
 	l.cache = make([][]byte, 0)
-	l.response = make(chan []byte, 1)
 }
 
 func (l *Link) Write(buf []byte) error {
@@ -117,9 +117,7 @@ func (l *Link) Close() error {
 		return err
 	}
 
-	if l.peer != nil {
-		_ = l.peer.Detach()
-	}
+	l.peer = nil
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
@@ -130,27 +128,21 @@ func (l *Link) Close() error {
 	return err
 }
 
-func (l *Link) Attach(link base.Link) error {
+func (l *Link) Attach(listener base.Listener) error {
 	//check peer
-	l.peer = link
+	l.peer = listener
 	return nil
 }
 func (l *Link) Detach() error {
 	//check peer
 	if l.peer != nil {
-		_ = l.peer.Detach()
 		l.peer = nil
 	}
 	return nil
 }
 
-func (l *Link) Request(buf []byte) ([]byte, error) {
-	_, err := l.conn.Write(buf)
-	if err != nil {
-		return nil, err
-	}
-
-	return <-l.response, nil
+func (l *Link) Listen(listener base.Listener) {
+	l.listener = listener
 }
 
 func newLink(ch Tunnel, conn net.Conn) *Link {
@@ -164,7 +156,6 @@ func newLink(ch Tunnel, conn net.Conn) *Link {
 		tunnel: ch,
 		conn:   conn,
 		cache:  make([][]byte, 0),
-		response: make(chan []byte, 1),
 	}
 }
 
@@ -179,6 +170,5 @@ func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 		tunnel: ch,
 		conn:   base.NewPackConn(conn, addr),
 		cache:  make([][]byte, 0),
-		response: make(chan []byte, 1),
 	}
 }

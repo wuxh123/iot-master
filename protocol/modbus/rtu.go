@@ -20,12 +20,20 @@ func init() {
 		NewModbusRtu)
 }
 
+type response struct {
+	buf []byte
+	err error
+}
+
 type RTU struct {
 	link base.Link
+	resp chan response
 }
 
 func NewModbusRtu(opts string) (adapter.Adapter, error) {
-	return &RTU{}, nil
+	return &RTU{
+		resp: make(chan response, 1),
+	}, nil
 }
 
 func (m *RTU) Name() string {
@@ -36,6 +44,63 @@ func (m *RTU) Version() string {
 	return "v0.0.1"
 }
 
+func (m *RTU) Attach(link base.Link) {
+	m.link = link
+	link.Listen(func(buf []byte) {
+
+		//解析数据
+		l := len(buf)
+		crc := helper.ParseUint16(buf[l-2:])
+
+		if crc != CRC16(buf[:l-2]) {
+			//检验错误
+			m.resp <- response{err: errors.New("校验错误")}
+			return
+		}
+
+		//解析错误码
+		if buf[1]&0x80 > 0 {
+			m.resp <- response{err: fmt.Errorf("错误码：%d", buf[2])}
+			return
+		}
+
+		//解析数据
+		length := 4
+		count := int(helper.ParseUint16(buf[1:]))
+		switch buf[1] {
+		case FuncCodeReadDiscreteInputs,
+			FuncCodeReadCoils:
+			length += 1 + count/8
+			if count%8 != 0 {
+				length++
+			}
+
+			if l < length {
+				//长度不够
+				m.resp <- response{err: errors.New("长度不够")}
+				return
+			}
+			b := buf[2 : l-2]
+			//数组解压
+			bb := helper.ExpandBool(b, count)
+			m.resp <- response{buf: bb}
+		case FuncCodeReadInputRegisters,
+			FuncCodeReadHoldingRegisters,
+			FuncCodeReadWriteMultipleRegisters:
+			length += 1 + count*2
+			if l < length {
+				//长度不够
+				m.resp <- response{err: errors.New("长度不够")}
+				return
+			}
+			b := buf[2 : l-2]
+			m.resp <- response{buf: b}
+		default:
+			m.resp <- response{}
+		}
+	})
+}
+
 func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte, error) {
 	b := make([]byte, 8)
 	b[0] = slave
@@ -44,57 +109,15 @@ func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte,
 	helper.WriteUint16(b[4:], size)
 	helper.WriteUint16(b[6:], CRC16(b[:6]))
 
-	buf, err := m.link.Request(b)
+	err := m.link.Write(b)
 	if err != nil {
 		return nil, err
 	}
 
-	//解析数据
-	l := len(buf)
-	crc := helper.ParseUint16(buf[l-2:])
+	//等待结果
+	resp := <- m.resp
 
-	if crc != CRC16(buf[:l-2]) {
-		//检验错误
-		return nil, errors.New("校验错误")
-	}
-
-	//解析错误码
-	if buf[1]&0x80 > 0 {
-		return nil, fmt.Errorf("错误码：%d", buf[2])
-	}
-
-	//解析数据
-	length := 4
-	count := int(helper.ParseUint16(buf[1:]))
-	switch buf[1] {
-	case FuncCodeReadDiscreteInputs,
-		FuncCodeReadCoils:
-		length += 1 + count/8
-		if count%8 != 0 {
-			length++
-		}
-
-		if l < length {
-			//长度不够
-			return nil, errors.New("长度不够")
-		}
-		b := buf[2 : l-2]
-		//解析开关
-		bb := helper.ExpandBool(b, count)
-		return bb, nil
-	case FuncCodeReadInputRegisters,
-		FuncCodeReadHoldingRegisters,
-		FuncCodeReadWriteMultipleRegisters:
-		length += 1 + count*2
-		if l < length {
-			//长度不够
-			return nil, errors.New("长度不够")
-		}
-		b := buf[2 : l-2]
-		return b, nil
-	default:
-		return nil, errors.New("不支持的指令")
-	}
+	return resp.buf, resp.err
 }
 
 func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
@@ -113,6 +136,7 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 				}
 			} else {
 				area = 15 //0x0F
+				//数组压缩
 				b := helper.ShrinkBool(buf)
 				count := len(b)
 				buf = make([]byte, 3+count)
@@ -142,24 +166,13 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 	copy(b[4:], buf)
 	helper.WriteUint16(b[l-2:], CRC16(b[:l-2]))
 
-	buf, err := m.link.Request(b)
+	err := m.link.Write(b)
 	if err != nil {
 		return err
 	}
 
-	//解析数据
-	l = len(buf)
-	crc := helper.ParseUint16(buf[l-2:])
+	//等待结果
+	resp := <- m.resp
 
-	if crc != CRC16(buf[:l-2]) {
-		//检验错误
-		return errors.New("校验错误")
-	}
-
-	//解析错误码
-	if buf[1]&0x80 > 0 {
-		return fmt.Errorf("错误码：%d", buf[2])
-	}
-
-	return nil
+	return resp.err
 }
