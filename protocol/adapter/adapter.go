@@ -6,8 +6,6 @@ import (
 	"sync"
 )
 
-type CodeMap map[string]uint8
-
 type Adapter interface {
 	Name() string
 	Version() string
@@ -20,9 +18,14 @@ type Adapter interface {
 
 type Factory func(opts string) (Adapter, error)
 
+type Code struct {
+	Name string `json:"name"`
+	Code uint8  `json:"code"`
+}
+
 type adapter struct {
-	Name    string           `json:"name"`
-	Codes   CodeMap `json:"codes"`
+	Name    string `json:"name"`
+	Codes   []Code `json:"codes"`
 	factory Factory
 }
 
@@ -46,7 +49,7 @@ func CreateAdapter(name string, opts string) (Adapter, error) {
 	return nil, errors.New("找不到协议")
 }
 
-func RegisterAdapter(name string, codes CodeMap, factory Factory) {
+func RegisterAdapter(name string, codes []Code, factory Factory) {
 	protocols.Store(name, &adapter{
 		Name:    name,
 		Codes:   codes,

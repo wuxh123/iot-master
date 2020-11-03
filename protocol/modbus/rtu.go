@@ -11,11 +11,11 @@ import (
 func init() {
 	adapter.RegisterAdapter(
 		"Modbus RTU",
-		adapter.CodeMap{
-			"线圈":    1,
-			"离散量":   2,
-			"保持寄存器": 3,
-			"输入寄存器": 4,
+		[]adapter.Code{
+			{"线圈", 1},
+			{"离散量", 2},
+			{"保持寄存器", 3},
+			{"输入寄存器", 4},
 		},
 		NewModbusRtu)
 }
@@ -115,7 +115,7 @@ func (m *RTU) Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte,
 	}
 
 	//等待结果
-	resp := <- m.resp
+	resp := <-m.resp
 
 	return resp.buf, resp.err
 }
@@ -172,7 +172,7 @@ func (m *RTU) Write(slave uint8, code uint8, offset uint16, buf []byte) error {
 	}
 
 	//等待结果
-	resp := <- m.resp
+	resp := <-m.resp
 
 	return resp.err
 }

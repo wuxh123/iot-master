@@ -17,7 +17,7 @@ type Element struct {
 	Created time.Time `json:"created" storm:"created"`
 }
 
-//Modbus Area
+//Modbus
 // coil 线圈 离散输出 （1读多个、5写单个、15写多个）
 // discrete 触点 离散输入 （2读多个）
 // hold 保持寄存器（3读多个、6写单个、16写多个，--23读写多个--）
@@ -29,7 +29,7 @@ type ElementVariable struct {
 	Alias  string `json:"alias"`  //别名，用于编程
 	Code   uint8  `json:"code"`   //功能码
 	Offset uint16 `json:"offset"` //偏移
-	Length uint16 `json:"length"` //连续长度 //默认1
+	Extend uint16 `json:"extend"` //扩展长度 默认0，自动在别名基础上添加数字后缀，比如 s s1 s2 ...
 	Type   string `json:"type"`
 	Unit   string `json:"unit"` //单位
 
