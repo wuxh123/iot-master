@@ -25,14 +25,11 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	peer     base.Link
-	listener base.LinkListener
+	peer base.Link
+
+	response chan []byte
 
 	lastTime time.Time
-}
-
-func (l *Link) Listen(listener base.LinkListener) {
-	l.listener = listener
 }
 
 func (l *Link) onData(buf []byte) {
@@ -67,9 +64,8 @@ func (l *Link) onData(buf []byte) {
 		return
 	}
 
-	if l.listener != nil {
-		l.listener.OnLinkData(buf)
-	}
+	//响应数据
+	l.response <- buf
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
@@ -83,6 +79,7 @@ func (l *Link) Resume() {
 		_ = l.Write(b)
 	}
 	l.cache = make([][]byte, 0)
+	l.response = make(chan []byte, 1)
 }
 
 func (l *Link) Write(buf []byte) error {
@@ -147,17 +144,27 @@ func (l *Link) Detach() error {
 	return nil
 }
 
+func (l *Link) Request(buf []byte) ([]byte, error) {
+	_, err := l.conn.Write(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	return <-l.response, nil
+}
+
 func newLink(ch Tunnel, conn net.Conn) *Link {
 	c := ch.GetTunnel()
 	return &Link{
 		Link: models.Link{
-			TunnelId:  c.ID,
+			TunnelId: c.ID,
 			//ProjectId: c.ProjectId,
-			Active:    true,
+			Active: true,
 		},
 		tunnel: ch,
 		conn:   conn,
 		cache:  make([][]byte, 0),
+		response: make(chan []byte, 1),
 	}
 }
 
@@ -165,12 +172,13 @@ func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 	c := ch.GetTunnel()
 	return &Link{
 		Link: models.Link{
-			TunnelId:  c.ID,
+			TunnelId: c.ID,
 			//ProjectId: c.ProjectId,
-			Active:    true,
+			Active: true,
 		},
 		tunnel: ch,
 		conn:   base.NewPackConn(conn, addr),
 		cache:  make([][]byte, 0),
+		response: make(chan []byte, 1),
 	}
 }
