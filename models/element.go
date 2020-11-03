@@ -18,10 +18,10 @@ type Element struct {
 }
 
 //Modbus Area
-// discrete 离散输入 触点（2读多个）
-// coil 离散输出 线圈（1读多个、5写单个、15写多个）
-// input 输入寄存器（4读多个）
+// coil 线圈 离散输出 （1读多个、5写单个、15写多个）
+// discrete 触点 离散输入 （2读多个）
 // hold 保持寄存器（3读多个、6写单个、16写多个，--23读写多个--）
+// input 输入寄存器（4读多个）
 
 type ElementVariable struct {
 	ID     int    `json:"id"`
