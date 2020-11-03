@@ -25,8 +25,8 @@ type Link struct {
 	//发送缓存
 	cache [][]byte
 
-	peer     base.Listener
-	listener base.Listener
+	peer     base.OnDataFunc
+	listener base.OnDataFunc
 
 	lastTime time.Time
 }
@@ -128,7 +128,7 @@ func (l *Link) Close() error {
 	return err
 }
 
-func (l *Link) Attach(listener base.Listener) error {
+func (l *Link) Attach(listener base.OnDataFunc) error {
 	//check peer
 	l.peer = listener
 	return nil
@@ -141,7 +141,7 @@ func (l *Link) Detach() error {
 	return nil
 }
 
-func (l *Link) Listen(listener base.Listener) {
+func (l *Link) Listen(listener base.OnDataFunc) {
 	l.listener = listener
 }
 

@@ -5,11 +5,11 @@ type Link interface {
 	Write(buf []byte) error
 	Close() error
 
-	Attach(peer Listener) error
+	Attach(peer OnDataFunc) error
 	Detach() error
 
-	Listen(listener Listener)
+	Listen(listener OnDataFunc)
 	//UnListen()
 }
 
-type Listener func([]byte)
+type OnDataFunc func([]byte)
