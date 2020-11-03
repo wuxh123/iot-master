@@ -11,7 +11,7 @@ import (
 func init() {
 	adapter.RegisterAdapter(
 		"Modbus RTU",
-		adapter.Area{
+		adapter.CodeMap{
 			"线圈":    1,
 			"离散量":   2,
 			"保持寄存器": 3,
@@ -101,10 +101,10 @@ func (m *RTU) Attach(link base.Link) {
 	})
 }
 
-func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte, error) {
+func (m *RTU) Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte, error) {
 	b := make([]byte, 8)
 	b[0] = slave
-	b[1] = area
+	b[1] = code
 	helper.WriteUint16(b[2:], offset)
 	helper.WriteUint16(b[4:], size)
 	helper.WriteUint16(b[6:], CRC16(b[:6]))
@@ -120,14 +120,14 @@ func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte,
 	return resp.buf, resp.err
 }
 
-func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
+func (m *RTU) Write(slave uint8, code uint8, offset uint16, buf []byte) error {
 	length := len(buf)
 	//如果是线圈，需要Shrink
-	if area == 1 {
-		switch area {
+	if code == 1 {
+		switch code {
 		case FuncCodeReadCoils:
 			if length == 1 {
-				area = 5
+				code = 5
 				//数据 转成 0x0000 0xFF00
 				if buf[1] > 0 {
 					buf = []byte{0xFF, 0}
@@ -135,7 +135,7 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 					buf = []byte{0, 0}
 				}
 			} else {
-				area = 15 //0x0F
+				code = 15 //0x0F
 				//数组压缩
 				b := helper.ShrinkBool(buf)
 				count := len(b)
@@ -146,9 +146,9 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 			}
 		case FuncCodeReadHoldingRegisters:
 			if length == 2 {
-				area = 6
+				code = 6
 			} else {
-				area = 16 //0x10
+				code = 16 //0x10
 				b := make([]byte, 3+length)
 				helper.WriteUint16(b, uint16(length/2))
 				b[2] = uint8(length)
@@ -161,7 +161,7 @@ func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
 	l := 6 + len(buf)
 	b := make([]byte, l)
 	b[0] = slave
-	b[1] = area
+	b[1] = code
 	helper.WriteUint16(b[2:], offset)
 	copy(b[4:], buf)
 	helper.WriteUint16(b[l-2:], CRC16(b[:l-2]))

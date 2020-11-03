@@ -5,29 +5,21 @@ import (
 	"sync"
 )
 
-//
-//type Address struct {
-//	Slave  uint8
-//	Offset uint16
-//	Area   string
-//}
-
-type Area map[string]uint8
+type CodeMap map[string]uint8
 
 type Adapter interface {
 	Name() string
 	Version() string
-	//Areas() []Area
 
-	Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte, error)
-	Write(slave uint8, area uint8, offset uint16, buf []byte) error
+	Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte, error)
+	Write(slave uint8, code uint8, offset uint16, buf []byte) error
 }
 
 type Factory func(opts string) (Adapter, error)
 
 type adapter struct {
 	Name    string           `json:"name"`
-	Areas   map[string]uint8 `json:"areas"`
+	Codes   CodeMap `json:"codes"`
 	factory Factory
 }
 
@@ -51,10 +43,10 @@ func CreateAdapter(name string, opts string) (Adapter, error) {
 	return nil, errors.New("找不到协议")
 }
 
-func RegisterAdapter(name string, areas Area, factory Factory) {
+func RegisterAdapter(name string, codes CodeMap, factory Factory) {
 	protocols.Store(name, &adapter{
 		Name:    name,
-		Areas:   areas,
+		Codes:   codes,
 		factory: factory,
 	})
 }

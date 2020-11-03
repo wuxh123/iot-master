@@ -4,6 +4,7 @@ import (
 	"git.zgwit.com/zgwit/iot-admin/conf"
 	"git.zgwit.com/zgwit/iot-admin/core"
 	"git.zgwit.com/zgwit/iot-admin/flag"
+	_ "git.zgwit.com/zgwit/iot-admin/protocol/modbus" //默认支持Modbus协议
 	"git.zgwit.com/zgwit/iot-admin/web"
 	"github.com/denisbrodbeck/machineid"
 	"log"
