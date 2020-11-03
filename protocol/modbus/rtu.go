@@ -99,11 +99,40 @@ func (m *RTU) Read(slave uint8, area uint8, offset uint16, size uint16) ([]byte,
 }
 
 func (m *RTU) Write(slave uint8, area uint8, offset uint16, buf []byte) error {
+	length := len(buf)
 	//如果是线圈，需要Shrink
 	if area == 1 {
-		buf = helper.ShrinkBool(buf)
-		//TODO 长度需要计算
-		//数据 转成 0x0000 0xFF00
+		switch area {
+		case FuncCodeReadCoils:
+			if length == 1 {
+				area = 5
+				//数据 转成 0x0000 0xFF00
+				if buf[1] > 0 {
+					buf = []byte{0xFF, 0}
+				} else {
+					buf = []byte{0, 0}
+				}
+			} else {
+				area = 15 //0x0F
+				b := helper.ShrinkBool(buf)
+				count := len(b)
+				buf = make([]byte, 3 + count)
+				helper.WriteUint16(buf, uint16(length))
+				buf[2] = uint8(count)
+				copy(buf[3:], b)
+			}
+		case FuncCodeReadHoldingRegisters:
+			if length == 2 {
+				area = 6
+			} else {
+				area = 16 //0x10
+				b := make([]byte, 3 + length)
+				helper.WriteUint16(b, uint16(length / 2))
+				b[2] = uint8(length)
+				copy(b[3:], buf)
+				buf = b
+			}
+		}
 	}
 
 	l := 6 + len(buf)
