@@ -29,7 +29,7 @@ type ElementVariable struct {
 	Alias  string `json:"alias"`  //别名，用于编程
 	Code   uint8  `json:"code"`   //功能码
 	Offset uint16 `json:"offset"` //偏移
-	Extend uint16 `json:"extend"` //扩展长度 默认0，自动在别名基础上添加数字后缀，比如 s s1 s2 ...
+	Extend uint16 `json:"extend"` //扩展长度 默认0，如果大于1，自动在别名基础上添加数字后缀，比如 s s1 s2 s3 ...
 	Type   string `json:"type"`
 	Unit   string `json:"unit"` //单位
 
