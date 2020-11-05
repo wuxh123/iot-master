@@ -63,11 +63,13 @@ type ProjectJob struct {
 }
 
 type ProjectStrategy struct {
-	ID        int       `json:"id"`
-	ProjectId int       `json:"project_id"`
-	Name      string    `json:"name"`
-	Script    string    `json:"script"` //javascript
-	Created   time.Time `json:"created" storm:"created"`
+	ID        int    `json:"id"`
+	ProjectId int    `json:"project_id"`
+	Name      string `json:"name"`
+	Trigger   string `json:"trigger"` //触发条件，当条件满足时，执行Script
+	//Triggers  string    `json:"triggers"` //触发变量
+	Script  string    `json:"script"` //javascript
+	Created time.Time `json:"created" storm:"created"`
 }
 
 type ProjectFunction struct {
