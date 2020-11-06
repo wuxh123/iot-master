@@ -31,54 +31,64 @@ type ProjectLink struct {
 type ProjectElement struct {
 	ID        int `json:"id"`
 	ProjectId int `json:"project_id"`
-	ElementId int `json:"element_id"`
-	//Element string `json:"element"` //uuid
+	//ElementId int `json:"element_id"`
+	Element string `json:"element"` //uuid
 
 	Name  string `json:"name"`
-	Alias string `json:"alias"` //项目元件唯一
+	Alias string `json:"alias"` //别名，用于编程
 	Slave uint8  `json:"slave"` //从站号
-
-	//采样周期，使用定时器。如果空闲，则读取， 如果忙，则排队， 如果已经排队，则跳过
-	Sampling int `json:"sampling"` //采样周期 ms
 
 	Created time.Time `json:"created" storm:"created"`
 }
 
+type ProjectVariable struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Alias  string `json:"alias"` //别名，用于编程
+	Slave  uint8  `json:"slave"`
+	Code   uint8  `json:"code"`   //功能码
+	Offset uint16 `json:"offset"` //偏移
+	Type   string `json:"type"`
+	Unit   string `json:"unit"` //单位
+
+	Scale float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
+
+	Default  string `json:"default"`
+	ReadOnly bool   `json:"read_only"` //只读
+}
+
 type ProjectValidator struct {
-	ID        int       `json:"id"`
-	ProjectId int       `json:"project_id"`
-	Title     string    `json:"title"`
-	Message   string    `json:"message"`
-	Script    string    `json:"script"`
-	Created   time.Time `json:"created" storm:"created"`
+	ID        int `json:"id"`
+	ProjectId int `json:"project_id"`
+	//Name       string    `json:"name"`
+	Alert      string    `json:"alert"`
+	Expression string    `json:"expression"` //表达式，检测变量名
+	Created    time.Time `json:"created" storm:"created"`
+}
+
+type ProjectFunction struct {
+	ID          int       `json:"id"`
+	ProjectId   int       `json:"project_id"`
+	Name        string    `json:"name"` //项目功能脚本唯一，供外部调用
+	Description string    `json:"description"`
+	Script      string    `json:"script"` //javascript
+	Created     time.Time `json:"created" storm:"created"`
 }
 
 type ProjectJob struct {
 	ID        int       `json:"id"`
 	ProjectId int       `json:"project_id"`
-	Name      string    `json:"name"`
+	Function  string    `json:"function"`
 	Cron      string    `json:"cron"`
-	Script    string    `json:"script"` //javascript
 	Created   time.Time `json:"created" storm:"created"`
 }
 
 type ProjectStrategy struct {
-	ID        int    `json:"id"`
-	ProjectId int    `json:"project_id"`
-	Name      string `json:"name"`
-	Trigger   string `json:"trigger"` //触发条件，当条件满足时，执行Script
-	//Triggers  string    `json:"triggers"` //触发变量
-	Script  string    `json:"script"` //javascript
-	Created time.Time `json:"created" storm:"created"`
-}
-
-type ProjectFunction struct {
-	ID        int       `json:"id"`
-	ProjectId int       `json:"project_id"`
-	Name      string    `json:"name"`
-	Alias     string    `json:"alias"`  //项目功能脚本唯一，供外部调用
-	Script    string    `json:"script"` //javascript
-	Created   time.Time `json:"created" storm:"created"`
+	ID         int       `json:"id"`
+	ProjectId  int       `json:"project_id"`
+	Expression string    `json:"expression"` //触发条件 表达式，检测变量名
+	Function   string    `json:"function"`
+	Created    time.Time `json:"created" storm:"created"`
 }
 
 type Script struct {
