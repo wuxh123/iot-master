@@ -24,15 +24,14 @@ type ProjectLink struct {
 	Name      string `json:"name"`
 	Protocol  string `json:"protocol"`
 
-	//Elements []ProjectElement `json:"elements"`
 	Created time.Time `json:"created" storm:"created"`
 }
 
 type ProjectElement struct {
-	ID        int `json:"id"`
-	ProjectId int `json:"project_id"`
-	//ElementId int `json:"element_id"`
-	Element string `json:"element"` //uuid
+	ID int `json:"id"`
+	//ProjectId     int `json:"project_id"`
+	ElementId     int `json:"element_id"`
+	ProjectLinkId int `json:"project_link_id"`
 
 	Name  string `json:"name"`
 	Alias string `json:"alias"` //别名，用于编程
@@ -42,25 +41,21 @@ type ProjectElement struct {
 }
 
 type ProjectVariable struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Alias  string `json:"alias"` //别名，用于编程
-	Slave  uint8  `json:"slave"`
-	Code   uint8  `json:"code"`   //功能码
-	Offset uint16 `json:"offset"` //偏移
-	Type   string `json:"type"`
-	Unit   string `json:"unit"` //单位
+	ID int `json:"id"`
+	//ProjectId int `json:"project_id"`
+	//ElementId        int `json:"element_id"`
+	ProjectElementId int `json:"project_element_id"`
 
-	Scale float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
+	Variable `storm:"inline"`
 
-	Default  string `json:"default"`
-	ReadOnly bool   `json:"read_only"` //只读
+	//TODO 添加采样周期
+
+	Created time.Time `json:"created" storm:"created"`
 }
 
 type ProjectValidator struct {
-	ID        int `json:"id"`
-	ProjectId int `json:"project_id"`
-	//Name       string    `json:"name"`
+	ID         int       `json:"id"`
+	ProjectId  int       `json:"project_id"`
 	Alert      string    `json:"alert"`
 	Expression string    `json:"expression"` //表达式，检测变量名
 	Created    time.Time `json:"created" storm:"created"`
@@ -76,18 +71,18 @@ type ProjectFunction struct {
 }
 
 type ProjectJob struct {
-	ID        int       `json:"id"`
-	ProjectId int       `json:"project_id"`
-	Function  string    `json:"function"`
-	Cron      string    `json:"cron"`
-	Created   time.Time `json:"created" storm:"created"`
+	ID         int       `json:"id"`
+	ProjectId  int       `json:"project_id"`
+	FunctionId string    `json:"function_id"`
+	Cron       string    `json:"cron"`
+	Created    time.Time `json:"created" storm:"created"`
 }
 
 type ProjectStrategy struct {
 	ID         int       `json:"id"`
 	ProjectId  int       `json:"project_id"`
+	FunctionId string    `json:"function_id"`
 	Expression string    `json:"expression"` //触发条件 表达式，检测变量名
-	Function   string    `json:"function"`
 	Created    time.Time `json:"created" storm:"created"`
 }
 
