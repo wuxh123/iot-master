@@ -141,7 +141,7 @@ func RegisterRoutes(app *mux.Router) {
 	//项目元件
 	mod = reflect.TypeOf(models.ProjectElement{})
 	node = store.From("element")
-	app.HandleFunc("/project/{id}/elements", curdApiListById(node, mod, "project_id")).Methods("POST")
+	app.HandleFunc("/project/{id}/elements", curdApiListById(node, mod, "project_link_id")).Methods("POST")
 	app.HandleFunc("/project/link/{id}/elements", curdApiListById(node, mod, "link_id")).Methods("POST")
 	//app.HandleFunc("/project/elements", curdApiList(node,mod)).Methods("POST")
 	app.HandleFunc("/project/element", curdApiCreate(node, mod, nil, nil)).Methods("POST")
@@ -152,7 +152,7 @@ func RegisterRoutes(app *mux.Router) {
 	//项目变量
 	mod = reflect.TypeOf(models.ProjectVariable{})
 	node = store.From("variable")
-	app.HandleFunc("/project/{id}/variables", curdApiListById(node, mod, "project_id")).Methods("POST")
+	app.HandleFunc("/project/{id}/variables", curdApiListById(node, mod, "project_element_id")).Methods("POST")
 	//app.HandleFunc("/project/variables", curdApiList(node,mod)).Methods("POST")
 	app.HandleFunc("/project/variable", curdApiCreate(node, mod, nil, nil)).Methods("POST")
 	app.HandleFunc("/project/variable/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")

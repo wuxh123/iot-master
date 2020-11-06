@@ -86,6 +86,7 @@ type ProjectStrategy struct {
 	Created    time.Time `json:"created" storm:"created"`
 }
 
+
 type Script struct {
 	source    string
 	variables []string
