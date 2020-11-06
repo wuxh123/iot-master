@@ -149,25 +149,15 @@ func RegisterRoutes(app *mux.Router) {
 	app.HandleFunc("/project/element/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/project/element/{id}", curdApiGet(node, mod)).Methods("GET")
 
-	//项目任务
-	mod = reflect.TypeOf(models.ProjectJob{})
-	node = store.From("job")
-	app.HandleFunc("/project/{id}/jobs", curdApiListById(node, mod, "project_id")).Methods("POST")
-	//app.HandleFunc("/project/jobs", curdApiList(node,mod)).Methods("POST")
-	app.HandleFunc("/project/job", curdApiCreate(node, mod, nil, nil)).Methods("POST")
-	app.HandleFunc("/project/job/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
-	app.HandleFunc("/project/job/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
-	app.HandleFunc("/project/job/{id}", curdApiGet(node, mod)).Methods("GET")
-
-	//项目策略
-	mod = reflect.TypeOf(models.ProjectStrategy{})
-	node = store.From("strategy")
-	app.HandleFunc("/project/{id}/strategies", curdApiListById(node, mod, "project_id")).Methods("POST")
-	//app.HandleFunc("/project/strategies", curdApiList(node,mod)).Methods("POST")
-	app.HandleFunc("/project/strategy", curdApiCreate(node, mod, nil, nil)).Methods("POST")
-	app.HandleFunc("/project/strategy/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
-	app.HandleFunc("/project/strategy/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
-	app.HandleFunc("/project/strategy/{id}", curdApiGet(node, mod)).Methods("GET")
+	//项目变量
+	mod = reflect.TypeOf(models.ProjectVariable{})
+	node = store.From("variable")
+	app.HandleFunc("/project/{id}/variables", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/variables", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/variable", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/variable/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/variable/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/variable/{id}", curdApiGet(node, mod)).Methods("GET")
 
 	//项目检查
 	mod = reflect.TypeOf(models.ProjectValidator{})
@@ -188,6 +178,26 @@ func RegisterRoutes(app *mux.Router) {
 	app.HandleFunc("/project/function/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
 	app.HandleFunc("/project/function/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
 	app.HandleFunc("/project/function/{id}", curdApiGet(node, mod)).Methods("GET")
+
+	//项目任务
+	mod = reflect.TypeOf(models.ProjectJob{})
+	node = store.From("job")
+	app.HandleFunc("/project/{id}/jobs", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/jobs", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/job", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/job/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/job/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/job/{id}", curdApiGet(node, mod)).Methods("GET")
+
+	//项目策略
+	mod = reflect.TypeOf(models.ProjectStrategy{})
+	node = store.From("strategy")
+	app.HandleFunc("/project/{id}/strategies", curdApiListById(node, mod, "project_id")).Methods("POST")
+	//app.HandleFunc("/project/strategies", curdApiList(node,mod)).Methods("POST")
+	app.HandleFunc("/project/strategy", curdApiCreate(node, mod, nil, nil)).Methods("POST")
+	app.HandleFunc("/project/strategy/{id}", curdApiDelete(node, mod, nil, nil)).Methods("DELETE")
+	app.HandleFunc("/project/strategy/{id}", curdApiModify(node, mod, nil, nil)).Methods("PUT", "POST")
+	app.HandleFunc("/project/strategy/{id}", curdApiGet(node, mod)).Methods("GET")
 
 	//元件管理
 	mod = reflect.TypeOf(models.Element{})
