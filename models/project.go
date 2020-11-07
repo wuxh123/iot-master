@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/robertkrimen/otto"
 	"time"
 )
 
@@ -70,10 +69,20 @@ type ProjectFunction struct {
 	Created     time.Time `json:"created" storm:"created"`
 }
 
+type ProjectFunctionOperator struct {
+	ID int `json:"id"`
+	//ProjectId  int    `json:"project_id"`
+	FunctionId string      `json:"function_id"`
+	VariableId string      `json:"variable_id"`
+	Value      interface{} `json:"value"`
+	Created    time.Time   `json:"created" storm:"created"`
+}
+
 type ProjectJob struct {
 	ID         int       `json:"id"`
 	ProjectId  int       `json:"project_id"`
 	FunctionId string    `json:"function_id"`
+	Name       string    `json:"name"`
 	Cron       string    `json:"cron"`
 	Created    time.Time `json:"created" storm:"created"`
 }
@@ -82,13 +91,13 @@ type ProjectStrategy struct {
 	ID         int       `json:"id"`
 	ProjectId  int       `json:"project_id"`
 	FunctionId string    `json:"function_id"`
+	Name       string    `json:"name"`
 	Expression string    `json:"expression"` //触发条件 表达式，检测变量名
 	Created    time.Time `json:"created" storm:"created"`
 }
-
-
-type Script struct {
-	source    string
-	variables []string
-	script    *otto.Script
-}
+//
+//type Script struct {
+//	source    string
+//	variables []string
+//	script    *otto.Script
+//}
