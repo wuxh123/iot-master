@@ -1,10 +1,10 @@
 package web
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/conf"
-	"git.zgwit.com/zgwit/iot-admin/web/api"
-	"git.zgwit.com/zgwit/iot-admin/web/open"
-	wwwFiles "git.zgwit.com/zgwit/iot-admin/web/www"
+	"git.zgwit.com/zgwit/dtu-admin/conf"
+	"git.zgwit.com/zgwit/dtu-admin/web/api"
+	"git.zgwit.com/zgwit/dtu-admin/web/open"
+	wwwFiles "git.zgwit.com/zgwit/dtu-admin/web/www"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"

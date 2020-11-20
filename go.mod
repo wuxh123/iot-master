@@ -1,4 +1,4 @@
-module git.zgwit.com/zgwit/iot-admin
+module git.zgwit.com/zgwit/dtu-admin
 
 go 1.13
 

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/core"
+	"git.zgwit.com/zgwit/dtu-admin/core"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"

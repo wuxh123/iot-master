@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/models"
+	"git.zgwit.com/zgwit/dtu-admin/models"
 	"github.com/google/uuid"
 	"net/http"
 )

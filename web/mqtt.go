@@ -1,7 +1,7 @@
 package web
 
 import (
-	"git.zgwit.com/zgwit/iot-admin/core"
+	"git.zgwit.com/zgwit/dtu-admin/core"
 	"golang.org/x/net/websocket"
 	"net/http"
 )
