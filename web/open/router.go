@@ -1,19 +1,20 @@
 package open
 
 import (
-	"github.com/gorilla/mux"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(app *mux.Router) {
+func RegisterRoutes(app *gin.RouterGroup) {
 
 	//跨域咨问题
-	//app.Use(cors.Default())
+	app.Use(cors.Default())
 
-	//app.Use(func(ctx iris.Context) {
-	//	//TODO 检查KEY
-	//
-	//	//log.Println("open", ctx.FullPath())
-	//})
+	app.Use(func(ctx *gin.Context) {
+		//TODO 检查KEY
 
-	//app.Get("/channels")
+		//log.Println("open", ctx.FullPath())
+	})
+
+	app.GET("/channels")
 }

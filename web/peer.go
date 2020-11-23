@@ -1,13 +1,13 @@
 package web
 
 import (
+	"github.com/gin-gonic/gin"
 	"golang.org/x/net/websocket"
 	"log"
-	"net/http"
 )
 
-func peer(writer http.ResponseWriter, request *http.Request)  {
-	key := request.URL.Query()["key"]
+func peer(ctx *gin.Context)  {
+	key := ctx.Query("key")
 	log.Println(key)
 
 	//TODO 获取链接
@@ -17,7 +17,7 @@ func peer(writer http.ResponseWriter, request *http.Request)  {
 	websocket.Handler(func(ws *websocket.Conn) {
 		//peer := core.NewPeer(ws, nil)
 		//peer.Receive()
-	}).ServeHTTP(writer, request)
+	}).ServeHTTP(ctx.Writer, ctx.Request)
 	//ctx.Abort()
 }
 

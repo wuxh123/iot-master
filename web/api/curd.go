@@ -2,13 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"io/ioutil"
 	"net/http"
 	"reflect"
-	"strconv"
 )
 
 type hook func(value interface{}) error
@@ -31,17 +30,17 @@ func parseBody(request *http.Request, data interface{}) error {
 	return json.Unmarshal(body, data)
 }
 
-type Handler func(writer http.ResponseWriter, request *http.Request)
+//type Handler func(c *gin.Context)
 
-func curdApiList(store storm.Node, mod reflect.Type) Handler {
-	return func(writer http.ResponseWriter, request *http.Request) {
+func curdApiList(store storm.Node, mod reflect.Type) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		datas := createSliceFromType(mod)
 		data := reflect.New(mod).Interface()
 
 		var body paramSearch
-		err := parseBody(request, &body)
+		err := c.ShouldBindJSON(&body)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
@@ -74,7 +73,7 @@ func curdApiList(store storm.Node, mod reflect.Type) Handler {
 		//计算总数
 		cnt, err := query.Count(data)
 		if err != nil && err != storm.ErrNotFound {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
@@ -94,35 +93,36 @@ func curdApiList(store storm.Node, mod reflect.Type) Handler {
 
 		err = query.Find(datas)
 		if err != nil && err != storm.ErrNotFound {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		//replyOk(ctx, cs)
-		replyList(writer, datas, cnt)
+		replyList(c, datas, cnt)
 	}
 }
 
-func curdApiListById(store storm.Node,mod reflect.Type, field string) Handler {
-	return func(writer http.ResponseWriter, request *http.Request) {
+func curdApiListById(store storm.Node,mod reflect.Type, field string) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		datas := createSliceFromType(mod)
 		data := reflect.New(mod).Interface()
 
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
+		var pid paramId
+		err := c.ShouldBindUri(&pid)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		var body paramSearch
-		err = parseBody(request, &body)
+		err = c.ShouldBindJSON(&body)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		cond := make([]q.Matcher, 0)
-		cond = append(cond, q.Eq(field, id))
+		cond = append(cond, q.Eq(field, pid.Id))
 
 		//过滤
 		for _, filter := range body.Filters {
@@ -149,7 +149,7 @@ func curdApiListById(store storm.Node,mod reflect.Type, field string) Handler {
 		//计算总数
 		cnt, err := query.Count(data)
 		if err != nil && err != storm.ErrNotFound {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
@@ -169,141 +169,144 @@ func curdApiListById(store storm.Node,mod reflect.Type, field string) Handler {
 
 		err = query.Find(datas)
 		if err != nil && err != storm.ErrNotFound {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		//replyOk(ctx, cs)
-		replyList(writer, datas, cnt)
+		replyList(c, datas, cnt)
 	}
 }
 
-func curdApiCreate(store storm.Node,mod reflect.Type, before hook, after hook) Handler {
-	return func(writer http.ResponseWriter, request *http.Request) {
+func curdApiCreate(store storm.Node,mod reflect.Type, before hook, after hook) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		data := reflect.New(mod).Interface()
-		if err := parseBody(request, data); err != nil {
-			replyError(writer, err)
+		if err := c.ShouldBindJSON(data); err != nil {
+			replyError(c, err)
 			return
 		}
 
 		if before != nil {
 			if err := before(data); err != nil {
-				replyError(writer, err)
+				replyError(c, err)
 				return
 			}
 		}
 
 		err := store.Save(data)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(writer, err)
+				replyError(c, err)
 				return
 			}
 		}
 
-		replyOk(writer, data)
+		replyOk(c, data)
 	}
 }
 
-func curdApiModify(store storm.Node,mod reflect.Type, before hook, after hook) Handler {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
+func curdApiModify(store storm.Node,mod reflect.Type, before hook, after hook) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var pid paramId
+		err := c.ShouldBindUri(&pid)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		val := reflect.New(mod)
 		data := val.Interface()
-		if err := parseBody(request, data); err != nil {
-			replyError(writer, err)
+		if err := c.ShouldBindJSON(data); err != nil {
+			replyError(c, err)
 			return
 		}
 
-		val.Elem().FieldByName("ID").Set(reflect.ValueOf(id))
+		val.Elem().FieldByName("ID").Set(reflect.ValueOf(pid.Id))
 
 		if before != nil {
 			if err := before(data); err != nil {
-				replyError(writer, err)
+				replyError(c, err)
 				return
 			}
 		}
 
 		err = store.Update(data)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(writer, err)
+				replyError(c, err)
 				return
 			}
 		}
 
-		replyOk(writer, data)
+		replyOk(c, data)
 	}
 }
 
-func curdApiDelete(store storm.Node,mod reflect.Type, before hook, after hook) Handler {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
+func curdApiDelete(store storm.Node,mod reflect.Type, before hook, after hook) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var pid paramId
+		err := c.ShouldBindUri(&pid)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		val := reflect.New(mod)
 		data := val.Interface()
-		val.Elem().FieldByName("ID").Set(reflect.ValueOf(id))
+		val.Elem().FieldByName("ID").Set(reflect.ValueOf(pid.Id))
 
 
 		if before != nil {
-			if err := before(id); err != nil {
-				replyError(writer, err)
+			if err := before(pid.Id); err != nil {
+				replyError(c, err)
 				return
 			}
 		}
 
 		err = store.DeleteStruct(data)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(writer, err)
+				replyError(c, err)
 				return
 			}
 		}
 
-		replyOk(writer, nil)
+		replyOk(c, nil)
 	}
 }
 
-func curdApiGet(store storm.Node,mod reflect.Type) Handler {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		id, err := strconv.Atoi(mux.Vars(request)["id"])
+func curdApiGet(store storm.Node,mod reflect.Type) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var pid paramId
+		err := c.ShouldBindUri(&pid)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
 		data := reflect.New(mod).Interface()
-		err = store.One("ID", id, data)
+		err = store.One("ID", pid.Id, data)
 		if err != nil {
-			replyError(writer, err)
+			replyError(c, err)
 			return
 		}
-		replyOk(writer, data)
+		replyOk(c, data)
 	}
 }

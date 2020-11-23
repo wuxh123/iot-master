@@ -2,8 +2,8 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/MyDTU/models"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 func projectBeforeCreate(data interface{}) error {
@@ -31,14 +31,14 @@ func projectAfterDelete(data interface{}) error {
 }
 
 
-func projectImport(writer http.ResponseWriter, request *http.Request) {
+func projectImport(c *gin.Context) {
 
 }
 
-func projectExport(writer http.ResponseWriter, request *http.Request) {
+func projectExport(c *gin.Context) {
 
 }
 
-func projectDeploy(writer http.ResponseWriter, request *http.Request) {
+func projectDeploy(c *gin.Context) {
 
 }

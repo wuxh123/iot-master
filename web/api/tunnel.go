@@ -2,49 +2,49 @@ package api
 
 import (
 	"git.zgwit.com/zgwit/MyDTU/core"
-	"github.com/gorilla/mux"
-	"net/http"
-	"strconv"
+	"github.com/gin-gonic/gin"
 )
 
-func tunnelStart(writer http.ResponseWriter, request *http.Request) {
-	id, err := strconv.Atoi(mux.Vars(request)["id"])
+func tunnelStart(c *gin.Context) {
+	var pid paramId
+	err := c.ShouldBindUri(&pid)
 	if err != nil {
-		replyError(writer, err)
+		replyError(c, err)
 		return
 	}
-	c, err := core.GetTunnel(id)
+	t, err := core.GetTunnel(pid.Id)
 	if err != nil {
-		replyError(writer, err)
-		return
-	}
-
-	err = c.Open()
-	if err != nil {
-		replyError(writer, err)
+		replyError(c, err)
 		return
 	}
 
-	replyOk(writer, nil)
+	err = t.Open()
+	if err != nil {
+		replyError(c, err)
+		return
+	}
+
+	replyOk(c, nil)
 }
 
-func tunnelStop(writer http.ResponseWriter, request *http.Request) {
-	id, err := strconv.Atoi(mux.Vars(request)["id"])
+func tunnelStop(c *gin.Context) {
+	var pid paramId
+	err := c.ShouldBindUri(&pid)
 	if err != nil {
-		replyError(writer, err)
+		replyError(c, err)
 		return
 	}
-	c, err := core.GetTunnel(id)
+	t, err := core.GetTunnel(pid.Id)
 	if err != nil {
-		replyError(writer, err)
-		return
-	}
-
-	err = c.Close()
-	if err != nil {
-		replyError(writer, err)
+		replyError(c, err)
 		return
 	}
 
-	replyOk(writer, nil)
+	err = t.Close()
+	if err != nil {
+		replyError(c, err)
+		return
+	}
+
+	replyOk(c, nil)
 }
