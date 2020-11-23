@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	git.zgwit.com/iot/beeq v0.0.7
+	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3

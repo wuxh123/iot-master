@@ -30,7 +30,7 @@ type _baseAuth struct {
 	Users  _users `yaml:"users"`
 }
 
-type _sysAdmin struct {
+type _myServer struct {
 	Desc   string `yaml:"desc"`
 	Enable bool   `yaml:"enable"`
 	Addr   string `yaml:"addr"`
@@ -44,10 +44,10 @@ type _dbus struct {
 }
 
 type _config struct {
-	Data _data `yaml:"data"`
+	Data     _data     `yaml:"data"`
 	Web      _web      `yaml:"web"`
 	BaseAuth _baseAuth `yaml:"basicAuth"`
-	SysAdmin _sysAdmin `yaml:"sysAdmin"`
+	MyServer _myServer `yaml:"myServer"`
 	DBus     _dbus     `yaml:"dbus"`
 }
 
@@ -67,8 +67,8 @@ var Config = _config{
 			//"admin": "123456",
 		},
 	},
-	SysAdmin: _sysAdmin{
-		Desc:   "Sys Admin地址",
+	MyServer: _myServer{
+		Desc:   "MyServer地址",
 		Enable: false,
 		Addr:   "http://127.0.0.1:8080",
 	},

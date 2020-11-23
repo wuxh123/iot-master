@@ -45,7 +45,7 @@ func main() {
 	}
 
 	//打印用户名密码，方便用户登录
-	if !conf.Config.SysAdmin.Enable {
+	if !conf.Config.MyServer.Enable {
 		for k, v := range conf.Config.BaseAuth.Users {
 			log.Println("用户名：", k, "，密码：", v)
 		}

@@ -53,7 +53,7 @@ func mustLogin(c *gin.Context) {
 
 func RegisterRoutes(app *gin.RouterGroup) {
 
-	if conf.Config.SysAdmin.Enable {
+	if conf.Config.MyServer.Enable {
 		//检查 session，必须登录
 		app.Use(mustLogin)
 	} else if conf.Config.BaseAuth.Enable {
