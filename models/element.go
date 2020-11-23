@@ -13,6 +13,8 @@ type Element struct {
 	Model        string `json:"model"`        //型号
 	Version      string `json:"version"`      //版本
 
+	Variables []ElementVariable `json:"variables"` //变量
+
 	Created time.Time `json:"created" storm:"created"`
 }
 
@@ -23,22 +25,18 @@ type Element struct {
 // input 输入寄存器（4读多个）
 
 type ElementVariable struct {
-	ID int `json:"id"`
-
 	Variable `storm:"inline"`
-	Extend uint16 `json:"extend"` //扩展长度 默认0，如果大于1，自动在别名基础上添加数字后缀，比如 s s1 s2 s3 ...
-
-	Created time.Time `json:"created" storm:"created"`
+	Extend   uint16 `json:"extend"` //扩展长度 默认0，如果大于1，自动在别名基础上添加数字后缀，比如 s s1 s2 s3 ...
 }
 
 type Variable struct {
-	Name   string `json:"name"`
-	Alias  string `json:"alias"`  //默认别名，用于编程
-	Code   uint8  `json:"code"`   //功能码
-	Offset uint16 `json:"offset"` //偏移
-	Type   string `json:"type"`
-	Unit   string `json:"unit"` //单位
-	Scale float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
+	Name   string  `json:"name"`
+	Alias  string  `json:"alias"`  //默认别名，用于编程
+	Code   uint8   `json:"code"`   //功能码
+	Offset uint16  `json:"offset"` //偏移
+	Type   string  `json:"type"`
+	Unit   string  `json:"unit"`  //单位
+	Scale  float32 `json:"scale"` //倍率，比如一般是 整数÷10，得到
 
 	//Default  string `json:"default"`
 	ReadOnly bool `json:"read_only"` //只读
