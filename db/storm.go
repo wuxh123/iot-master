@@ -1,7 +1,7 @@
 package db
 
 import (
-	"git.zgwit.com/zgwit/dtu-admin/conf"
+	"git.zgwit.com/zgwit/MyDTU/conf"
 	"github.com/zgwit/storm/v3"
 	"log"
 	"os"

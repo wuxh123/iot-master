@@ -2,9 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"git.zgwit.com/zgwit/dtu-admin/conf"
-	"git.zgwit.com/zgwit/dtu-admin/db"
-	"git.zgwit.com/zgwit/dtu-admin/models"
+	"git.zgwit.com/zgwit/MyDTU/conf"
+	"git.zgwit.com/zgwit/MyDTU/db"
+	"git.zgwit.com/zgwit/MyDTU/models"
 	"github.com/gorilla/mux"
 	"github.com/quasoft/memstore"
 	"net/http"
@@ -35,10 +35,10 @@ func RegisterRoutes(app *mux.Router) {
 
 	if conf.Config.SysAdmin.Enable {
 		//启用session
-		store := memstore.NewMemStore([]byte("dtu-admin"), []byte("dtu-admin"))
+		store := memstore.NewMemStore([]byte("MyDTU"), []byte("MyDTU"))
 		app.Use(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-				sess, err := store.Get(request, "dtu-admin")
+				sess, err := store.Get(request, "MyDTU")
 				if err != nil {
 					http.Error(writer, err.Error(), http.StatusInternalServerError)
 					return

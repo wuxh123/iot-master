@@ -1,7 +1,7 @@
 package web
 
 import (
-	"git.zgwit.com/zgwit/dtu-admin/core"
+	"git.zgwit.com/zgwit/MyDTU/core"
 	"golang.org/x/net/websocket"
 	"net/http"
 )

@@ -1,8 +1,8 @@
 package core
 
 import (
-	"git.zgwit.com/zgwit/dtu-admin/db"
-	"git.zgwit.com/zgwit/dtu-admin/models"
+	"git.zgwit.com/zgwit/MyDTU/db"
+	"git.zgwit.com/zgwit/MyDTU/models"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"

@@ -3,9 +3,9 @@ package modbus
 import (
 	"errors"
 	"fmt"
-	"git.zgwit.com/zgwit/dtu-admin/base"
-	"git.zgwit.com/zgwit/dtu-admin/protocol/adapter"
-	"git.zgwit.com/zgwit/dtu-admin/protocol/helper"
+	"git.zgwit.com/zgwit/MyDTU/base"
+	"git.zgwit.com/zgwit/MyDTU/protocol/adapter"
+	"git.zgwit.com/zgwit/MyDTU/protocol/helper"
 )
 
 func init() {

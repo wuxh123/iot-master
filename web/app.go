@@ -1,10 +1,10 @@
 package web
 
 import (
-	"git.zgwit.com/zgwit/dtu-admin/conf"
-	"git.zgwit.com/zgwit/dtu-admin/web/api"
-	"git.zgwit.com/zgwit/dtu-admin/web/open"
-	wwwFiles "git.zgwit.com/zgwit/dtu-admin/web/www"
+	"git.zgwit.com/zgwit/MyDTU/conf"
+	"git.zgwit.com/zgwit/MyDTU/web/api"
+	"git.zgwit.com/zgwit/MyDTU/web/open"
+	wwwFiles "git.zgwit.com/zgwit/MyDTU/web/www"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"

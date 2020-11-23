@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/dtu-admin/core"
+	"git.zgwit.com/zgwit/MyDTU/core"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"

@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"git.zgwit.com/zgwit/dtu-admin/models"
+	"git.zgwit.com/zgwit/MyDTU/models"
 	"regexp"
 )
 

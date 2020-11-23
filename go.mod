@@ -1,4 +1,4 @@
-module git.zgwit.com/zgwit/dtu-admin
+module git.zgwit.com/zgwit/MyDTU
 
 go 1.13
 

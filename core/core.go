@@ -2,8 +2,8 @@ package core
 
 import (
 	"errors"
-	"git.zgwit.com/zgwit/dtu-admin/db"
-	"git.zgwit.com/zgwit/dtu-admin/models"
+	"git.zgwit.com/zgwit/MyDTU/db"
+	"git.zgwit.com/zgwit/MyDTU/models"
 	"log"
 	"sync"
 )

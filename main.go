@@ -1,11 +1,11 @@
 package main
 
 import (
-	"git.zgwit.com/zgwit/dtu-admin/conf"
-	"git.zgwit.com/zgwit/dtu-admin/core"
-	"git.zgwit.com/zgwit/dtu-admin/flag"
-	_ "git.zgwit.com/zgwit/dtu-admin/protocol/modbus" //默认支持Modbus协议
-	"git.zgwit.com/zgwit/dtu-admin/web"
+	"git.zgwit.com/zgwit/MyDTU/conf"
+	"git.zgwit.com/zgwit/MyDTU/core"
+	"git.zgwit.com/zgwit/MyDTU/flag"
+	_ "git.zgwit.com/zgwit/MyDTU/protocol/modbus" //默认支持Modbus协议
+	"git.zgwit.com/zgwit/MyDTU/web"
 	"github.com/denisbrodbeck/machineid"
 	"log"
 )

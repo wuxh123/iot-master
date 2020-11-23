@@ -16,7 +16,7 @@ go env -w GOSUMDB=off
 
 
 set GOOS=linux
-go build -o dtu-admin main.go
+go build -o MyDTU main.go
 
 set GOOS=windows
-go build -o dtu-admin.exe main.go
+go build -o MyDTU.exe main.go
