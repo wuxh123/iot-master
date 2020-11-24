@@ -52,6 +52,7 @@ import {ProjectLinkComponent} from './project-link/project-link.component';
 import {ProjectLinkEditComponent} from './project-link-edit/project-link-edit.component';
 import {ProjectFunctionComponent} from './project-function/project-function.component';
 import {ProjectFunctionEditComponent} from './project-function-edit/project-function-edit.component';
+import {CodemirrorModule} from "@ctrl/ngx-codemirror";
 
 
 @NgModule({
@@ -99,6 +100,7 @@ import {ProjectFunctionEditComponent} from './project-function-edit/project-func
     NzStatisticModule,
     NzTabsModule,
     NzCollapseModule,
+    CodemirrorModule,
   ],
   bootstrap: [MainComponent]
 })

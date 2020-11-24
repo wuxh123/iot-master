@@ -15,6 +15,8 @@ export class ProjectEditComponent implements OnInit {
 
   data: any = {};
 
+  content = "";
+
   constructor(private as: ApiService, private mr: NzModalRef, private ms: NzMessageService) {
 
   }
