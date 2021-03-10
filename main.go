@@ -1,12 +1,11 @@
 package main
 
 import (
+	"git.zgwit.com/iot/mydtu/args"
 	"git.zgwit.com/iot/mydtu/conf"
 	"git.zgwit.com/iot/mydtu/core"
-	"git.zgwit.com/iot/mydtu/flag"
 	_ "git.zgwit.com/iot/mydtu/protocol/modbus" //默认支持Modbus协议
 	"git.zgwit.com/iot/mydtu/web"
-	"github.com/denisbrodbeck/machineid"
 	"log"
 )
 
@@ -26,19 +25,10 @@ import (
 // @BasePath /open
 func main() {
 	//解析参数
-	if !flag.Parse() {
-		return
-	}
-
-	id, err := machineid.ID()
-	if err != nil {
-		log.Println("获取ID错误：", err)
-		return
-	}
-	log.Println("机器码：", id)
+	args.Parse()
 
 	//加载配置
-	err = conf.Load()
+	err := conf.Load()
 	if err != nil {
 		log.Println(err)
 		return
