@@ -1,19 +1,19 @@
 package api
 
 import (
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 func projectBeforeCreate(data interface{}) error {
-	project := data.(*models.Project)
+	project := data.(*model.Project)
 	project.UUID = uuid.New().String()
 	return nil
 }
 
 func projectAfterCreate(data interface{}) error {
-	//project := data.(*models.Project)
+	//project := data.(*model.Project)
 
 	//TODO 加载实例
 	return nil

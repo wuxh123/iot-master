@@ -1,12 +1,12 @@
 package api
 
 import (
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"github.com/google/uuid"
 )
 
 func elementBeforeCreate(data interface{}) error {
-	element := data.(*models.Element)
+	element := data.(*model.Element)
 	element.UUID = uuid.New().String()
 	return nil
 }

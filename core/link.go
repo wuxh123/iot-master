@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
 	"git.zgwit.com/iot/mydtu/base"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"log"
 	"net"
 	"time"
 )
 
 type Link struct {
-	models.Link
+	model.Link
 
 	//指向通道
 	tunnel Tunnel
@@ -148,7 +148,7 @@ func (l *Link) Listen(listener base.OnDataFunc) {
 func newLink(ch Tunnel, conn net.Conn) *Link {
 	c := ch.GetTunnel()
 	return &Link{
-		Link: models.Link{
+		Link: model.Link{
 			TunnelId: c.ID,
 			//ProjectId: c.ProjectId,
 			Active: true,
@@ -162,7 +162,7 @@ func newLink(ch Tunnel, conn net.Conn) *Link {
 func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
 	c := ch.GetTunnel()
 	return &Link{
-		Link: models.Link{
+		Link: model.Link{
 			TunnelId: c.ID,
 			//ProjectId: c.ProjectId,
 			Active: true,

@@ -2,7 +2,7 @@ package core
 
 import (
 	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -50,7 +50,7 @@ func (c *TcpUdpClient) receive(conn net.Conn) {
 	if c.link == nil {
 		link := newLink(c, conn)
 
-		var lnk models.Link
+		var lnk model.Link
 		//has, err := db.Engine.Where("tunnel_id", c.ID).Get(&lnk)
 		err := db.DB("link").Select(q.Eq("TunnelId", c.ID)).First(&lnk)
 		if err == storm.ErrNotFound {

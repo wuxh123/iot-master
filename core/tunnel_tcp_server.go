@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -99,7 +99,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 		link.Serial = serial
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
-		var lnk models.Link
+		var lnk model.Link
 		err = db.DB("link").Select(q.Eq("TunnelId", s.ID), q.Eq("Serial", serial)).First(&lnk)
 		if err == storm.ErrNotFound {
 			//找不到

@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"regexp"
 )
 
@@ -10,16 +10,16 @@ import (
 type Tunnel interface {
 	Open() error
 	Close() error
-	GetTunnel() *models.Tunnel
+	GetTunnel() *model.Tunnel
 	GetLink(id int) (*Link, error)
 }
 
 type baseTunnel struct {
-	models.Tunnel
-	//models.ProjectAdapter
+	model.Tunnel
+	//model.ProjectAdapter
 }
 
-func (t *baseTunnel) GetTunnel() *models.Tunnel {
+func (t *baseTunnel) GetTunnel() *model.Tunnel {
 	return &t.Tunnel
 }
 
@@ -45,7 +45,7 @@ func (t *baseTunnel) checkRegister(buf []byte) (string, error) {
 	return serial, nil
 }
 
-func NewTunnel(tunnel *models.Tunnel) (Tunnel, error) {
+func NewTunnel(tunnel *model.Tunnel) (Tunnel, error) {
 	switch tunnel.Type {
 	case "tcp-server":
 		return &TcpServer{

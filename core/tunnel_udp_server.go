@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"
@@ -89,7 +89,7 @@ func (c *PacketServer) receive() {
 				link.Serial = serial
 
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
-				var lnk models.Link
+				var lnk model.Link
 
 				//has, err := db.Engine.Where("tunnel_id", c.ID).And("serial", serial).Get(&lnk)
 				err = db.DB("link").Select(q.Eq("TunnelId", c.ID), q.Eq("Serial", serial)).First(&lnk)

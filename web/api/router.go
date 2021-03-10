@@ -1,9 +1,8 @@
 package api
 
 import (
-	"git.zgwit.com/iot/mydtu/conf"
 	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -42,6 +41,7 @@ type paramId2 struct {
 func mustLogin(c *gin.Context) {
 	session := sessions.Default(c)
 	if user := session.Get("user"); user != nil {
+		c.Set("user", user)
 		c.Next()
 	} else {
 		//TODO 检查OAuth2返回的code，进一步获取用户信息，放置到session中
@@ -52,19 +52,14 @@ func mustLogin(c *gin.Context) {
 }
 
 func RegisterRoutes(app *gin.RouterGroup) {
+	app.POST("/login", login)
+	app.Any("/logout", logout)
 
-	if conf.Config.MyServer.Enable {
-		//检查 session，必须登录
-		app.Use(mustLogin)
-	} else if conf.Config.BaseAuth.Enable {
-		//检查HTTP认证
-		app.Use(gin.BasicAuth(gin.Accounts(conf.Config.BaseAuth.Users)))
-	} else {
-		//支持匿名访问
-	}
+	//检查 session，必须登录
+	app.Use(mustLogin)
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
-	mod := reflect.TypeOf(models.Tunnel{})
+	mod := reflect.TypeOf(model.Tunnel{})
 	store := db.DB("tunnel")
 	app.POST("/project/:id/tunnels", curdApiListById(store, mod, "project_id"))
 	app.POST("/tunnels", curdApiList(store, mod))
@@ -79,7 +74,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	//app.POST("/channel/:id/links")
 
 	//连接管理
-	mod = reflect.TypeOf(models.Link{})
+	mod = reflect.TypeOf(model.Link{})
 	store = db.DB("link")
 	app.POST("/tunnel/:id/links", curdApiListById(store, mod, "tunnel_id"))
 	app.POST("/links", curdApiList(store, mod))
@@ -88,7 +83,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/link/:id", curdApiGet(store, mod))
 
 	//设备管理
-	mod = reflect.TypeOf(models.Device{})
+	mod = reflect.TypeOf(model.Device{})
 	store = db.DB("device")
 	app.POST("/project/:id/devices", curdApiListById(store, mod, "project_id"))
 	app.POST("/devices", curdApiList(store, mod))
@@ -98,7 +93,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/device/:id", curdApiGet(store, mod))
 
 	//插件管理
-	mod = reflect.TypeOf(models.Plugin{})
+	mod = reflect.TypeOf(model.Plugin{})
 	store = db.DB("plugin")
 	app.POST("/plugins", curdApiList(store, mod))
 	app.POST("/plugin", curdApiCreate(store, mod, nil, nil))
@@ -107,7 +102,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/plugin/:id", curdApiGet(store, mod))
 
 	//项目管理
-	mod = reflect.TypeOf(models.Project{})
+	mod = reflect.TypeOf(model.Project{})
 	store = db.DB("project")
 	app.POST("/projects", curdApiList(store, mod))
 	app.POST("/project", curdApiCreate(store, mod,  projectBeforeCreate, projectAfterCreate))
@@ -120,7 +115,7 @@ func RegisterRoutes(app *gin.RouterGroup) {
 	app.GET("/project/:id/deploy", projectDeploy)
 
 	//元件管理
-	mod = reflect.TypeOf(models.Element{})
+	mod = reflect.TypeOf(model.Element{})
 	store = db.DB("element")
 	app.POST("/elements", curdApiList(store, mod))
 	app.POST("/element", curdApiCreate(store, mod, elementBeforeCreate,nil))

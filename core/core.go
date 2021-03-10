@@ -3,7 +3,7 @@ package core
 import (
 	"errors"
 	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/models"
+	"git.zgwit.com/iot/mydtu/model"
 	"log"
 	"sync"
 )
@@ -20,7 +20,7 @@ func Tunnels() []Tunnel {
 }
 
 func Recovery() error {
-	var cs []models.Tunnel
+	var cs []model.Tunnel
 	err := db.DB("tunnel").All(&cs)
 	if err != nil {
 		return err
@@ -39,7 +39,7 @@ func Recovery() error {
 	return nil
 }
 
-func StartTunnel(c *models.Tunnel) (Tunnel, error) {
+func StartTunnel(c *model.Tunnel) (Tunnel, error) {
 	//log.Println("Start core", c)
 	tunnel, err := NewTunnel(c)
 	if err != nil {

@@ -44,14 +44,6 @@ func main() {
 		return
 	}
 
-	//打印用户名密码，方便用户登录
-	if !conf.Config.MyServer.Enable {
-		for k, v := range conf.Config.BaseAuth.Users {
-			log.Println("用户名：", k, "，密码：", v)
-		}
-		log.Println("系统使用HTTP简单认证，有泄露密码的风险，请采用安全的SysAdmin方式！！！")
-	}
-
 	//err = db.Open()
 	//if err != nil {
 	//	log.Println("数据库错误：", err)

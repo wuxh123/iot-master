@@ -1,6 +1,9 @@
 package flag
 
-import "flag"
+import (
+	"flag"
+	"os"
+)
 
 var (
 	help bool
@@ -11,7 +14,7 @@ var (
 func init() {
 	flag.BoolVar(&help, "h", false, "Show help")
 	flag.BoolVar(&SyncTables, "s", false, "Sync tables")
-	flag.StringVar(&ConfigPath, "c", "config.yaml", "Configure path")
+	flag.StringVar(&ConfigPath, "c", os.Args[0]+".yaml", "Configure path")
 }
 
 
