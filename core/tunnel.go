@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"git.zgwit.com/zgwit/MyDTU/models"
+	"git.zgwit.com/iot/mydtu/models"
 	"regexp"
 )
 

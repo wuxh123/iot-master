@@ -1,10 +1,10 @@
 package web
 
 import (
-	"git.zgwit.com/zgwit/MyDTU/conf"
-	"git.zgwit.com/zgwit/MyDTU/web/api"
-	"git.zgwit.com/zgwit/MyDTU/web/open"
-	wwwFiles "git.zgwit.com/zgwit/MyDTU/web/www"
+	"git.zgwit.com/iot/mydtu/conf"
+	"git.zgwit.com/iot/mydtu/web/api"
+	"git.zgwit.com/iot/mydtu/web/open"
+	wwwFiles "git.zgwit.com/iot/mydtu/web/www"
 	"github.com/PuerkitoBio/urlesc"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"

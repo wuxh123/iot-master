@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/MyDTU/models"
+	"git.zgwit.com/iot/mydtu/models"
 	"github.com/google/uuid"
 )
 

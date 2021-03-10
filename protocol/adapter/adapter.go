@@ -2,7 +2,7 @@ package adapter
 
 import (
 	"errors"
-	"git.zgwit.com/zgwit/MyDTU/base"
+	"git.zgwit.com/iot/mydtu/base"
 	"sync"
 )
 

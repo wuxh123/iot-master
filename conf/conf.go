@@ -1,8 +1,8 @@
 package conf
 
 import (
-	"git.zgwit.com/zgwit/MyDTU/base"
-	"git.zgwit.com/zgwit/MyDTU/flag"
+	"git.zgwit.com/iot/mydtu/base"
+	"git.zgwit.com/iot/mydtu/flag"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"

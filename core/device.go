@@ -1,8 +1,8 @@
 package core
 
 import (
-	"git.zgwit.com/zgwit/MyDTU/base"
-	"git.zgwit.com/zgwit/MyDTU/protocol/adapter"
+	"git.zgwit.com/iot/mydtu/base"
+	"git.zgwit.com/iot/mydtu/protocol/adapter"
 )
 
 type Device struct {

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/MyDTU/core"
+	"git.zgwit.com/iot/mydtu/core"
 	"github.com/gin-gonic/gin"
 )
 

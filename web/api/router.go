@@ -1,9 +1,9 @@
 package api
 
 import (
-	"git.zgwit.com/zgwit/MyDTU/conf"
-	"git.zgwit.com/zgwit/MyDTU/db"
-	"git.zgwit.com/zgwit/MyDTU/models"
+	"git.zgwit.com/iot/mydtu/conf"
+	"git.zgwit.com/iot/mydtu/db"
+	"git.zgwit.com/iot/mydtu/models"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
