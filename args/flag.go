@@ -13,6 +13,7 @@ var (
 )
 
 var (
+	Version   string
 	gitHash   string
 	buildTime string
 	goVersion string
@@ -31,8 +32,9 @@ func Parse() {
 		os.Exit(0)
 	}
 	if showVersion {
-		fmt.Printf("Git Commit Hash: %s \n", gitHash)
-		fmt.Printf("Build TimeStamp: %s \n", buildTime)
+		fmt.Printf("Version: %s \n", Version)
+		fmt.Printf("Git Hash: %s \n", gitHash)
+		fmt.Printf("Build Time: %s \n", buildTime)
 		fmt.Printf("GoLang Version: %s \n", goVersion)
 		os.Exit(0)
 	}
