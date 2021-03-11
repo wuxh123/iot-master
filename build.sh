@@ -24,6 +24,8 @@ ldflags="-X 'mydtu/args.Version=$version' \
 -X 'mydtu/args.buildTime=$buildTime'"
 
 export GOOS=linux
+export CGO_ENABLED=1
+
 #go build -o MyDTU main.go
 go build -ldflags "$ldflags" -o mydtu-linux main.go
 

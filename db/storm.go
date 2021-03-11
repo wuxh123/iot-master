@@ -1,7 +1,6 @@
 package db
 
 import (
-	"mydtu/conf"
 	"github.com/zgwit/storm/v3"
 	"log"
 	"os"
@@ -17,7 +16,7 @@ func DB(name string) *storm.DB {
 		return v.(*storm.DB)
 	}
 
-	path := conf.Config.Data.Path
+	path := ""
 
 	err := os.MkdirAll(path, 0755)
 	if err != nil && !os.IsExist(err) {

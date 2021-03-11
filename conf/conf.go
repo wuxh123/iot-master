@@ -7,12 +7,12 @@ import (
 	"os"
 )
 
-type _data struct {
-	Desc  string `yaml:"desc"`
-	Path  string `yaml:"path"`
-	Debug bool   `yaml:"debug"`
+type _database struct {
+	Desc    string `json:"desc" yaml:"desc"`
+	Type    string `json:"type" yaml:"type"`
+	Url     string `json:"url" yaml:"url"`
+	ShowSQL bool   `json:"showSQL" yaml:"showSQL"`
 }
-
 
 type _web struct {
 	Desc string `yaml:"desc"`
@@ -27,15 +27,17 @@ type _dbus struct {
 }
 
 type _config struct {
-	Data     _data     `yaml:"data"`
+	Database _database `yaml:"database"`
 	Web      _web      `yaml:"web"`
 	DBus     _dbus     `yaml:"dbus"`
 }
 
 var Config = _config{
-	Data: _data{
-		Desc:    "数据库配置",
-		Path:    "data",
+	Database: _database{
+		"数据库配置",
+		"mysql",
+		"root:root@tcp(127.0.0.1:3306)/fta?charset=utf8",
+		false,
 	},
 	Web: _web{
 		Desc: "Web服务配置",
