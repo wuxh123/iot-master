@@ -1,4 +1,4 @@
-module git.zgwit.com/iot/mydtu
+module mydtu
 
 go 1.13
 

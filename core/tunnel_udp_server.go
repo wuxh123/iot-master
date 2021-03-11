@@ -3,8 +3,8 @@ package core
 import (
 	"errors"
 	"fmt"
-	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/model"
+	"mydtu/db"
+	"mydtu/model"
 	"github.com/zgwit/storm/v3"
 	"github.com/zgwit/storm/v3/q"
 	"log"

@@ -2,8 +2,8 @@ package core
 
 import (
 	"errors"
-	"git.zgwit.com/iot/mydtu/db"
-	"git.zgwit.com/iot/mydtu/model"
+	"mydtu/db"
+	"mydtu/model"
 	"log"
 	"sync"
 )

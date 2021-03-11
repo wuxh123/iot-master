@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/gob"
-	"git.zgwit.com/iot/mydtu/model"
+	"mydtu/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"

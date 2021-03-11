@@ -1,7 +1,7 @@
 package web
 
 import (
-	"git.zgwit.com/iot/mydtu/core"
+	"mydtu/core"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/websocket"
 )

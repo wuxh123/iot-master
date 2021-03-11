@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"git.zgwit.com/iot/mydtu/args"
+	"mydtu/args"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"

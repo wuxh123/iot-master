@@ -10,8 +10,8 @@ go env -w GOSUMDB=off
 
 export GOOS=linux
 #go build -o MyDTU main.go
-go build -ldflags "-X 'args.goVersion=$(go version)' -X 'args.gitHash=$(git show -s --format=%H)' -X 'args.buildTime=$(git show -s --format=%cd)'" -o mydtu main.go
+go build -ldflags "-X 'mydtu/args.goVersion=$(go version)' -X 'mydtu/args.gitHash=$(git show -s --format=%H)' -X 'mydtu/args.buildTime=$(git show -s --format=%cd)'" -o mydtu main.go
 
 export GOOS=windows
 #go build -o MyDTU.exe main.go
-go build -ldflags "-X 'args.goVersion=$(go version)' -X 'args.gitHash=$(git show -s --format=%H)' -X 'args.buildTime=$(git show -s --format=%cd)'" -o mydtu.exe main.go
+go build -ldflags "-X 'mydtu/args.goVersion=$(go version)' -X 'mydtu/args.gitHash=$(git show -s --format=%H)' -X 'mydtu/args.buildTime=$(git show -s --format=%cd)'" -o mydtu.exe main.go
