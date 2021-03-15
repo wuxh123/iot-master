@@ -2,8 +2,8 @@ package core
 
 import (
 	"errors"
-	"mydtu/db"
-	"mydtu/model"
+	"iot-master/db"
+	"iot-master/model"
 	"log"
 	"sync"
 )

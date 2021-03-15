@@ -1,10 +1,9 @@
-module mydtu
+module iot-master
 
 go 1.13
 
 require (
 	git.zgwit.com/iot/beeq v0.0.7
-	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.6.3

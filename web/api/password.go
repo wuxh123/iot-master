@@ -1,8 +1,8 @@
 package api
 
 import (
-	"mydtu/db"
-	"mydtu/model"
+	"iot-master/db"
+	"iot-master/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

@@ -6,8 +6,8 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
-	"mydtu/conf"
-	"mydtu/model"
+	"iot-master/conf"
+	"iot-master/model"
 	"xorm.io/xorm"
 )
 

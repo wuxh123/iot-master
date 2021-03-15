@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"mydtu/model"
+	"iot-master/model"
 	"regexp"
 )
 

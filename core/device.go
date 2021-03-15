@@ -1,8 +1,8 @@
 package core
 
 import (
-	"mydtu/base"
-	"mydtu/protocol/adapter"
+	"iot-master/base"
+	"iot-master/protocol/adapter"
 )
 
 type Device struct {

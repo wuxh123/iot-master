@@ -3,9 +3,9 @@ package modbus
 import (
 	"errors"
 	"fmt"
-	"mydtu/base"
-	"mydtu/protocol/adapter"
-	"mydtu/protocol/helper"
+	"iot-master/base"
+	"iot-master/protocol/adapter"
+	"iot-master/protocol/helper"
 )
 
 func init() {

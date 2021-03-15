@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"mydtu/args"
+	"iot-master/args"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"

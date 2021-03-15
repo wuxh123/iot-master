@@ -1,7 +1,7 @@
 package api
 
 import (
-	"mydtu/core"
+	"iot-master/core"
 	"github.com/gin-gonic/gin"
 )
 

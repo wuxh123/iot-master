@@ -1,7 +1,7 @@
 package api
 
 import (
-	"mydtu/model"
+	"iot-master/model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

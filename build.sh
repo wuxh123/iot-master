@@ -18,17 +18,17 @@ goVersion=$(go version | awk '{print $3}')
 gitHash=$(git show -s --format=%H)
 buildTime=$(date -d today +"%Y-%m-%d %H:%M:%S")
 
-ldflags="-X 'mydtu/args.Version=$version' \
--X 'mydtu/args.goVersion=$goVersion' \
--X 'mydtu/args.gitHash=$gitHash' \
--X 'mydtu/args.buildTime=$buildTime'"
+ldflags="-X 'iot-master/args.Version=$version' \
+-X 'iot-master/args.goVersion=$goVersion' \
+-X 'iot-master/args.gitHash=$gitHash' \
+-X 'iot-master/args.buildTime=$buildTime'"
 
 export GOOS=linux
 export CGO_ENABLED=1
 
 #go build -o MyDTU main.go
-go build -ldflags "$ldflags" -o mydtu-linux main.go
+go build -ldflags "$ldflags" -o iot-master-linux main.go
 
 export GOOS=windows
 #go build -o MyDTU.exe main.go
-go build -ldflags "$ldflags" -o mydtu-win64.exe main.go
+go build -ldflags "$ldflags" -o iot-master-win64.exe main.go

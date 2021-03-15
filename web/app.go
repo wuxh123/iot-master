@@ -1,10 +1,10 @@
 package web
 
 import (
-	"mydtu/conf"
-	"mydtu/web/api"
-	"mydtu/web/open"
-	wwwFiles "mydtu/web/www"
+	"iot-master/conf"
+	"iot-master/web/api"
+	"iot-master/web/open"
+	wwwFiles "iot-master/web/www"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"

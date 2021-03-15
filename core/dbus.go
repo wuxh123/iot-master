@@ -3,8 +3,8 @@ package core
 import (
 	"git.zgwit.com/iot/beeq"
 	"git.zgwit.com/iot/beeq/packet"
-	"mydtu/db"
-	"mydtu/model"
+	"iot-master/db"
+	"iot-master/model"
 	"github.com/zgwit/storm/v3"
 	"log"
 	"strconv"

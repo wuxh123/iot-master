@@ -1,11 +1,11 @@
 package main
 
 import (
-	"mydtu/args"
-	"mydtu/conf"
-	"mydtu/core"
-	_ "mydtu/protocol/modbus" //默认支持Modbus协议
-	"mydtu/web"
+	"iot-master/args"
+	"iot-master/conf"
+	"iot-master/core"
+	_ "iot-master/protocol/modbus" //默认支持Modbus协议
+	"iot-master/web"
 	"log"
 )
 
