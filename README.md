@@ -1,7 +1,5 @@
 
-[![真格智能实验室](https://labs.zgwit.com/logo.png)](https://labs.zgwit.com)
-
-[<点击进入>](https://labs.zgwit.com)
+[<div align=center>![真格智能实验室](https://labs.zgwit.com/logo.png)](https://labs.zgwit.com)
 
 # IoT Master 物联大师
 
