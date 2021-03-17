@@ -8,9 +8,13 @@ import (
 	"iot-master/protocol/helper"
 )
 
+const name = "Modbus RTU"
+const version = "0.1"
+
 func init() {
 	protocol.RegisterAdapter(
-		"Modbus RTU",
+		name,
+		version,
 		[]protocol.Code{
 			{"线圈", 1},
 			{"离散量", 2},
@@ -36,13 +40,6 @@ func NewModbusRtu(opts string) (protocol.Adapter, error) {
 	}, nil
 }
 
-func (m *RTU) Name() string {
-	return "Modbus RTU"
-}
-
-func (m *RTU) Version() string {
-	return "v0.0.1"
-}
 
 func (m *RTU) Attach(link base.Link) {
 	m.link = link
