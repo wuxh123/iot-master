@@ -5,7 +5,7 @@ import (
 )
 
 type Project struct {
-	ID          int    `json:"id"`
+	Id          int64  `json:"id"`
 	UUID        string `json:"uuid" storm:"unique"` //唯一码，自动生成
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -21,7 +21,7 @@ type Project struct {
 	Functions  []ProjectFunction  `json:"functions"`
 	Strategies []ProjectStrategy  `json:"strategies"`
 
-	Created time.Time `json:"created" storm:"created"`
+	Created time.Time `json:"created" xorm:"created"`
 }
 
 type ProjectVariable struct {

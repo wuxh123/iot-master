@@ -1,10 +1,11 @@
-package core
+package dbus
 
 import (
 	"git.zgwit.com/iot/beeq"
 	"git.zgwit.com/iot/beeq/packet"
 	"iot-master/db"
 	"iot-master/model"
+	"iot-master/tunnel"
 	"log"
 	"strconv"
 	"strings"
@@ -12,7 +13,7 @@ import (
 
 var hive *beeq.Hive
 
-func StartDBus(addr string) error {
+func Start(addr string) error {
 	hive = beeq.NewHive()
 	hive.OnConnect(func(connect *packet.Connect, bee *beeq.Bee) bool {
 		// 验证插件 Key Secret
@@ -30,7 +31,6 @@ func StartDBus(addr string) error {
 		}
 
 		//TODO 验证浏览器
-
 
 		log.Println(bee.ClientId(), "connect", connect)
 		return true
@@ -56,7 +56,7 @@ func StartDBus(addr string) error {
 		}
 
 		//发送到 link
-		link, err := GetLink(channelId, linkId)
+		link, err := tunnel.GetLink(channelId, linkId)
 		if err != nil {
 			log.Println(err)
 			return

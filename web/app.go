@@ -1,13 +1,13 @@
 package web
 
 import (
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/memstore"
+	"github.com/gin-gonic/gin"
 	"iot-master/conf"
 	"iot-master/web/api"
 	"iot-master/web/open"
 	wwwFiles "iot-master/web/www"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
-	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	swaggerFiles "github.com/zgwit/swagger-files"
 	"log"

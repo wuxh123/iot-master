@@ -1,4 +1,4 @@
-package core
+package tunnel
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 )
 
 type PacketServer struct {
-	baseTunnel
+	tunnel
 
 	//处理UDP Server
 	packetConn    net.PacketConn
@@ -45,12 +45,16 @@ func (c *PacketServer) Close() error {
 	return nil
 }
 
-func (c *PacketServer) GetLink(id int) (*Link, error) {
+func (c *PacketServer) GetLink(id int) (Link, error) {
+	return c.getLink(id)
+}
+
+func (c *PacketServer) getLink(id int) (*link, error) {
 	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
 	}
-	return v.(*Link), nil
+	return v.(*link), nil
 }
 
 func (c *PacketServer) receive() {
@@ -65,73 +69,73 @@ func (c *PacketServer) receive() {
 		key := addr.String()
 
 		//找到连接，将消息发送过去
-		var link *Link
+		var lnk *link
 		v, ok := c.packetIndexes.Load(key)
 		if ok {
-			link = v.(*Link)
+			lnk = v.(*link)
 
 			//处理数据
-			link.onData(buf[:n])
+			lnk.onData(buf[:n])
 		} else {
-			link = newPacketLink(c, c.packetConn, addr)
+			lnk = newPacketLink(c, c.packetConn, addr)
 
 			//第一个包作为注册包
 			if c.RegisterEnable {
-				serial, err := c.baseTunnel.checkRegister(buf[:n])
+				serial, err := c.tunnel.checkRegister(buf[:n])
 				if err != nil {
-					_ = link.Write([]byte(err.Error()))
+					_ = lnk.Write([]byte(err.Error()))
 					return
 				}
 
 				//配置序列号
-				link.Serial = serial
+				lnk.Serial = serial
 
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
-				var lnk model.Link
+				var l model.Link
 
-				has, err := db.Engine.Where("tunnel_id", c.ID).And("serial", serial).Get(&lnk)
+				has, err := db.Engine.Where("tunnel_id", c.Id).And("serial", serial).Get(&l)
 				if !has {
 					//找不到
 				} else if err != nil {
-					_ = link.Write([]byte(err.Error()))
+					_ = lnk.Write([]byte(err.Error()))
 					log.Println(err)
 					return
 				} else {
 					//复用连接，更新地址，状态，等
-					l, _ := c.GetLink(lnk.ID)
-					if l != nil {
+					ll, _ := c.getLink(lnk.Id)
+					if ll != nil {
 						//如果同序号连接还在正常通讯，则关闭当前连接
-						if l.conn != nil {
-							_ = link.Write([]byte(fmt.Sprintf("duplicate serial %s", serial)))
+						if ll.conn != nil {
+							_ = lnk.Write([]byte(fmt.Sprintf("duplicate serial %s", serial)))
 							return
 						}
 
 						//复制有用的历史数据
-						//link.Rx = l.Rx
-						//link.Tx = l.Tx
+						//lnk.Rx = l.Rx
+						//lnk.Tx = l.Tx
 
 						//复制watcher
-						link.Resume()
+						lnk.Resume()
 					}
 
-					link.ID = lnk.ID
-					//link.Name = lnk.Name
+					lnk.Id = l.Id
+					//lnk.Name = lnk.Name
 				}
 
 				//处理剩余内容
 				if c.RegisterMax > 0 && n > c.RegisterMax {
-					link.onData(buf[c.RegisterMax:n])
+					lnk.onData(buf[c.RegisterMax:n])
 				}
 			} else {
-				link.onData(buf[:n])
+				lnk.onData(buf[:n])
 			}
 
 			//保存链接
-			//c.storeLink(link)
-			c.clients.Store(link.ID, link)
+			//c.storeLink(lnk)
+			c.clients.Store(lnk.Id, lnk)
 
 			//根据地址保存，收到UDP包之后，方便索引
-			c.packetIndexes.Store(key, link)
+			c.packetIndexes.Store(key, lnk)
 
 			//TODO 超时自动断线，应该在一个独立的线程中检查
 		}

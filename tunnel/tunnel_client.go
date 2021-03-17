@@ -1,4 +1,4 @@
-package core
+package tunnel
 
 import (
 	"iot-master/db"
@@ -8,10 +8,10 @@ import (
 )
 
 type TcpUdpClient struct {
-	baseTunnel
+	tunnel
 
-	Net string
-	link *Link //作为客户端的连接
+	Net  string
+	link *link //作为客户端的连接
 }
 
 func (c *TcpUdpClient) Open() error {
@@ -39,7 +39,7 @@ func (c *TcpUdpClient) Close() error {
 	return nil
 }
 
-func (c *TcpUdpClient) GetLink(id int) (*Link, error) {
+func (c *TcpUdpClient) GetLink(id int) (Link, error) {
 	return c.link, nil
 }
 
@@ -49,7 +49,7 @@ func (c *TcpUdpClient) receive(conn net.Conn) {
 		link := newLink(c, conn)
 
 		var lnk model.Link
-		has, err := db.Engine.Where("tunnel_id", c.ID).Get(&lnk)
+		has, err := db.Engine.Where("tunnel_id", c.Id).Get(&lnk)
 		if !has {
 			//找不到，新建
 		} else if err != nil {
@@ -59,7 +59,7 @@ func (c *TcpUdpClient) receive(conn net.Conn) {
 		} else {
 			//复用连接，更新地址，状态，等
 			c.link.Link = lnk
-			//c.link.ID = lnk.ID
+			//c.link.Id = lnk.Id
 		}
 
 		c.link = link

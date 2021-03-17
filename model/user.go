@@ -10,5 +10,5 @@ type User struct {
 	Password string    `json:"password"`
 	Name     string    `json:"name"`
 	Disabled bool      `json:"disabled"`
-	Created  time.Time `json:"created" storm:"created"`
+	Created  time.Time `json:"created" xorm:"created"`
 }

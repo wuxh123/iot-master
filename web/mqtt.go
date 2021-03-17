@@ -10,7 +10,7 @@ func mqtt(ctx *gin.Context)  {
 	websocket.Handler(func(ws *websocket.Conn) {
 		//设置二进制模式
 		ws.PayloadType = websocket.BinaryFrame
-		core.Hive().Receive(ws)
+		dbus.Hive().Receive(ws)
 	}).ServeHTTP(ctx.Writer, ctx.Request)
 	//ctx.Abort()
 }

@@ -3,9 +3,10 @@ package main
 import (
 	"iot-master/args"
 	"iot-master/conf"
-	"iot-master/core"
 	"iot-master/db"
+	"iot-master/dbus"
 	_ "iot-master/protocol/modbus" //默认支持Modbus协议
+	"iot-master/tunnel"
 	"iot-master/web"
 	"log"
 )
@@ -42,14 +43,14 @@ func main() {
 	}
 
 	//启动总线
-	err = core.StartDBus(conf.Config.DBus.Addr)
+	err = dbus.Start(conf.Config.DBus.Addr)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	//恢复之前的链接
-	err = core.Recovery()
+	err = tunnel.Recovery()
 	if err != nil {
 		log.Println(err)
 		return

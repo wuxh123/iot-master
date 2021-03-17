@@ -1,4 +1,4 @@
-package core
+package tunnel
 
 import (
 	"bytes"
@@ -7,13 +7,20 @@ import (
 	"fmt"
 	"git.zgwit.com/iot/beeq/packet"
 	"iot-master/base"
+	"iot-master/dbus"
 	"iot-master/model"
 	"log"
 	"net"
 	"time"
 )
 
-type Link struct {
+
+type Link interface {
+	Write(buf []byte) error
+	Close() error
+}
+
+type link struct {
 	model.Link
 
 	//指向通道
@@ -31,7 +38,7 @@ type Link struct {
 	lastTime time.Time
 }
 
-func (l *Link) onData(buf []byte) {
+func (l *link) onData(buf []byte) {
 	//过滤心跳
 	c := l.tunnel.GetTunnel()
 	if c.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(c.HeartBeatInterval) {
@@ -70,19 +77,19 @@ func (l *Link) onData(buf []byte) {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.TunnelId, l.ID)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/recv", l.TunnelId, l.Id)))
 	pub.SetPayload(buf)
-	hive.Publish(pub)
+	dbus.Hive().Publish(pub)
 }
 
-func (l *Link) Resume() {
+func (l *link) Resume() {
 	for _, b := range l.cache {
 		_ = l.Write(b)
 	}
 	l.cache = make([][]byte, 0)
 }
 
-func (l *Link) Write(buf []byte) error {
+func (l *link) Write(buf []byte) error {
 	//检查状态，如果关闭，则缓存
 	if l.conn == nil {
 		l.cache = append(l.cache, buf)
@@ -100,14 +107,14 @@ func (l *Link) Write(buf []byte) error {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.TunnelId, l.ID)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/send", l.TunnelId, l.Id)))
 	pub.SetPayload(buf)
-	Hive().Publish(pub)
+	dbus.Hive().Publish(pub)
 
 	return e
 }
 
-func (l *Link) Close() error {
+func (l *link) Close() error {
 	if l.conn == nil {
 		return errors.New("连接已经关闭")
 	}
@@ -121,19 +128,19 @@ func (l *Link) Close() error {
 
 	//发送至MQTT
 	pub := packet.PUBLISH.NewMessage().(*packet.Publish)
-	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.TunnelId, l.ID)))
+	pub.SetTopic([]byte(fmt.Sprintf("/link/%d/%d/event", l.TunnelId, l.Id)))
 	pub.SetPayload([]byte("close"))
-	Hive().Publish(pub)
+	dbus.Hive().Publish(pub)
 
 	return err
 }
 
-func (l *Link) Attach(listener base.OnDataFunc) error {
+func (l *link) Attach(listener base.OnDataFunc) error {
 	//check peer
 	l.peer = listener
 	return nil
 }
-func (l *Link) Detach() error {
+func (l *link) Detach() error {
 	//check peer
 	if l.peer != nil {
 		l.peer = nil
@@ -141,30 +148,28 @@ func (l *Link) Detach() error {
 	return nil
 }
 
-func (l *Link) Listen(listener base.OnDataFunc) {
+func (l *link) Listen(listener base.OnDataFunc) {
 	l.listener = listener
 }
 
-func newLink(ch Tunnel, conn net.Conn) *Link {
-	c := ch.GetTunnel()
-	return &Link{
+func newLink(t Tunnel, conn net.Conn) *link {
+	c := t.GetTunnel()
+	return &link{
 		Link: model.Link{
-			TunnelId: c.ID,
-			//ProjectId: c.ProjectId,
+			TunnelId: c.Id,
 			Active: true,
 		},
-		tunnel: ch,
+		tunnel: t,
 		conn:   conn,
 		cache:  make([][]byte, 0),
 	}
 }
 
-func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *Link {
+func newPacketLink(ch Tunnel, conn net.PacketConn, addr net.Addr) *link {
 	c := ch.GetTunnel()
-	return &Link{
+	return &link{
 		Link: model.Link{
-			TunnelId: c.ID,
-			//ProjectId: c.ProjectId,
+			TunnelId: c.Id,
 			Active: true,
 		},
 		tunnel: ch,

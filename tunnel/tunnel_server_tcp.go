@@ -1,18 +1,18 @@
-package core
+package tunnel
 
 import (
-	"errors"
-	"fmt"
-	"iot-master/db"
-	"iot-master/model"
-	"log"
-	"net"
-	"sync"
-	"time"
+"errors"
+"fmt"
+"iot-master/db"
+"iot-master/model"
+"log"
+"net"
+"sync"
+"time"
 )
 
 type TcpServer struct {
-	baseTunnel
+	tunnel
 
 	clients sync.Map
 	listener net.Listener
@@ -31,7 +31,7 @@ func (s *TcpServer) Open() error {
 
 func (s *TcpServer) Close() error {
 	s.clients.Range(func(key, value interface{}) bool {
-		l := value.(*Link)
+		l := value.(*link)
 		_ = l.Close()
 		return true
 	})
@@ -48,13 +48,18 @@ func (s *TcpServer) Close() error {
 	return nil
 }
 
-func (s *TcpServer) GetLink(id int) (*Link, error) {
+func (s *TcpServer) GetLink(id int) (Link, error) {
+	return s.getLink(id)
+}
+
+func (s *TcpServer) getLink(id int) (*link, error) {
 	v, ok := s.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")
 	}
-	return v.(*Link), nil
+	return v.(*link), nil
 }
+
 
 func (s *TcpServer) accept() {
 	for s.listener != nil {
@@ -87,7 +92,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 			return
 		}
 
-		serial, err := s.baseTunnel.checkRegister(buf[:n])
+		serial, err := s.tunnel.checkRegister(buf[:n])
 		if err != nil {
 			_ = link.Write([]byte(err.Error()))
 			return
@@ -98,7 +103,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 		//查找数据库同通道，同序列号链接，更新数据库中 addr online
 		var lnk model.Link
-		has, err := db.Engine.Where("tunnel_id=?", s.ID).And("serial=?", serial).Get(&lnk)
+		has, err := db.Engine.Where("tunnel_id=?", s.Id).And("serial=?", serial).Get(&lnk)
 		if !has {
 			//找不到
 		} else if err != nil {
@@ -107,7 +112,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 			return
 		} else {
 			//复用连接，更新地址，状态，等
-			l, _ := s.GetLink(lnk.ID)
+			l, _ := s.getLink(lnk.Id)
 			if l != nil {
 				//如果同序号连接还在正常通讯，则关闭当前连接
 				if l.conn != nil {
@@ -124,7 +129,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 				link.Resume()
 			}
 
-			link.ID = lnk.ID
+			link.Id = lnk.Id
 			//link.Name = lnk.Name
 		}
 
@@ -136,7 +141,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 	//保存链接
 	//s.storeLink(link)
-	s.clients.Store(link.ID, link)
+	s.clients.Store(link.Id, link)
 
 	for link.conn != nil {
 		n, e := conn.Read(buf)
@@ -155,14 +160,14 @@ func (s *TcpServer) receive(conn net.Conn) {
 
 	//无序号，直接删除
 	if link.Serial != "" {
-		s.clients.Delete(link.ID)
+		s.clients.Delete(link.Id)
 	} else {
 		//有序号，等待5分钟，之后设为离线
 		time.AfterFunc(time.Minute*5, func() {
-			lnk, _ := s.GetLink(link.ID)
+			lnk, _ := s.getLink(link.Id)
 			//判断指针地址也行
 			if lnk != nil && lnk.conn == nil {
-				s.clients.Delete(link.ID)
+				s.clients.Delete(link.Id)
 			}
 		})
 	}

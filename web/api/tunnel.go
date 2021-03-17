@@ -12,7 +12,7 @@ func tunnelStart(c *gin.Context) {
 		replyError(c, err)
 		return
 	}
-	t, err := core.GetTunnel(pid.Id)
+	t, err := tunnel.GetTunnel(pid.Id)
 	if err != nil {
 		replyError(c, err)
 		return
@@ -34,7 +34,7 @@ func tunnelStop(c *gin.Context) {
 		replyError(c, err)
 		return
 	}
-	t, err := core.GetTunnel(pid.Id)
+	t, err := tunnel.GetTunnel(pid.Id)
 	if err != nil {
 		replyError(c, err)
 		return

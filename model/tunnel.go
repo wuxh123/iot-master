@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Tunnel struct {
-	ID      int    `json:"id"`
+	Id      int64  `json:"id"`
 	Name    string `json:"name"`
 	Type    string `json:"type"` //tcp-server tcp-client udp-server udp-client serial
 	Addr    string `json:"addr"`
@@ -25,20 +25,20 @@ type Tunnel struct {
 
 	TemplateId int `json:"template_id"` //模板ID
 
-	Created time.Time `json:"created" storm:"created"`
-	Updated time.Time `json:"updated" storm:"updated"`
+	Created time.Time `json:"created" xorm:"created"`
+	Updated time.Time `json:"updated" xorm:"updated"`
 }
 
 type Link struct {
-	ID        int `json:"id"`
-	TunnelId  int `json:"tunnel_id"`
+	Id       int64 `json:"id"`
+	TunnelId int64 `json:"tunnel_id"`
 
-	ProjectId int `json:"project_id"` //项目ID
+	ProjectId int64 `json:"project_id"` //项目ID
 
 	Serial string `json:"serial" storm:"index"`
 	Addr   string `json:"addr"`
 
 	Active  bool      `json:"active"`
 	Online  time.Time `json:"online"`
-	Created time.Time `json:"created" storm:"created"`
+	Created time.Time `json:"created" xorm:"created"`
 }

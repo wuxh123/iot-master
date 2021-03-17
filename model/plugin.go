@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Plugin struct {
-	ID       int       `json:"id"`
+	Id       int64     `json:"id"`
 	Name     string    `json:"name"`
 	Key      string    `json:"key" storm:"unique"`
 	Secret   string    `json:"secret"`
