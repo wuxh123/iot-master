@@ -39,7 +39,7 @@ func (c *TcpUdpClient) Close() error {
 	return nil
 }
 
-func (c *TcpUdpClient) GetLink(id int) (Link, error) {
+func (c *TcpUdpClient) GetLink(id int64)(Link, error) {
 	return c.link, nil
 }
 

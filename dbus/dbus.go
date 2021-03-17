@@ -5,10 +5,7 @@ import (
 	"git.zgwit.com/iot/beeq/packet"
 	"iot-master/db"
 	"iot-master/model"
-	"iot-master/tunnel"
 	"log"
-	"strconv"
-	"strings"
 )
 
 var hive *beeq.Hive
@@ -41,32 +38,6 @@ func Start(addr string) error {
 	//	return true
 	//})
 
-	hive.Subscribe("/link/+/+/transfer", func(pub *packet.Publish) {
-		//log.Println(string(pub.Topic()), string(pub.Payload()))
-		topics := strings.Split(string(pub.Topic()), "/")
-		channelId, err := strconv.Atoi(topics[2])
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		linkId, err := strconv.Atoi(topics[3])
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		//发送到 link
-		link, err := tunnel.GetLink(channelId, linkId)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		err = link.Write(pub.Payload())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	})
 	return hive.ListenAndServe(addr)
 }
 

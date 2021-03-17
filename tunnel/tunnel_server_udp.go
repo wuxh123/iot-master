@@ -45,11 +45,11 @@ func (c *PacketServer) Close() error {
 	return nil
 }
 
-func (c *PacketServer) GetLink(id int) (Link, error) {
+func (c *PacketServer) GetLink(id int64)(Link, error) {
 	return c.getLink(id)
 }
 
-func (c *PacketServer) getLink(id int) (*link, error) {
+func (c *PacketServer) getLink(id int64)(*link, error) {
 	v, ok := c.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")

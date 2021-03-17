@@ -16,7 +16,7 @@ type Tunnel interface {
 	Open() error
 	Close() error
 	GetTunnel() *model.Tunnel
-	GetLink(id int) (Link, error)
+	GetLink(id int64) (Link, error)
 }
 
 
@@ -100,7 +100,7 @@ func StartTunnel(c *model.Tunnel) (Tunnel, error) {
 	return tunnel, err
 }
 
-func DeleteTunnel(id int) error {
+func DeleteTunnel(id int64) error {
 	v, ok := tunnels.Load(id)
 	if !ok {
 		return errors.New("通道不存在")
@@ -109,7 +109,7 @@ func DeleteTunnel(id int) error {
 	return v.(Tunnel).Close()
 }
 
-func GetTunnel(id int) (Tunnel, error) {
+func GetTunnel(id int64) (Tunnel, error) {
 	v, ok := tunnels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
@@ -117,7 +117,7 @@ func GetTunnel(id int) (Tunnel, error) {
 	return v.(Tunnel), nil
 }
 
-func GetLink(tunnelId, linkId int) (Link, error) {
+func GetLink(tunnelId, linkId int64) (Link, error) {
 	t, err := GetTunnel(tunnelId)
 	if err != nil {
 		return nil, err

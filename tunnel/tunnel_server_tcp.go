@@ -48,11 +48,11 @@ func (s *TcpServer) Close() error {
 	return nil
 }
 
-func (s *TcpServer) GetLink(id int) (Link, error) {
+func (s *TcpServer) GetLink(id int64)(Link, error) {
 	return s.getLink(id)
 }
 
-func (s *TcpServer) getLink(id int) (*link, error) {
+func (s *TcpServer) getLink(id int64)(*link, error) {
 	v, ok := s.clients.Load(id)
 	if !ok {
 		return nil, errors.New("连接不存在")

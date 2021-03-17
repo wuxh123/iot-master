@@ -50,7 +50,7 @@ func main() {
 	}
 
 	//恢复之前的链接
-	err = tunnel.Recovery()
+	err = tunnel.Start()
 	if err != nil {
 		log.Println(err)
 		return
