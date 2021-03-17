@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"iot-master/model"
+	"iot-master/types"
 	"regexp"
 	"sync"
 )
@@ -11,21 +12,13 @@ import (
 var tunnels sync.Map
 
 
-//通道
-type Tunnel interface {
-	Open() error
-	Close() error
-	GetTunnel() *model.Tunnel
-	GetLink(id int64) (Link, error)
-}
-
 
 type tunnel struct {
 	model.Tunnel
 	//model.ProjectAdapter
 }
 
-func (t *tunnel) GetTunnel() *model.Tunnel {
+func (t *tunnel) GetModel() *model.Tunnel {
 	return &t.Tunnel
 }
 
@@ -51,7 +44,7 @@ func (t *tunnel) checkRegister(buf []byte) (string, error) {
 	return serial, nil
 }
 
-func NewTunnel(t *model.Tunnel) (Tunnel, error) {
+func NewTunnel(t *model.Tunnel) (types.Tunnel, error) {
 	switch t.Type {
 	case "tcp-server":
 		return &TcpServer{
@@ -86,7 +79,7 @@ func NewTunnel(t *model.Tunnel) (Tunnel, error) {
 }
 
 
-func StartTunnel(c *model.Tunnel) (Tunnel, error) {
+func StartTunnel(c *model.Tunnel) (types.Tunnel, error) {
 	//log.Println("Start core", c)
 	tunnel, err := NewTunnel(c)
 	if err != nil {
@@ -106,18 +99,18 @@ func DeleteTunnel(id int64) error {
 		return errors.New("通道不存在")
 	}
 	tunnels.Delete(id)
-	return v.(Tunnel).Close()
+	return v.(types.Tunnel).Close()
 }
 
-func GetTunnel(id int64) (Tunnel, error) {
+func GetTunnel(id int64) (types.Tunnel, error) {
 	v, ok := tunnels.Load(id)
 	if !ok {
 		return nil, errors.New("通道不存在")
 	}
-	return v.(Tunnel), nil
+	return v.(types.Tunnel), nil
 }
 
-func GetLink(tunnelId, linkId int64) (Link, error) {
+func GetLink(tunnelId, linkId int64) (types.Link, error) {
 	t, err := GetTunnel(tunnelId)
 	if err != nil {
 		return nil, err

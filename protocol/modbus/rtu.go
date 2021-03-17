@@ -3,9 +3,9 @@ package modbus
 import (
 	"errors"
 	"fmt"
-	"iot-master/base"
 	"iot-master/protocol"
 	"iot-master/protocol/helper"
+	"iot-master/types"
 )
 
 func init() {
@@ -27,7 +27,7 @@ type response struct {
 }
 
 type RTU struct {
-	link base.Link
+	link types.Link
 	resp chan response
 }
 
@@ -37,62 +37,58 @@ func NewModbusRtu(opts string) (protocol.Adapter, error) {
 	}, nil
 }
 
+func (m *RTU) OnData(buf []byte) {
 
-func (m *RTU) Attach(link base.Link) {
-	m.link = link
-	link.Listen(func(buf []byte) {
+	//解析数据
+	l := len(buf)
+	crc := helper.ParseUint16(buf[l-2:])
 
-		//解析数据
-		l := len(buf)
-		crc := helper.ParseUint16(buf[l-2:])
+	if crc != CRC16(buf[:l-2]) {
+		//检验错误
+		m.resp <- response{err: errors.New("校验错误")}
+		return
+	}
 
-		if crc != CRC16(buf[:l-2]) {
-			//检验错误
-			m.resp <- response{err: errors.New("校验错误")}
+	//解析错误码
+	if buf[1]&0x80 > 0 {
+		m.resp <- response{err: fmt.Errorf("错误码：%d", buf[2])}
+		return
+	}
+
+	//解析数据
+	length := 4
+	count := int(helper.ParseUint16(buf[1:]))
+	switch buf[1] {
+	case FuncCodeReadDiscreteInputs,
+		FuncCodeReadCoils:
+		length += 1 + count/8
+		if count%8 != 0 {
+			length++
+		}
+
+		if l < length {
+			//长度不够
+			m.resp <- response{err: errors.New("长度不够")}
 			return
 		}
-
-		//解析错误码
-		if buf[1]&0x80 > 0 {
-			m.resp <- response{err: fmt.Errorf("错误码：%d", buf[2])}
+		b := buf[2 : l-2]
+		//数组解压
+		bb := helper.ExpandBool(b, count)
+		m.resp <- response{buf: bb}
+	case FuncCodeReadInputRegisters,
+		FuncCodeReadHoldingRegisters,
+		FuncCodeReadWriteMultipleRegisters:
+		length += 1 + count*2
+		if l < length {
+			//长度不够
+			m.resp <- response{err: errors.New("长度不够")}
 			return
 		}
-
-		//解析数据
-		length := 4
-		count := int(helper.ParseUint16(buf[1:]))
-		switch buf[1] {
-		case FuncCodeReadDiscreteInputs,
-			FuncCodeReadCoils:
-			length += 1 + count/8
-			if count%8 != 0 {
-				length++
-			}
-
-			if l < length {
-				//长度不够
-				m.resp <- response{err: errors.New("长度不够")}
-				return
-			}
-			b := buf[2 : l-2]
-			//数组解压
-			bb := helper.ExpandBool(b, count)
-			m.resp <- response{buf: bb}
-		case FuncCodeReadInputRegisters,
-			FuncCodeReadHoldingRegisters,
-			FuncCodeReadWriteMultipleRegisters:
-			length += 1 + count*2
-			if l < length {
-				//长度不够
-				m.resp <- response{err: errors.New("长度不够")}
-				return
-			}
-			b := buf[2 : l-2]
-			m.resp <- response{buf: b}
-		default:
-			m.resp <- response{}
-		}
-	})
+		b := buf[2 : l-2]
+		m.resp <- response{buf: b}
+	default:
+		m.resp <- response{}
+	}
 }
 
 func (m *RTU) Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte, error) {

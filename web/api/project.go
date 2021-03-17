@@ -1,14 +1,10 @@
 package api
 
 import (
-	"iot-master/model"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func projectBeforeCreate(data interface{}) error {
-	project := data.(*model.Project)
-	project.UUID = uuid.New().String()
 	return nil
 }
 

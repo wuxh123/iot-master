@@ -1,13 +1,15 @@
 package api
 
 import (
-	"iot-master/model"
 	"github.com/google/uuid"
+	"iot-master/model"
 )
 
 func elementBeforeCreate(data interface{}) error {
 	element := data.(*model.Element)
-	element.UUID = uuid.New().String()
+	if element.Origin == "" {
+		element.Origin = uuid.New().String()
+	}
 	return nil
 }
 

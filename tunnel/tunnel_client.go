@@ -3,6 +3,7 @@ package tunnel
 import (
 	"iot-master/db"
 	"iot-master/model"
+	"iot-master/types"
 	"log"
 	"net"
 )
@@ -39,7 +40,7 @@ func (c *TcpUdpClient) Close() error {
 	return nil
 }
 
-func (c *TcpUdpClient) GetLink(id int64)(Link, error) {
+func (c *TcpUdpClient) GetLink(id int64)(types.Link, error) {
 	return c.link, nil
 }
 

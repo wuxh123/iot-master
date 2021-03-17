@@ -5,7 +5,8 @@ import (
 "fmt"
 "iot-master/db"
 "iot-master/model"
-"log"
+	"iot-master/types"
+	"log"
 "net"
 "sync"
 "time"
@@ -48,7 +49,7 @@ func (s *TcpServer) Close() error {
 	return nil
 }
 
-func (s *TcpServer) GetLink(id int64)(Link, error) {
+func (s *TcpServer) GetLink(id int64)(types.Link, error) {
 	return s.getLink(id)
 }
 

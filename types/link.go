@@ -1,4 +1,4 @@
-package base
+package types
 
 //连接
 type Link interface {
@@ -8,8 +8,12 @@ type Link interface {
 	Attach(peer OnDataFunc) error
 	Detach() error
 
-	Listen(listener OnDataFunc)
+	Listen(listener LinkListener)
 	//UnListen()
+}
+
+type LinkListener interface {
+	OnData([]byte)
 }
 
 type OnDataFunc func([]byte)

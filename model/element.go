@@ -3,19 +3,17 @@ package model
 import "time"
 
 type Element struct {
-	Id          int64  `json:"id"`
-	UUID        string `json:"uuid" storm:"unique"` //唯一码，自动生成
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Origin      string `json:"origin"` //来源
+	Id     int64  `json:"id"`
+	Origin string `json:"origin"` //平台UUID，自动生成
 
+	Name         string `json:"name"`
 	Manufacturer string `json:"manufacturer"` //厂商
 	Model        string `json:"model"`        //型号
 	Version      string `json:"version"`      //版本
 
 	Variables []ElementVariable `json:"variables" xorm:"json"` //变量
 
-	Created time.Time `json:"created" storm:"created"`
+	Created time.Time `json:"created" xorm:"created"`
 }
 
 //Modbus

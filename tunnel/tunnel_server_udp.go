@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"iot-master/db"
 	"iot-master/model"
+	"iot-master/types"
 	"log"
 	"net"
 	"sync"
@@ -45,7 +46,7 @@ func (c *PacketServer) Close() error {
 	return nil
 }
 
-func (c *PacketServer) GetLink(id int64)(Link, error) {
+func (c *PacketServer) GetLink(id int64)(types.Link, error) {
 	return c.getLink(id)
 }
 
