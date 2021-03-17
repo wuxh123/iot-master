@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"iot-master/base"
-	"iot-master/protocol/adapter"
+	"iot-master/protocol"
 	"iot-master/protocol/helper"
 )
 
 func init() {
-	adapter.RegisterAdapter(
+	protocol.RegisterAdapter(
 		"Modbus RTU",
-		[]adapter.Code{
+		[]protocol.Code{
 			{"线圈", 1},
 			{"离散量", 2},
 			{"保持寄存器", 3},
@@ -30,7 +30,7 @@ type RTU struct {
 	resp chan response
 }
 
-func NewModbusRtu(opts string) (adapter.Adapter, error) {
+func NewModbusRtu(opts string) (protocol.Adapter, error) {
 	return &RTU{
 		resp: make(chan response, 1),
 	}, nil

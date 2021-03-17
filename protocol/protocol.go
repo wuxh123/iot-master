@@ -1,41 +1,31 @@
-package adapter
+package protocol
 
 import (
 	"errors"
-	"iot-master/base"
 	"sync"
 )
 
-type Adapter interface {
-	Name() string
-	Version() string
+//可以改为普通map
+var protocols sync.Map //adapters
 
-	Attach(link base.Link)
-
-	Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte, error)
-	Write(slave uint8, code uint8, offset uint16, buf []byte) error
-}
-
-type Factory func(opts string) (Adapter, error)
-
+//功能码
 type Code struct {
 	Name string `json:"name"`
 	Code uint8  `json:"code"`
 }
 
-type adapter struct {
+type adapters struct {
 	Name    string `json:"name"`
 	Codes   []Code `json:"codes"`
 	factory Factory
 }
 
-//可以改为普通map
-var protocols sync.Map //adapter
+type Factory func(opts string) (Adapter, error)
 
-func GetProtocols() []adapter {
-	ps := make([]adapter, 0)
+func GetProtocols() []adapters {
+	ps := make([]adapters, 0)
 	protocols.Range(func(key, value interface{}) bool {
-		ps = append(ps, value.(adapter))
+		ps = append(ps, value.(adapters))
 		return true
 	})
 	return ps
@@ -43,14 +33,14 @@ func GetProtocols() []adapter {
 
 func CreateAdapter(name string, opts string) (Adapter, error) {
 	if v, ok := protocols.Load(name); ok && v != nil {
-		p := v.(*adapter)
+		p := v.(*adapters)
 		return p.factory(opts)
 	}
 	return nil, errors.New("找不到协议")
 }
 
 func RegisterAdapter(name string, codes []Code, factory Factory) {
-	protocols.Store(name, &adapter{
+	protocols.Store(name, &adapters{
 		Name:    name,
 		Codes:   codes,
 		factory: factory,
