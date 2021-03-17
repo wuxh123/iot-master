@@ -3,8 +3,6 @@ package core
 import (
 	"iot-master/db"
 	"iot-master/model"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net"
 )
@@ -51,9 +49,8 @@ func (c *TcpUdpClient) receive(conn net.Conn) {
 		link := newLink(c, conn)
 
 		var lnk model.Link
-		//has, err := db.Engine.Where("tunnel_id", c.ID).Get(&lnk)
-		err := db.DB("link").Select(q.Eq("TunnelId", c.ID)).First(&lnk)
-		if err == storm.ErrNotFound {
+		has, err := db.Engine.Where("tunnel_id", c.ID).Get(&lnk)
+		if !has {
 			//找不到，新建
 		} else if err != nil {
 			_ = link.Write([]byte(err.Error()))

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"iot-master/db"
 	"iot-master/model"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
 	"log"
 	"net"
 	"sync"
@@ -91,9 +89,8 @@ func (c *PacketServer) receive() {
 				//查找数据库同通道，同序列号链接，更新数据库中 addr online
 				var lnk model.Link
 
-				//has, err := db.Engine.Where("tunnel_id", c.ID).And("serial", serial).Get(&lnk)
-				err = db.DB("link").Select(q.Eq("TunnelId", c.ID), q.Eq("Serial", serial)).First(&lnk)
-				if err == storm.ErrNotFound {
+				has, err := db.Engine.Where("tunnel_id", c.ID).And("serial", serial).Get(&lnk)
+				if !has {
 					//找不到
 				} else if err != nil {
 					_ = link.Write([]byte(err.Error()))

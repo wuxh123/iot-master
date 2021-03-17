@@ -1,11 +1,10 @@
 package api
 
 import (
-	"iot-master/db"
-	"iot-master/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/storm/v3"
+	"iot-master/db"
+	"iot-master/model"
 	"net/http"
 )
 
@@ -25,12 +24,12 @@ func login(ctx *gin.Context) {
 	}
 
 	var user model.User
-	err := db.DB("user").Find("username",obj.Username, &user)
-	if err != nil {
-		if err == storm.ErrNotFound {
-			replyFail(ctx, "找不到用户")
-			return
-		}
+	has, err := db.Engine.Where("username=?", obj.Username).Get(&user)
+
+	if !has {
+		replyFail(ctx, "找不到用户")
+		return
+	} else	if err != nil {
 		replyError(ctx, err)
 		return
 	}

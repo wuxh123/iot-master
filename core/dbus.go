@@ -5,7 +5,6 @@ import (
 	"git.zgwit.com/iot/beeq/packet"
 	"iot-master/db"
 	"iot-master/model"
-	"github.com/zgwit/storm/v3"
 	"log"
 	"strconv"
 	"strings"
@@ -18,8 +17,8 @@ func StartDBus(addr string) error {
 	hive.OnConnect(func(connect *packet.Connect, bee *beeq.Bee) bool {
 		// 验证插件 Key Secret
 		var plugin model.Plugin
-		err := db.DB("plugin").One("Key", connect.UserName(), &plugin)
-		if err == storm.ErrNotFound {
+		has, err := db.Engine.Where("key=?", connect.UserName()).Get(&plugin)
+		if !has {
 			if plugin.Secret == string(connect.Password()) {
 				return true
 			} else {

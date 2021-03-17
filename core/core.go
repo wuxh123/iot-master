@@ -21,7 +21,7 @@ func Tunnels() []Tunnel {
 
 func Recovery() error {
 	var cs []model.Tunnel
-	err := db.DB("tunnel").All(&cs)
+	err := db.Engine.Find(&cs)
 	if err != nil {
 		return err
 	}

@@ -27,24 +27,22 @@ func password(c *gin.Context) {
 	u := user.(*model.User)
 	//log.Println("u", u)
 
-	 err := db.DB("user").One("ID", u.Id, u)
-	if err != nil {
-		//if err == storm.ErrNotFound {
-		//	replyError(c, err)
-		//	return
-		//}
+	has, err := db.Engine.ID(u.Id).Get(u)
+	if !has {
+		replyError(c, err)
+		return
+	} else if err != nil {
 		replyError(c, err)
 		return
 	}
-
 
 	if u.Password != obj.Origin {
 		replyFail(c, "密钥错误")
 		return
 	}
 
-	//u.Password = obj.Password
-	err = db.DB("user").UpdateField(u, "Password", obj.Password)
+	u.Password = obj.Password
+	_, err = db.Engine.ID(u.Id).Cols("password").Update(u)
 	if err != nil {
 		replyError(c, err)
 		return
