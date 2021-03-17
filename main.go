@@ -4,6 +4,7 @@ import (
 	"iot-master/args"
 	"iot-master/conf"
 	"iot-master/core"
+	"iot-master/db"
 	_ "iot-master/protocol/modbus" //默认支持Modbus协议
 	"iot-master/web"
 	"log"
@@ -34,11 +35,11 @@ func main() {
 		return
 	}
 
-	//err = db.Open()
-	//if err != nil {
-	//	log.Println("数据库错误：", err)
-	//	return
-	//}
+	err = db.Open()
+	if err != nil {
+		log.Println("数据库错误：", err)
+		return
+	}
 
 	//启动总线
 	err = core.StartDBus(conf.Config.DBus.Addr)

@@ -3,9 +3,8 @@ package api
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/zgwit/storm/v3"
-	"github.com/zgwit/storm/v3/q"
 	"io/ioutil"
+	"iot-master/db"
 	"net/http"
 	"reflect"
 )
@@ -30,283 +29,188 @@ func parseBody(request *http.Request, data interface{}) error {
 	return json.Unmarshal(body, data)
 }
 
-//type Handler func(c *gin.Context)
-
-func curdApiList(store storm.Node, mod reflect.Type) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		datas := createSliceFromType(mod)
-		data := reflect.New(mod).Interface()
+func curdApiList(mod reflect.Type) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		datum := createSliceFromType(mod)
 
 		var body paramSearch
-		err := c.ShouldBindJSON(&body)
+		err := ctx.ShouldBindJSON(&body)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
 
-		cond := make([]q.Matcher, 0)
+		if body.Length < 1 {
+			body.Length = 20
+		}
+		op := db.Engine.Limit(body.Length, body.Offset)
 
-		//过滤
 		for _, filter := range body.Filters {
 			if len(filter.Values) > 0 {
 				if len(filter.Values) == 1 {
-					cond = append(cond, q.Eq(filter.Key, filter.Values[0]))
+					op.And(filter.Key+"=?", filter.Values[0])
 				} else {
-					cond = append(cond, q.In(filter.Key, filter.Values))
+					op.In(filter.Key, filter.Values)
 				}
 			}
 		}
 
-		//关键字搜索
-		kws := make([]q.Matcher, 0)
 		for _, keyword := range body.Keywords {
 			if keyword.Value != "" {
-				kws = append(kws, q.Re(keyword.Key, keyword.Value))
+				op.And(keyword.Key + " like", "%" + keyword.Value + "%")
 			}
 		}
-		if len(kws) > 0 {
-			cond = append(cond, q.Or(kws...))
-		}
 
-		query := store.Select(cond...)
-
-		//计算总数
-		cnt, err := query.Count(data)
-		if err != nil && err != storm.ErrNotFound {
-			replyError(c, err)
-			return
-		}
-
-		//分页
-		query = query.Skip(body.Offset).Limit(body.Length)
-
-		//排序
 		if body.SortKey != "" {
 			if body.SortOrder == "desc" {
-				query = query.OrderBy(body.SortKey).Reverse()
+				op.Desc(body.SortKey)
 			} else {
-				query = query.OrderBy(body.SortKey)
+				op.Asc(body.SortKey)
 			}
 		} else {
-			query = query.OrderBy("ID").Reverse()
+			op.Desc("id")
 		}
-
-		err = query.Find(datas)
-		if err != nil && err != storm.ErrNotFound {
-			replyError(c, err)
+		cnt, err := op.FindAndCount(datum)
+		if err != nil {
+			replyError(ctx, err)
 			return
 		}
 
 		//replyOk(ctx, cs)
-		replyList(c, datas, cnt)
+		replyList(ctx, datum, cnt)
 	}
 }
 
-func curdApiListById(store storm.Node,mod reflect.Type, field string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		datas := createSliceFromType(mod)
+func curdApiCreate(mod reflect.Type, before, after hook) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		data := reflect.New(mod).Interface()
-
-		var pid paramId
-		err := c.ShouldBindUri(&pid)
+		err := ctx.ShouldBindJSON(&data)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
 
-		var body paramSearch
-		err = c.ShouldBindJSON(&body)
-		if err != nil {
-			replyError(c, err)
-			return
-		}
-
-		cond := make([]q.Matcher, 0)
-		cond = append(cond, q.Eq(field, pid.Id))
-
-		//过滤
-		for _, filter := range body.Filters {
-			if len(filter.Values) > 0 {
-				if len(filter.Values) == 1 {
-					cond = append(cond, q.Eq(filter.Key, filter.Values[0]))
-				} else {
-					cond = append(cond, q.In(filter.Key, filter.Values))
-				}
-			}
-		}
-
-		//关键字搜索
-		kws := make([]q.Matcher, 0)
-		for _, keyword := range body.Keywords {
-			kws = append(kws, q.Re(keyword.Key, keyword.Value))
-		}
-		if len(kws) > 0 {
-			cond = append(cond, q.Or(kws...))
-		}
-
-		query := store.Select(cond...)
-
-		//计算总数
-		cnt, err := query.Count(data)
-		if err != nil && err != storm.ErrNotFound {
-			replyError(c, err)
-			return
-		}
-
-		//分页
-		query = query.Skip(body.Offset).Limit(body.Length)
-
-		//排序
-		if body.SortKey != "" {
-			if body.SortOrder == "desc" {
-				query = query.OrderBy(body.SortKey).Reverse()
-			} else {
-				query = query.OrderBy(body.SortKey)
-			}
-		} else {
-			query = query.OrderBy("ID").Reverse()
-		}
-
-		err = query.Find(datas)
-		if err != nil && err != storm.ErrNotFound {
-			replyError(c, err)
-			return
-		}
-
-		//replyOk(ctx, cs)
-		replyList(c, datas, cnt)
-	}
-}
-
-func curdApiCreate(store storm.Node,mod reflect.Type, before hook, after hook) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		data := reflect.New(mod).Interface()
-		if err := c.ShouldBindJSON(data); err != nil {
-			replyError(c, err)
-			return
-		}
 
 		if before != nil {
 			if err := before(data); err != nil {
-				replyError(c, err)
+				replyError(ctx, err)
 				return
 			}
 		}
 
-		err := store.Save(data)
+		_, err = db.Engine.Insert(data)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(c, err)
+				replyError(ctx, err)
 				return
 			}
 		}
 
-		replyOk(c, data)
+		replyOk(ctx, data)
 	}
 }
 
-func curdApiModify(store storm.Node,mod reflect.Type, before hook, after hook) gin.HandlerFunc {
-	return func(c *gin.Context) {
+func curdApiModify(mod reflect.Type, updateFields []string, before, after hook) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		var pid paramId
-		err := c.ShouldBindUri(&pid)
+		err := ctx.ShouldBindUri(&pid)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
 
-		val := reflect.New(mod)
-		data := val.Interface()
-		if err := c.ShouldBindJSON(data); err != nil {
-			replyError(c, err)
-			return
-		}
-
-		val.Elem().FieldByName("ID").Set(reflect.ValueOf(pid.Id))
-
-		if before != nil {
-			if err := before(data); err != nil {
-				replyError(c, err)
-				return
-			}
-		}
-
-		err = store.Update(data)
+		data := reflect.New(mod).Interface()
+		err = ctx.ShouldBindJSON(&data)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
-
-		if after != nil {
-			err = after(data)
-			if err != nil {
-				replyError(c, err)
-				return
-			}
-		}
-
-		replyOk(c, data)
-	}
-}
-
-func curdApiDelete(store storm.Node,mod reflect.Type, before hook, after hook) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var pid paramId
-		err := c.ShouldBindUri(&pid)
-		if err != nil {
-			replyError(c, err)
-			return
-		}
-
-		val := reflect.New(mod)
-		data := val.Interface()
-		val.Elem().FieldByName("ID").Set(reflect.ValueOf(pid.Id))
 
 
 		if before != nil {
 			if err := before(pid.Id); err != nil {
-				replyError(c, err)
+				replyError(ctx, err)
 				return
 			}
 		}
 
-		err = store.DeleteStruct(data)
+		_, err = db.Engine.ID(pid.Id).Cols(updateFields...).Update(data)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
 
 		if after != nil {
 			err = after(data)
 			if err != nil {
-				replyError(c, err)
+				replyError(ctx, err)
 				return
 			}
 		}
 
-		replyOk(c, nil)
+		replyOk(ctx, data)
 	}
 }
 
-func curdApiGet(store storm.Node,mod reflect.Type) gin.HandlerFunc {
-	return func(c *gin.Context) {
+func curdApiDelete(mod reflect.Type, before, after hook) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		var pid paramId
-		err := c.ShouldBindUri(&pid)
+		err := ctx.ShouldBindUri(&pid)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
+
+		if before != nil {
+			if err := before(pid.Id); err != nil {
+				replyError(ctx, err)
+				return
+			}
+		}
+
 		data := reflect.New(mod).Interface()
-		err = store.One("ID", pid.Id, data)
+		_, err = db.Engine.ID(pid.Id).Delete(data)
 		if err != nil {
-			replyError(c, err)
+			replyError(ctx, err)
 			return
 		}
-		replyOk(c, data)
+
+		if after != nil {
+			err = after(data)
+			if err != nil {
+				replyError(ctx, err)
+				return
+			}
+		}
+
+		replyOk(ctx, nil)
+	}
+}
+
+func curdApiGet(mod reflect.Type) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var pid paramId
+		err := ctx.ShouldBindUri(&pid)
+		if err != nil {
+			replyError(ctx, err)
+			return
+		}
+
+		data := reflect.New(mod).Interface()
+		has, err := db.Engine.ID(pid.Id).Get(data)
+		if !has {
+			replyFail(ctx, "记录不存在")
+			return
+		} else if err != nil {
+			replyError(ctx, err)
+			return
+		}
+		replyOk(ctx, data)
 	}
 }

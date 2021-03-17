@@ -35,8 +35,8 @@ type _config struct {
 var Config = _config{
 	Database: _database{
 		"数据库配置",
-		"mysql",
-		"root:root@tcp(127.0.0.1:3306)/fta?charset=utf8",
+		"sqlite3", //"mysql",
+		"iot-master.db",//"root:root@tcp(127.0.0.1:3306)/fta?charset=utf8",
 		false,
 	},
 	Web: _web{

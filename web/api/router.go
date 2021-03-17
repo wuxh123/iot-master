@@ -1,10 +1,9 @@
 package api
 
 import (
-	"iot-master/db"
-	"iot-master/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"iot-master/model"
 	"net/http"
 	"reflect"
 )
@@ -60,13 +59,12 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	//TODO 转移至子目录，并使用中间件，检查session及权限
 	mod := reflect.TypeOf(model.Tunnel{})
-	store := db.DB("tunnel")
-	app.POST("/project/:id/tunnels", curdApiListById(store, mod, "project_id"))
-	app.POST("/tunnels", curdApiList(store, mod))
-	app.POST("/tunnel", curdApiCreate(store, mod, nil, nil))       //TODO 启动
-	app.DELETE("/tunnel/:id", curdApiDelete(store, mod, nil, nil)) //TODO 停止
-	app.PUT("/tunnel/:id", curdApiModify(store, mod, nil, nil))    //TODO 重新启动
-	app.GET("/tunnel/:id", curdApiGet(store, mod))
+	//app.POST("/project/:id/tunnels", curdApiListById(mod, "project_id"))
+	app.POST("/tunnels", curdApiList(mod))
+	app.POST("/tunnel", curdApiCreate(mod, nil, nil))       //TODO 启动
+	app.DELETE("/tunnel/:id", curdApiDelete(mod, nil, nil)) //TODO 停止
+	app.PUT("/tunnel/:id", curdApiModify(mod, []string{""},nil, nil))    //TODO 重新启动
+	app.GET("/tunnel/:id", curdApiGet(mod))
 
 	app.GET("/tunnel/:id/start", tunnelStart)
 	app.GET("/tunnel/:id/stop", tunnelStop)
@@ -75,40 +73,36 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	//连接管理
 	mod = reflect.TypeOf(model.Link{})
-	store = db.DB("link")
-	app.POST("/tunnel/:id/links", curdApiListById(store, mod, "tunnel_id"))
-	app.POST("/links", curdApiList(store, mod))
-	app.DELETE("/link/:id", curdApiDelete(store, mod, nil, nil)) //TODO 停止
-	app.PUT("/link/:id", curdApiModify(store, mod, nil, nil))
-	app.GET("/link/:id", curdApiGet(store, mod))
+	//app.POST("/tunnel/:id/links", curdApiListById(mod, "tunnel_id"))
+	app.POST("/links", curdApiList(mod))
+	app.DELETE("/link/:id", curdApiDelete(mod, nil, nil)) //TODO 停止
+	app.PUT("/link/:id", curdApiModify(mod, []string{""},nil, nil))
+	app.GET("/link/:id", curdApiGet(mod))
 
 	//设备管理
 	mod = reflect.TypeOf(model.Device{})
-	store = db.DB("device")
-	app.POST("/project/:id/devices", curdApiListById(store, mod, "project_id"))
-	app.POST("/devices", curdApiList(store, mod))
-	app.POST("/device", curdApiCreate(store, mod, nil, nil))
-	app.DELETE("/device/:id", curdApiDelete(store, mod, nil, nil))
-	app.PUT("/device/:id", curdApiModify(store, mod, nil, nil))
-	app.GET("/device/:id", curdApiGet(store, mod))
+	//app.POST("/project/:id/devices", curdApiListById(mod, "project_id"))
+	app.POST("/devices", curdApiList(mod))
+	app.POST("/device", curdApiCreate(mod, nil, nil))
+	app.DELETE("/device/:id", curdApiDelete(mod, nil, nil))
+	app.PUT("/device/:id", curdApiModify(mod, []string{""},nil, nil))
+	app.GET("/device/:id", curdApiGet(mod))
 
 	//插件管理
 	mod = reflect.TypeOf(model.Plugin{})
-	store = db.DB("plugin")
-	app.POST("/plugins", curdApiList(store, mod))
-	app.POST("/plugin", curdApiCreate(store, mod, nil, nil))
-	app.DELETE("/plugin/:id", curdApiDelete(store, mod, nil, nil))
-	app.PUT("/plugin/:id", curdApiModify(store, mod, nil, nil))
-	app.GET("/plugin/:id", curdApiGet(store, mod))
+	app.POST("/plugins", curdApiList(mod))
+	app.POST("/plugin", curdApiCreate(mod, nil, nil))
+	app.DELETE("/plugin/:id", curdApiDelete(mod, nil, nil))
+	app.PUT("/plugin/:id", curdApiModify(mod, []string{""},nil, nil))
+	app.GET("/plugin/:id", curdApiGet(mod))
 
 	//项目管理
 	mod = reflect.TypeOf(model.Project{})
-	store = db.DB("project")
-	app.POST("/projects", curdApiList(store, mod))
-	app.POST("/project", curdApiCreate(store, mod,  projectBeforeCreate, projectAfterCreate))
-	app.DELETE("/project/:id", curdApiDelete(store, mod, nil,projectAfterDelete))
-	app.PUT("/project/:id", curdApiModify(store, mod, nil, projectAfterModify))
-	app.GET("/project/:id", curdApiGet(store, mod))
+	app.POST("/projects", curdApiList(mod))
+	app.POST("/project", curdApiCreate(mod,  projectBeforeCreate, projectAfterCreate))
+	app.DELETE("/project/:id", curdApiDelete(mod, nil,projectAfterDelete))
+	app.PUT("/project/:id", curdApiModify(mod, []string{""},nil, projectAfterModify))
+	app.GET("/project/:id", curdApiGet(mod))
 
 	app.POST("/project-import", projectImport)
 	app.GET("/project/:id/export", projectExport)
@@ -116,16 +110,15 @@ func RegisterRoutes(app *gin.RouterGroup) {
 
 	//元件管理
 	mod = reflect.TypeOf(model.Element{})
-	store = db.DB("element")
-	app.POST("/elements", curdApiList(store, mod))
-	app.POST("/element", curdApiCreate(store, mod, elementBeforeCreate,nil))
-	app.DELETE("/element/:id", curdApiDelete(store, mod, elementBeforeDelete, nil))
-	app.PUT("/element/:id", curdApiModify(store, mod, nil,nil))
-	app.GET("/element/:id", curdApiGet(store, mod))
+	app.POST("/elements", curdApiList(mod))
+	app.POST("/element", curdApiCreate(mod, elementBeforeCreate,nil))
+	app.DELETE("/element/:id", curdApiDelete(mod, elementBeforeDelete, nil))
+	app.PUT("/element/:id", curdApiModify(mod, []string{""},nil,nil))
+	app.GET("/element/:id", curdApiGet(mod))
 }
 
 
-func replyList(ctx *gin.Context, data interface{}, total int) {
+func replyList(ctx *gin.Context, data interface{}, total int64) {
 	ctx.JSON(http.StatusOK, gin.H{"data": data, "total": total})
 }
 
