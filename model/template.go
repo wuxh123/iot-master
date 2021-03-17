@@ -18,21 +18,25 @@ type Template struct {
 }
 
 type TemplateManifest struct {
-
-	//协议
-	Protocol        string `json:"protocol"`
-	ProtocolOptions string `json:"protocol_options"`
-
-	//变量等
+	Links      []TemplateLink      `json:"links"`
 	Variables  []TemplateVariable  `json:"variables"`
 	Validators []TemplateValidator `json:"validators"`
 	Functions  []TemplateFunction  `json:"functions"`
 	Strategies []TemplateStrategy  `json:"strategies"`
 }
 
+type TemplateLink struct {
+	Name string `json:"name"`
+	//协议
+	Protocol        string `json:"protocol"`
+	ProtocolOptions string `json:"protocol_options"`
+}
+
 type TemplateVariable struct {
 	Element string `json:"element"` //uuid
-	Slave   uint8  `json:"slave"`   //从站号
+
+	Link  uint8 `json:"link"`  //链接编号 0 1 2 3
+	Slave uint8 `json:"slave"` //从站号
 
 	Variable
 

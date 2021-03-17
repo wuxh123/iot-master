@@ -22,7 +22,7 @@ type Tunnel struct {
 	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
 
 	//模板ID，根据模板ID自动创建项目
-	TemplateId int `json:"template_id"`
+	TemplateId int64 `json:"template_id"`
 
 	Disabled bool `json:"disabled"`
 

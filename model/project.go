@@ -12,6 +12,7 @@ type Project struct {
 
 	Disabled bool `json:"disabled"`
 
+	//如果是模板项目，则无效
 	Manifest TemplateManifest `json:"manifest" xorm:"json"`
 
 	//模板项目
