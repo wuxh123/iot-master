@@ -1,4 +1,4 @@
-package device
+package project
 
 import (
 	"errors"
@@ -13,6 +13,9 @@ type project struct {
 	//支持多个链接
 	links   map[string]types.Link
 	devices map[string]device
+
+	validatorsVars []Vars
+	strategiesVars map[string]Vars
 }
 
 func (p *project) Run(name string) error {
