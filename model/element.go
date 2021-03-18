@@ -13,6 +13,7 @@ type Element struct {
 
 	Variables []ElementVariable `json:"variables" xorm:"json"` //变量
 
+
 	Created time.Time `json:"created" xorm:"created"`
 }
 

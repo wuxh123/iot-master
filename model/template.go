@@ -18,25 +18,38 @@ type Template struct {
 }
 
 type TemplateManifest struct {
-	Links      []TemplateLink      `json:"links"`
-	Variables  []TemplateVariable  `json:"variables"`
+	Links   map[string]TemplateLink   `json:"links"`
+	Devices map[string]TemplateDevice `json:"devices"`
+
+	Functions  map[string]TemplateFunction `json:"functions"`
+	Strategies map[string]TemplateStrategy `json:"strategies"`
+
 	Validators []TemplateValidator `json:"validators"`
-	Functions  []TemplateFunction  `json:"functions"`
-	Strategies []TemplateStrategy  `json:"strategies"`
 }
 
 type TemplateLink struct {
-	Name string `json:"name"`
+	Description string `json:"description"`
 	//协议
 	Protocol        string `json:"protocol"`
 	ProtocolOptions string `json:"protocol_options"`
 }
 
-type TemplateVariable struct {
+type TemplateDevice struct {
+	Description string `json:"description"`
+
 	Element string `json:"element"` //uuid
 
 	Link  uint8 `json:"link"`  //链接编号 0 1 2 3
 	Slave uint8 `json:"slave"` //从站号
+
+	DeviceId int64 `json:"device_id"` //TODO 模板中不需要
+
+	Variables  map[string]TemplateVariable `json:"variables"`
+	Validators []TemplateValidator         `json:"validators"`
+}
+
+type TemplateVariable struct {
+	Element string `json:"element"` //uuid
 
 	Variable
 
@@ -44,21 +57,19 @@ type TemplateVariable struct {
 }
 
 type TemplateValidator struct {
-	Alert      string `json:"alert"`
-	Expression string `json:"expression"` //表达式，检测变量名
+	Alert      string   `json:"alert"`
+	Watch      []string `json:"watch"` //监听变量（前端最好能检索生成）
+	Expression string   `json:"expression"` //表达式，检测变量名
 }
 
 type TemplateFunction struct {
-	Name        string                 `json:"name"` //项目功能脚本唯一，供外部调用
-	Description string                 `json:"description"`
-	Script      string                 `json:"script"` //javascript
-	Operators   map[string]interface{} `json:"operators"`
+	Description string            `json:"description"`
+	Operators   map[string]string `json:"operators"`
 }
 
 type TemplateStrategy struct {
-	Name       string                 `json:"name"`
-	Cron       string                 `json:"cron"`
-	Expression string                 `json:"expression"` //触发条件 表达式，检测变量名
-	Script     string                 `json:"script"`     //javascript
-	Operators  map[string]interface{} `json:"operators"`
+	Description string            `json:"description"`
+	Cron        string            `json:"cron"`
+	Expression  string            `json:"expression"` //触发条件 表达式，检测变量名
+	Operators   map[string]string `json:"operators"`
 }
