@@ -9,18 +9,18 @@ import (
 
 type device struct {
 	model.Device
+
+	variables map[string]variable
 }
 
-
-func (d *device)Read(name string) (interface{}, error) {
+func (d *device) Read(name string) (interface{}, error) {
 	//TODO 读变量
 	return nil, nil
 }
-func (d *device)Write(name string, value interface{}) error {
+func (d *device) Write(name string, value interface{}) error {
 	//TODO 写变量
 	return nil
 }
-
 
 var devices sync.Map
 
@@ -31,4 +31,3 @@ func GetDevice(id int64) (types.Device, error) {
 	}
 	return v.(types.Device), nil
 }
-

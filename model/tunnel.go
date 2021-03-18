@@ -34,9 +34,10 @@ type Link struct {
 	Id       int64 `json:"id"`
 	TunnelId int64 `json:"tunnel_id"`
 
-	ProjectId int64 `json:"project_id"` //项目ID
+	ProjectId  int64  `json:"project_id"`  //项目ID
+	ProjectKey string `json:"project_key"` //项目中 链接KEY
 
-	Serial string `json:"serial" storm:"index"`
+	Serial string `json:"serial" xorm:"index"`
 	Addr   string `json:"addr"`
 
 	Active  bool      `json:"active"`

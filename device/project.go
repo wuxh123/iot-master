@@ -11,15 +11,15 @@ type project struct {
 	model.Project
 
 	//支持多个链接
-	links []types.Link
+	links   map[string]types.Link
+	devices map[string]device
 }
 
-func (p *project)Run(name string) error  {
+func (p *project) Run(name string) error {
 	//TODO 调用脚本
 
 	return nil
 }
-
 
 var projects sync.Map
 

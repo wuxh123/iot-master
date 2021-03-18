@@ -24,7 +24,7 @@ type TemplateManifest struct {
 	Functions  map[string]TemplateFunction `json:"functions"`
 	Strategies map[string]TemplateStrategy `json:"strategies"`
 
-	Validators []TemplateValidator `json:"validators"`
+	Validators []TemplateValidator `json:"validators"` //可能不太需要
 }
 
 type TemplateLink struct {
@@ -39,10 +39,11 @@ type TemplateDevice struct {
 
 	Element string `json:"element"` //uuid
 
-	Link  uint8 `json:"link"`  //链接编号 0 1 2 3
+	Link string `json:"link"` //链接编号 0 1 2 3
+
 	Slave uint8 `json:"slave"` //从站号
 
-	DeviceId int64 `json:"device_id"` //TODO 模板中不需要
+	DeviceId int64 `json:"device_id"` //TODO 项目需要，模板不需要
 
 	Variables  map[string]TemplateVariable `json:"variables"`
 	Validators []TemplateValidator         `json:"validators"`
@@ -58,7 +59,7 @@ type TemplateVariable struct {
 
 type TemplateValidator struct {
 	Alert      string   `json:"alert"`
-	Watch      []string `json:"watch"` //监听变量（前端最好能检索生成）
+	Watch      []string `json:"watch"`      //监听变量（前端最好能检索生成）
 	Expression string   `json:"expression"` //表达式，检测变量名
 }
 
