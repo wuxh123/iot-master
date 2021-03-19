@@ -14,6 +14,15 @@ type Code struct {
 	Code uint8  `json:"code"`
 }
 
+//协议说明
+type Manifest struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Codes   []Code `json:"codes"`
+
+
+}
+
 type protocol struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
