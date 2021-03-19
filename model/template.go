@@ -47,6 +47,8 @@ type TemplateDevice struct {
 
 	Variables  map[string]TemplateVariable `json:"variables"`
 	Validators []TemplateValidator         `json:"validators"`
+
+	Functions  map[string]TemplateFunction `json:"functions"`
 }
 
 type TemplateVariable struct {
@@ -58,9 +60,8 @@ type TemplateVariable struct {
 }
 
 type TemplateValidator struct {
-	Alert      string   `json:"alert"`
-	Watch      []string `json:"watch"`      //监听变量（前端最好能检索生成）
-	Expression string   `json:"expression"` //表达式，检测变量名
+	Alert      string `json:"alert"`
+	Expression string `json:"expression"` //表达式，检测变量名
 }
 
 type TemplateFunction struct {

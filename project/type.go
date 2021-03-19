@@ -1,4 +1,4 @@
-package types
+package project
 
 import (
 	"errors"
@@ -11,7 +11,6 @@ type DataType uint8
 const (
 	DataTypeNone DataType = iota
 	DataTypeBit
-	DataTypeByte
 	DataTypeUint8
 	DataTypeUint16
 	DataTypeUint32

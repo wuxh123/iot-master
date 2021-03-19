@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	git.zgwit.com/iot/beeq v0.0.7
+	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.6.3
