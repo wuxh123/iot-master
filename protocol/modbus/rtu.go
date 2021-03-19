@@ -8,19 +8,6 @@ import (
 	"iot-master/types"
 )
 
-func init() {
-	protocol.RegisterAdapter(
-		"Modbus RTU",
-		"1.0",
-		[]protocol.Code{
-			{"线圈", 1},
-			{"离散量", 2},
-			{"保持寄存器", 3},
-			{"输入寄存器", 4},
-		},
-		NewModbusRtu)
-}
-
 type response struct {
 	buf []byte
 	err error
@@ -37,7 +24,17 @@ func NewModbusRtu(opts string) (protocol.Adapter, error) {
 	}, nil
 }
 
+//清空管道
+func (m *RTU) clearResponse() {
+	select {
+	case <-m.resp:
+	default: //不阻塞
+	}
+}
+
 func (m *RTU) OnData(buf []byte) {
+	//清理管道
+	m.clearResponse()
 
 	//解析数据
 	l := len(buf)
@@ -92,6 +89,9 @@ func (m *RTU) OnData(buf []byte) {
 }
 
 func (m *RTU) Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte, error) {
+	//清理管道
+	m.clearResponse()
+
 	b := make([]byte, 8)
 	b[0] = slave
 	b[1] = code
@@ -111,6 +111,9 @@ func (m *RTU) Read(slave uint8, code uint8, offset uint16, size uint16) ([]byte,
 }
 
 func (m *RTU) Write(slave uint8, code uint8, offset uint16, buf []byte) error {
+	//清理管道
+	m.clearResponse()
+
 	length := len(buf)
 	//如果是线圈，需要Shrink
 	if code == 1 {
@@ -145,6 +148,8 @@ func (m *RTU) Write(slave uint8, code uint8, offset uint16, buf []byte) error {
 				copy(b[3:], buf)
 				buf = b
 			}
+		default:
+			return errors.New("功能码不支持")
 		}
 	}
 
