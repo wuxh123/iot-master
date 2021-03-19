@@ -8,4 +8,6 @@ type Tunnel interface {
 	Close() error
 	GetModel() *model.Tunnel
 	GetLink(id int64) (Link, error)
+
+	//TODO 添加计量接口
 }
