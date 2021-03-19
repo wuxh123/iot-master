@@ -47,16 +47,16 @@ type link struct {
 func (l *link) onData(buf []byte) {
 	//过滤心跳
 	c := l.tunnel.GetModel()
-	if c.HeartBeatEnable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(c.HeartBeatInterval) {
+	if c.HeartBeat.Enable && time.Now().Sub(l.lastTime) > time.Second*time.Duration(c.HeartBeat.Interval) {
 		var b []byte
-		if c.HeartBeatIsHex {
+		if c.HeartBeat.IsHex {
 			var e error
-			b, e = hex.DecodeString(c.HeartBeatContent)
+			b, e = hex.DecodeString(c.HeartBeat.Content)
 			if e != nil {
 				log.Println(e)
 			}
 		} else {
-			b = []byte(c.HeartBeatContent)
+			b = []byte(c.HeartBeat.Content)
 		}
 		if bytes.Compare(b, buf) == 0 {
 			return

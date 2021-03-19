@@ -24,17 +24,17 @@ func (t *tunnel) GetModel() *model.Tunnel {
 
 func (t *tunnel) checkRegister(buf []byte) (string, error) {
 	n := len(buf)
-	if n < t.RegisterMin {
+	if n < t.Register.Min {
 		return "", fmt.Errorf("register package is too short %d %s", n, string(buf[:n]))
 	}
 	serial := string(buf[:n])
-	if t.RegisterMax > 0 && t.RegisterMax >= t.RegisterMin && n > t.RegisterMax {
-		serial = string(buf[:t.RegisterMax])
+	if t.Register.Max > 0 && t.Register.Max >= t.Register.Min && n > t.Register.Max {
+		serial = string(buf[:t.Register.Max])
 	}
 
 	// 正则表达式判断合法性
-	if t.RegisterRegex != "" {
-		reg := regexp.MustCompile(`^` + t.RegisterRegex + `$`)
+	if t.Register.Regex != "" {
+		reg := regexp.MustCompile(`^` + t.Register.Regex + `$`)
 		match := reg.MatchString(serial)
 		if !match {
 			return "", fmt.Errorf("register package format error %s", serial)

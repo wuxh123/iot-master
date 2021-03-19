@@ -71,7 +71,7 @@ func (s *TcpServer) accept() {
 		}
 
 		//开启注册了，支持多连接，否则，只支持一个链接
-		if s.RegisterEnable {
+		if s.Register.Enable {
 			go s.receive(conn)
 		} else {
 			s.receive(conn)
@@ -86,7 +86,7 @@ func (s *TcpServer) receive(conn net.Conn) {
 	buf := make([]byte, 1024)
 
 	//第一个包作为注册包
-	if s.RegisterEnable {
+	if s.Register.Enable {
 		n, e := conn.Read(buf)
 		if e != nil {
 			log.Println(e)
@@ -135,8 +135,8 @@ func (s *TcpServer) receive(conn net.Conn) {
 		}
 
 		//处理剩余内容
-		if s.RegisterMax > 0 && n > s.RegisterMax {
-			link.onData(buf[s.RegisterMax:n])
+		if s.Register.Max > 0 && n > s.Register.Max {
+			link.onData(buf[s.Register.Max:n])
 		}
 	}
 

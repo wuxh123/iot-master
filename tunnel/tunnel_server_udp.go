@@ -81,7 +81,7 @@ func (c *PacketServer) receive() {
 			lnk = newPacketLink(c, c.packetConn, addr)
 
 			//第一个包作为注册包
-			if c.RegisterEnable {
+			if c.Register.Enable {
 				serial, err := c.tunnel.checkRegister(buf[:n])
 				if err != nil {
 					_ = lnk.Write([]byte(err.Error()))
@@ -124,8 +124,8 @@ func (c *PacketServer) receive() {
 				}
 
 				//处理剩余内容
-				if c.RegisterMax > 0 && n > c.RegisterMax {
-					lnk.onData(buf[c.RegisterMax:n])
+				if c.Register.Max > 0 && n > c.Register.Max {
+					lnk.onData(buf[c.Register.Max:n])
 				}
 			} else {
 				lnk.onData(buf[:n])

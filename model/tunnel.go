@@ -2,6 +2,21 @@ package model
 
 import "time"
 
+type Register struct {
+	Enable bool   `json:"enable"`
+	Regex  string `json:"regex"`
+	Min    int    `json:"min"`
+	Max    int    `json:"max"`
+	//添加每次注册包检测，暂不需要（UDP可能会用）
+}
+
+type HeartBeat struct {
+	Enable   bool   `json:"enable"`
+	Interval int    `json:"interval"`
+	Content  string `json:"content"`
+	IsHex    bool   `json:"is_hex"`
+}
+
 type Tunnel struct {
 	Id      int64  `json:"id"`
 	Name    string `json:"name"`
@@ -10,16 +25,10 @@ type Tunnel struct {
 	Timeout int    `json:"timeout"`
 
 	//注册包
-	RegisterEnable bool   `json:"register_enable"`
-	RegisterRegex  string `json:"register_regex"`
-	RegisterMin    int    `json:"register_min"`
-	RegisterMax    int    `json:"register_max"`
+	Register Register `json:"register" xorm:"json"`
 
 	//心跳包
-	HeartBeatEnable   bool   `json:"heart_beat_enable"`
-	HeartBeatInterval int    `json:"heart_beat_interval"`
-	HeartBeatContent  string `json:"heart_beat_content"`
-	HeartBeatIsHex    bool   `json:"heart_beat_is_hex"`
+	HeartBeat HeartBeat `json:"heart_beat" xorm:"json"`
 
 	//模板ID，根据模板ID自动创建项目
 	TemplateId int64 `json:"template_id"`
