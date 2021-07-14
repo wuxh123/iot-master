@@ -21,5 +21,15 @@
   "bugs": {
     "url": "https://github.com/zgwit/iot-master/issues"
   },
-  "homepage": "https://github.com/zgwit/iot-master#readme"
+  "homepage": "https://github.com/zgwit/iot-master#readme",
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "koa": "^2.13.1",
+    "koa-joi-router": "^8.0.0",
+    "koa-joi-router-docs": "^1.2.1",
+    "koa-jwt": "^4.0.1",
+    "koa-logger": "^3.2.1",
+    "mongodb": "^4.0.0",
+    "redis": "^3.1.2"
+  }
 }
