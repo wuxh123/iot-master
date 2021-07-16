@@ -42,11 +42,11 @@ module.exports = class RTU {
     read(slave, address, length) {
         let {code, address} = addr.parseReadAddress(address);
         const buf = Buffer.allocUnsafe(8);
-        buf.writeUInt8(slave, 0);
-        buf.writeUInt8(code, 1);
-        buf.writeUInt16BE(address, 2);
-        buf.writeUInt16BE(length, 4);
-        buf.writeUInt16LE(crc16(buf.slice(0, -2)), 6);
+        buf.writeUInt8(slave, 0); //从站号
+        buf.writeUInt8(code, 1); //功能码
+        buf.writeUInt16BE(address, 2); //地址
+        buf.writeUInt16BE(length, 4); //长度
+        buf.writeUInt16LE(crc16(buf.slice(0, -2)), 6); //校验
 
         return this._execute(buf, false);
     }
@@ -61,15 +61,14 @@ module.exports = class RTU {
     write(slave, address, value) {
         let {code, address} = addr.parseWriteAddress(address);
         const buf = Buffer.allocUnsafe(8);
-        buf.writeUInt8(slave, 0);
-        buf.writeUInt8(code, 1);
-        buf.writeUInt16BE(address, 2);
-        //data.copy(buf, 4);
+        buf.writeUInt8(slave, 0); //从站号
+        buf.writeUInt8(code, 1); //功能码
+        buf.writeUInt16BE(address, 2); //地址
         if (code === 5)
-            buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 4);
+            buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 4); //写线圈，0xFF00代表合，0x0000代表开
         else
             buf.writeUInt16BE(value, 4);
-        buf.writeUInt16LE(crc16(buf.slice(0, -2)), buf.length - 2);
+        buf.writeUInt16LE(crc16(buf.slice(0, -2)), buf.length - 2); //检验位
 
         return this._execute(buf, true);
     }
@@ -87,27 +86,31 @@ module.exports = class RTU {
 
         let buffer;
         if (code === 15) {
+            //布尔数组压缩成二进制
             const size = parseInt((data.length - 1) / 8 + 1);
             buffer = Buffer.allocUnsafe(1 + size);
-            buffer[0] = data.length;
+            buffer[0] = size; //字节数
             for (let i = 0; i < data.length; i++) {
                 if (data[i])
                     buffer[parseInt(i / 8) + 1] |= 0x80 >> (i % 8);
             }
         } else if (code === 16) {
-            buffer = Buffer.allocUnsafe(1 + data.length * 2);
-            buffer[0] = data.length * 2;
+            //Uint16Array 转 Uint8Array
+            const size = data.length * 2;
+            buffer = Buffer.allocUnsafe(1 + size);
+            buffer[0] = size; //字节数
             for (let i = 0; i < data.length; i++) {
                 buffer.writeUInt16BE(data[i], i * 2 + 1);
             }
         }
 
-        const buf = Buffer.allocUnsafe(6 + buffer.length);
-        buf.writeUInt8(slave, 0);
-        buf.writeUInt8(code, 1);
-        buf.writeUInt16BE(address, 2);
-        buffer.copy(buf, 4);
-        buf.writeUInt16LE(crc16(buf.slice(0, -2)), buf.length - 2);
+        const buf = Buffer.allocUnsafe(8 + buffer.length);
+        buf.writeUInt8(slave, 0); //从站号
+        buf.writeUInt8(code, 1); //功能码
+        buf.writeUInt16BE(address, 2); //地址
+        buf.writeUInt16BE(data.length, 4); //长度
+        buffer.copy(buf, 6); //内容
+        buf.writeUInt16LE(crc16(buf.slice(0, -2)), buf.length - 2); //检验位
 
         return this._execute(buf, true);
     }

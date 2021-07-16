@@ -1,4 +1,5 @@
 const timeout = require('./interval');
+const addr = require('./address');
 
 module.exports = class TCP {
 
@@ -39,31 +40,94 @@ module.exports = class TCP {
         })
     }
 
-    read(cmd) {
+    /**
+     * 读取数据
+     * @param {number} slave
+     * @param {string} address
+     * @param {number} length
+     * @returns {Promise<Uint16Array|Uint8Array>}
+     */
+    read(slave, address, length) {
+        let {code, address} = addr.parseReadAddress(address);
         const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
-        buf.writeUInt16BE(0, 2);
-        buf.writeUInt16BE(6, 4);
-        buf.writeUInt8(cmd.slave, 6);
-        buf.writeUInt8(cmd.code, 7);
-        buf.writeUInt16BE(cmd.address, 8);
-        buf.writeUInt16BE(cmd.length, 10);
+        buf.writeUInt16BE(0, 2); //协议版本
+        buf.writeUInt16BE(6, 4); //剩余长度
+        buf.writeUInt8(slave, 6); //从站号
+        buf.writeUInt8(code, 7); //功能码
+        buf.writeUInt16BE(address, 8); //地址
+        buf.writeUInt16BE(length, 10); //长度
 
-        return this._execute(buf, cmd.primary);
+        return this._execute(buf, false);
     }
 
-    write(cmd) {
-        const buf = Buffer.allocUnsafe(10 + cmd.data.length);
+    /**
+     * 写单个线圈或寄存器
+     * @param {number} slave
+     * @param {string} address
+     * @param {boolean|number} value
+     * @returns {Promise<>}
+     */
+    write(slave, address, value) {
+        let {code, address} = addr.parseWriteAddress(address);
+        const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
-        buf.writeUInt16BE(0, 2);
-        buf.writeUInt16BE(6, 4);
-        buf.writeUInt8(cmd.slave, 6);
-        buf.writeUInt8(cmd.code, 7);
-        buf.writeUInt16BE(cmd.address, 8);
-        cmd.data.copy(buf, 10);
+        buf.writeUInt16BE(0, 2); //协议版本
+        buf.writeUInt16BE(6, 4); //剩余长度
+        buf.writeUInt8(slave, 6); //从站号
+        buf.writeUInt8(code, 7); //功能码
+        buf.writeUInt16BE(address, 8); //地址
+        if (code === 5)
+            buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 4); //写线圈，0xFF00代表合，0x0000代表开
+        else
+            buf.writeUInt16BE(value, 4);
+        return this._execute(buf, true);
+    }
+
+    /**
+     * 写入多个线圈或寄存器
+     * @param {number} slave
+     * @param {string} address
+     * @param {boolean[]|number[]} data
+     * @returns {Promise<>}
+     */
+    writeMany(slave, address, data) {
+        let {code, address} = addr.parseWriteAddress(address);
+        code += 10; // 5=>15 6=>16
+
+        let buffer;
+        if (code === 15) {
+            //布尔数组压缩成二进制
+            const size = parseInt((data.length - 1) / 8 + 1);
+            buffer = Buffer.allocUnsafe(1 + size);
+            buffer[0] = size; //字节数
+            for (let i = 0; i < data.length; i++) {
+                if (data[i])
+                    buffer[parseInt(i / 8) + 1] |= 0x80 >> (i % 8);
+            }
+        } else if (code === 16) {
+            //Uint16Array 转 Uint8Array
+            const size = data.length * 2;
+            buffer = Buffer.allocUnsafe(1 + size);
+            buffer[0] = size; //字节数
+            for (let i = 0; i < data.length; i++) {
+                buffer.writeUInt16BE(data[i], i * 2 + 1);
+            }
+        }
+
+        const buf = Buffer.allocUnsafe(12 + buffer.length);
+        //buf.writeUInt16BE(this.transactionId);
+        buf.writeUInt16BE(0, 2); //协议版本
+        buf.writeUInt16BE(6, 4); //剩余长度
+        buf.writeUInt8(slave, 6); //从站号
+        buf.writeUInt8(code, 7); //功能码
+        buf.writeUInt16BE(address, 8); //地址
+        buf.writeUInt16BE(data.length, 10); //长度
+        buffer.copy(buf, 12); //内容
 
         return this._execute(buf, true);
     }
+
 
     _execute(command, primary) {
         this.transactionId++
