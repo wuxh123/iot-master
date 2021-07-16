@@ -17,6 +17,7 @@ module.exports = class HeartBeat {
                 this.options.hex && this.options.hex.toLowerCase() === data.toString('hex')
             ) {
                 this.last = now;
+                this.tunnel.emit('heartbeat', data);
                 return;
             }
         }
