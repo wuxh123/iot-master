@@ -1,8 +1,0 @@
-{
-  "acceptors":[
-    {
-      "name": "TCP服务端",
-      "script": "tcp-server.js"
-    }
-  ]
-}

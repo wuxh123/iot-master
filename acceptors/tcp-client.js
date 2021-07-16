@@ -21,13 +21,14 @@ module.exports = class TcpClient extends EventEmitter {
         this.socket.on("error", err => {
             //console.error(err)
             this.emit("error", err);
+
+            //TODO 重连
+            setTimeout(()=>this.connect(), 10000);
         })
 
         this.socket.on("close", () => {
             this.emit("close");
 
-            //TODO 重连
-            setTimeout(()=>this.connect(), 1000);
         })
     }
 
