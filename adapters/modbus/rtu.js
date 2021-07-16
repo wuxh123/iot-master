@@ -1,5 +1,5 @@
 const timeout = require('./interval');
-
+const addr = require('./address');
 const crc16 = require("./crc16");
 
 module.exports = class RTU {
@@ -9,15 +9,14 @@ module.exports = class RTU {
     };
 
 
-
     _handler;    //Promise
-    
+
     _stamp = 0;
-    
+
     _queue = [];
 
     _doing = false;
-    
+
     constructor(tunnel, options) {
         this.tunnel = tunnel;
         Object.assign(this.options, options);
@@ -28,28 +27,86 @@ module.exports = class RTU {
             this._handle(data)
         })
 
-        tunnel.on('close', ()=>{
+        tunnel.on('close', () => {
             cancelable.cancel()
         })
     }
 
-    read(cmd) {
+    /**
+     * 读取数据
+     * @param {number} slave
+     * @param {string} address
+     * @param {number} length
+     * @returns {Promise<Uint16Array|Uint8Array>}
+     */
+    read(slave, address, length) {
+        let {code, address} = addr.parseReadAddress(address);
         const buf = Buffer.allocUnsafe(8);
-        buf.writeUInt8(cmd.slave, 0);
-        buf.writeUInt8(cmd.code, 1);
-        buf.writeUInt16BE(cmd.address, 2);
-        buf.writeUInt16BE(cmd.length, 4);
+        buf.writeUInt8(slave, 0);
+        buf.writeUInt8(code, 1);
+        buf.writeUInt16BE(address, 2);
+        buf.writeUInt16BE(length, 4);
         buf.writeUInt16LE(crc16(buf.slice(0, -2)), 6);
 
-        return this._execute(buf, cmd.primary);
+        return this._execute(buf, false);
     }
 
-    write(cmd) {
-        const buf = Buffer.allocUnsafe(6 + cmd.data.length);
-        buf.writeUInt8(cmd.slave, 0);
-        buf.writeUInt8(cmd.code, 1);
-        buf.writeUInt16BE(cmd.address, 2);
-        cmd.data.copy(buf, 4);
+    /**
+     * 写单个线圈或寄存器
+     * @param {number} slave
+     * @param {string} address
+     * @param {boolean|number} value
+     * @returns {Promise<>}
+     */
+    write(slave, address, value) {
+        let {code, address} = addr.parseWriteAddress(address);
+        const buf = Buffer.allocUnsafe(8);
+        buf.writeUInt8(slave, 0);
+        buf.writeUInt8(code, 1);
+        buf.writeUInt16BE(address, 2);
+        //data.copy(buf, 4);
+        if (code === 5)
+            buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 4);
+        else
+            buf.writeUInt16BE(value, 4);
+        buf.writeUInt16LE(crc16(buf.slice(0, -2)), buf.length - 2);
+
+        return this._execute(buf, true);
+    }
+
+    /**
+     * 写入多个线圈或寄存器
+     * @param {number} slave
+     * @param {string} address
+     * @param {boolean[]|number[]} data
+     * @returns {Promise<>}
+     */
+    writeMany(slave, address, data) {
+        let {code, address} = addr.parseWriteAddress(address);
+        code += 10; // 5=>15 6=>16
+
+        let buffer;
+        if (code === 15) {
+            const size = parseInt((data.length - 1) / 8 + 1);
+            buffer = Buffer.allocUnsafe(1 + size);
+            buffer[0] = data.length;
+            for (let i = 0; i < data.length; i++) {
+                if (data[i])
+                    buffer[parseInt(i / 8) + 1] |= 0x80 >> (i % 8);
+            }
+        } else if (code === 16) {
+            buffer = Buffer.allocUnsafe(1 + data.length * 2);
+            buffer[0] = data.length * 2;
+            for (let i = 0; i < data.length; i++) {
+                buffer.writeUInt16BE(data[i], i * 2 + 1);
+            }
+        }
+
+        const buf = Buffer.allocUnsafe(6 + buffer.length);
+        buf.writeUInt8(slave, 0);
+        buf.writeUInt8(code, 1);
+        buf.writeUInt16BE(address, 2);
+        buffer.copy(buf, 4);
         buf.writeUInt16LE(crc16(buf.slice(0, -2)), buf.length - 2);
 
         return this._execute(buf, true);

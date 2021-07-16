@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const net = require('net');
+const Tunnel = require('../lib/tunnel');
 
 module.exports = class TcpClient extends EventEmitter {
     options = {
@@ -28,14 +29,14 @@ module.exports = class TcpClient extends EventEmitter {
 
         this.socket.on("close", () => {
             this.emit("close");
-
         })
     }
 
     connect(){
         this.socket.connect(this.options.port, this.options.host, () => {
             //告诉外部，有新连接
-            this.emit("connect", this.socket);
+            const tunnel = new Tunnel(this.socket, options.tunnel);
+            this.emit("connect", tunnel);
         })
     }
 
