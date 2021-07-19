@@ -40,7 +40,12 @@
           {
             "name": "全部关闭",
             "address": "BO001",
-            "values": [false, false, false, false]
+            "values": [
+              false,
+              false,
+              false,
+              false
+            ]
           }
         ],
         "collectors": [
@@ -65,7 +70,9 @@
         },
         {
           "type": "script",
-          "values": ["replay1.i1"],
+          "values": [
+            "replay1.i1"
+          ],
           "options": {
             "script": "if (relay1.i1) replay1.execute('关闭')"
           }
