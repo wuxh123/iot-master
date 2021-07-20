@@ -22,6 +22,6 @@ module.exports = class Register {
         }
 
         this.sn = sn;
-        this.tunnel.emit('sn', sn);
+        this.tunnel.emit('register', sn);
     }
 }
