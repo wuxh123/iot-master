@@ -1,5 +1,5 @@
 const timeout = require('./interval');
-const addr = require('./address');
+const helper = require('./helper');
 
 module.exports = class TCP {
 
@@ -45,10 +45,10 @@ module.exports = class TCP {
      * @param {number} slave
      * @param {string} address
      * @param {number} length
-     * @returns {Promise<Uint16Array|Uint8Array>}
+     * @returns {Promise<Buffer>}
      */
     read(slave, address, length) {
-        let {code, address} = addr.parseReadAddress(address);
+        let {code, address} = helper.parseReadAddress(address);
         const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
         buf.writeUInt16BE(0, 2); //协议版本
@@ -69,7 +69,7 @@ module.exports = class TCP {
      * @returns {Promise<>}
      */
     write(slave, address, value) {
-        let {code, address} = addr.parseWriteAddress(address);
+        let {code, address} = helper.parseWriteAddress(address);
         const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
         buf.writeUInt16BE(0, 2); //协议版本
@@ -92,7 +92,7 @@ module.exports = class TCP {
      * @returns {Promise<>}
      */
     writeMany(slave, address, data) {
-        let {code, address} = addr.parseWriteAddress(address);
+        let {code, address} = helper.parseWriteAddress(address);
         code += 10; // 5=>15 6=>16
 
         let buffer;

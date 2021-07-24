@@ -1,3 +1,12 @@
-exports.TCP = require("./tcp");
-exports.RTU = require("./rtu");
-//exports.ASCII = require("./ascii");
+module.exports = [
+    {
+        id: 'modbus-rtu',
+        name: 'Modbus RTU',
+        file: 'modbus/rtu.js',
+    },
+    {
+        id: 'modbus-tcp',
+        name: 'Modbus TCP',
+        file: 'modbus/tcp.js',
+    }
+]
