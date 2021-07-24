@@ -63,9 +63,9 @@ exports.parseWriteAddress = function (address) {
  * @param {boolean[]|Uint8Array} data
  * @returns {Buffer}
  */
-exports.compressBooleans = function (data) {
+exports.booleanArrayToBuffer = function (data) {
     const size = parseInt((data.length - 1) / 8 + 1);
-    const buf = Buffer.allocUnsafe(1 + size);
+    const buf = Buffer.alloc(1 + size);
     buf[0] = size; //字节数
     for (let i = 0; i < data.length; i++) {
         buf[parseInt(i / 8) + 1] |= data[i] ? 0x80 >> (i % 8) : 0;
@@ -73,9 +73,33 @@ exports.compressBooleans = function (data) {
     return buf;
 }
 
+/**
+ * 数组转成Modbus数据
+ * @param data
+ * @returns {Buffer}
+ */
 exports.arrayToBuffer = function (data) {
     let buf;
-    if (data instanceof Uint8Array) {
+    const typ = typeof data[0];
+
+    if (Array.isArray(data)) {
+        if (typ === 'boolean') {
+            buf = exports.booleanArrayToBuffer(data);
+        } else {
+            //默认字类型：WORD
+            const size = data.length * 2;
+            buf = Buffer.allocUnsafe(1 + size);
+            buf[0] = size; //字节数
+            for (let i = 0; i < data.length; i++) {
+                buf.writeUInt16BE(data[i], i * 2 + 1);
+            }
+        }
+    } else if (data instanceof Buffer) {
+        const size = data.length;
+        buf = Buffer.allocUnsafe(1 + size);
+        buf[0] = size; //字节数
+        data.copy(buf, 1);
+    } else if (data instanceof Uint8Array) {
         const size = data.length;
         buf = Buffer.allocUnsafe(1 + size);
         buf[0] = size; //字节数
@@ -88,6 +112,13 @@ exports.arrayToBuffer = function (data) {
         buf[0] = size; //字节数
         for (let i = 0; i < data.length; i++) {
             buf.writeUInt16BE(data[i], i * 2 + 1);
+        }
+    } else if (data instanceof Uint32Array) {
+        const size = data.length * 4;
+        buf = Buffer.allocUnsafe(1 + size);
+        buf[0] = size; //字节数
+        for (let i = 0; i < data.length; i++) {
+            buf.writeUInt32BE(data[i], i * 4 + 1);
         }
     } else if (data instanceof Float32Array) {
         const size = data.length * 4;
@@ -103,19 +134,18 @@ exports.arrayToBuffer = function (data) {
         for (let i = 0; i < data.length; i++) {
             buf.writeDoubleBE(data[i], i * 8 + 1);
         }
-    } else if (data instanceof Buffer) {
-        const size = data.length;
+    } else {
+        const size = data.length * 2;
         buf = Buffer.allocUnsafe(1 + size);
         buf[0] = size; //字节数
-        data.copy(buf, 1);
-    } else {
-
-
+        for (let i = 0; i < data.length; i++) {
+            buf.writeUInt16BE(data[i], i * 2 + 1);
+        }
     }
     return buf;
 }
 
-exports.crc16 = function(buf) {
+exports.crc16 = function (buf) {
     let crc = 0xFFFF;
     let odd;
 

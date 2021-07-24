@@ -97,22 +97,9 @@ module.exports = class TCP {
 
         let buffer;
         if (code === 15) {
-            //布尔数组压缩成二进制
-            const size = parseInt((data.length - 1) / 8 + 1);
-            buffer = Buffer.allocUnsafe(1 + size);
-            buffer[0] = size; //字节数
-            for (let i = 0; i < data.length; i++) {
-                if (data[i])
-                    buffer[parseInt(i / 8) + 1] |= 0x80 >> (i % 8);
-            }
+            buffer = helper.booleanArrayToBuffer(data)
         } else if (code === 16) {
-            //Uint16Array 转 Uint8Array
-            const size = data.length * 2;
-            buffer = Buffer.allocUnsafe(1 + size);
-            buffer[0] = size; //字节数
-            for (let i = 0; i < data.length; i++) {
-                buffer.writeUInt16BE(data[i], i * 2 + 1);
-            }
+            buffer = helper.arrayToBuffer(data)
         }
 
         const buf = Buffer.allocUnsafe(12 + buffer.length);
@@ -254,7 +241,7 @@ module.exports = class TCP {
                 for (let i = 0; i < count; i++) {
                     let reg = data[i + 9];
                     for (let j = 0; j < 8; j++) {
-                        results.push((reg & 1) === 1);
+                        results.push((reg & 1) === 1); // ? 1 : 0);
                         reg = reg >> 1;
                     }
                 }
@@ -271,10 +258,11 @@ module.exports = class TCP {
                     return;
                 }
 
-                let results = [];
-                for (let i = 0; i < count; i += 2)
-                    results.push(data.readUInt16BE(i + 9));
-                this.resolve(id, results)
+                // let results = [];
+                // for (let i = 0; i < count; i += 2)
+                //     results.push(data.readUInt16BE(i + 9));
+                // 直接返回Buffer，方便外部解析非WORD类型，比如：浮点数，字符串
+                this.resolve(id, data.slice(9))
                 break;
             }
             case 5: //WriteCoil

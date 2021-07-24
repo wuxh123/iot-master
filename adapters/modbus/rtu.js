@@ -85,7 +85,7 @@ module.exports = class RTU {
 
         let buffer;
         if (code === 15) {
-            buffer = helper.compressBooleans(data)
+            buffer = helper.booleanArrayToBuffer(data)
         } else if (code === 16) {
             buffer = helper.arrayToBuffer(data)
         }
