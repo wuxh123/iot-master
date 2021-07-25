@@ -80,9 +80,9 @@ exports.booleanArrayToBuffer = function (data) {
  */
 exports.arrayToBuffer = function (data) {
     let buf;
-    const typ = typeof data[0];
 
     if (Array.isArray(data)) {
+        const typ = typeof data[0];
         if (typ === 'boolean') {
             buf = exports.booleanArrayToBuffer(data);
         } else {

@@ -1,7 +1,7 @@
-module.exports = class LuatConfig {
+module.exports = class Control {
     tunnel;
     options = {
-        prefix: 'config,', //Luat模块支持远程配置命令 config,get,imei\r\n 有人模块支持网络AT，usr.cn#AT\r\n
+        prefix: 'user.cn#', //Luat模块支持远程配置命令 config,get,imei\r\n 有人模块支持网络AT，usr.cn#AT\r\n
         suffix: '\r\n'
     };
 
