@@ -1,12 +1,17 @@
-module.exports = [
-    {
-        id: 'modbus-rtu',
-        name: 'Modbus RTU',
-        file: 'modbus/rtu.js',
-    },
-    {
-        id: 'modbus-tcp',
-        name: 'Modbus TCP',
-        file: 'modbus/tcp.js',
+
+module.exports = function (options) {
+    const option = {
+        type: 'rtu',
     }
-]
+    Object.assign(option, options);
+
+    switch (options.type) {
+        case 'rtu':
+        case 'RTU':
+
+            break;
+    }
+
+
+}
+

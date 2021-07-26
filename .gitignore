@@ -1,3 +1,7 @@
+# Jetbrains IDE工程配置
 /.idea
-/node_modules
-/package-lock.json
+
+# NPM 相关依赖不提交代码库，占用空间太大
+**/node_modules
+**/package-lock.json
+

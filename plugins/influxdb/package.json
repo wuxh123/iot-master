@@ -1,0 +1,7 @@
+{
+  "name": "influxdb",
+  "version": "1.0.0",
+  "dependencies": {
+    "influx": "^5.9.2"
+  }
+}
