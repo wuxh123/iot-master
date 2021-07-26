@@ -15,8 +15,8 @@ const defaultOptions = {
 module.exports = function (opts) {
     const cfg = Object.assign({}, defaultOptions, mongoConfig, opts);
     let mongoUrl;
-    if (cfg.user && cfg.pass) {
-        mongoUrl = `mongodb://${cfg.user}:${cfg.pass}@${cfg.host}:${cfg.port}/${cfg.db}?authSource=${cfg.authSource}`
+    if (cfg.username && cfg.password) {
+        mongoUrl = `mongodb://${cfg.username}:${cfg.password}@${cfg.host}:${cfg.port}/${cfg.db}?authSource=${cfg.authSource}`
     } else {
         mongoUrl = `mongodb://${cfg.host}:${cfg.port}/${cfg.db}`
     }
