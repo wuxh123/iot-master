@@ -1,7 +1,9 @@
 
 //启用插件功能
 require('./lib/plugin');
-require_plugin("mongodb")
+
+["mongodb"].
+require_plugin("mongodb");
 
 
 //TODO 1.连接数据库

@@ -71,7 +71,7 @@
         {
           "type": "script",
           "values": [
-            "replay1.i1"
+            "relay1.i1"
           ],
           "options": {
             "script": "if (relay1.i1) replay1.execute('关闭')"
@@ -79,5 +79,6 @@
         }
       ]
     }
+  }
   }
 }
