@@ -1,7 +1,11 @@
 
+//启用插件功能
+require('./lib/plugin');
+require_plugin("mongodb")
 
 
 //TODO 1.连接数据库
+
 //TODO 2.恢复acceptor（连接成功后）
 
 //TODO 3.启动Web服务

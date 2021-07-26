@@ -1,5 +1,5 @@
 {
-  "name": "tencentcloud",
+  "name": "plugin-tencentcloud",
   "version": "1.0.0",
   "dependencies": {
     "tencentcloud-sdk-nodejs": "^4.0.170"
