@@ -62,59 +62,47 @@ module.exports = class TCP {
     }
 
     /**
-     * 写单个线圈或寄存器
+     * 写线圈或寄存器
      * @param {number} slave
      * @param {string} address
-     * @param {boolean|number} value
+     * @param {boolean|number|boolean[]|Uint8Array|Uint16Array|Buffer} value
      * @returns {Promise<>}
      */
     write(slave, address, value) {
         let {code, address} = helper.parseWriteAddress(address);
-        const buf = Buffer.allocUnsafe(12);
-        //buf.writeUInt16BE(this.transactionId);
-        buf.writeUInt16BE(0, 2); //协议版本
-        buf.writeUInt16BE(6, 4); //剩余长度
-        buf.writeUInt8(slave, 6); //从站号
-        buf.writeUInt8(code, 7); //功能码
-        buf.writeUInt16BE(address, 8); //地址
-        if (code === 5)
-            buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 4); //写线圈，0xFF00代表合，0x0000代表开
-        else
-            buf.writeUInt16BE(value, 4);
-        return this._execute(buf, true);
-    }
+        const type = typeof value;
 
-    /**
-     * 写入多个线圈或寄存器
-     * @param {number} slave
-     * @param {string} address
-     * @param {boolean[]|number[]} data
-     * @returns {Promise<>}
-     */
-    writeMany(slave, address, data) {
-        let {code, address} = helper.parseWriteAddress(address);
-        code += 10; // 5=>15 6=>16
+        let buf;
+        if (type === 'boolean' || type === 'number') {
+            buf = Buffer.allocUnsafe(12);
+            if (code === 5)
+                buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 10); //写线圈，0xFF00代表合，0x0000代表开
+            else
+                buf.writeUInt16BE(value, 10);
+        } else {
+            code += 10; // 5=>15 6=>16
+            let buffer;
+            if (code === 15)
+                buffer = helper.booleanArrayToBuffer(value)
+            else if (code === 16)
+                buffer = helper.arrayToBuffer(value)
 
-        let buffer;
-        if (code === 15) {
-            buffer = helper.booleanArrayToBuffer(data)
-        } else if (code === 16) {
-            buffer = helper.arrayToBuffer(data)
+            buf = Buffer.allocUnsafe(12 + buffer.length);
+            buf.writeUInt16BE(value.length, 10); //长度 TODO 此处有问题
+            buffer.copy(buf, 12); //内容
         }
 
-        const buf = Buffer.allocUnsafe(12 + buffer.length);
+        //包头和尾
         //buf.writeUInt16BE(this.transactionId);
         buf.writeUInt16BE(0, 2); //协议版本
         buf.writeUInt16BE(6, 4); //剩余长度
         buf.writeUInt8(slave, 6); //从站号
         buf.writeUInt8(code, 7); //功能码
         buf.writeUInt16BE(address, 8); //地址
-        buf.writeUInt16BE(data.length, 10); //长度
-        buffer.copy(buf, 12); //内容
+
 
         return this._execute(buf, true);
     }
-
 
     _execute(command, primary) {
         this.transactionId++

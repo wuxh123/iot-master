@@ -1,3 +1,5 @@
+import {Tunnel} from "./tunnel";
+
 declare class Adapter {
     /**
      * @type Tunnel
@@ -47,3 +49,6 @@ declare class Adapter {
      */
     handle(data)
 }
+
+
+export declare function create(tunnel: Tunnel, options: Object);
