@@ -1,0 +1,7 @@
+{
+  "name": "plugin-jwt",
+  "version": "1.0.0",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
+}
