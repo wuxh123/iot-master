@@ -1,5 +1,4 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("device", {
+exports.post = curd.list("user", {
     name: 'string',
-    type: 'string',
 });

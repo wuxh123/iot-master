@@ -1,2 +1,2 @@
 const curd = require_plugin("curd");
-exports.post = curd.setting("tunnel");
+exports.post = curd.create("user");
