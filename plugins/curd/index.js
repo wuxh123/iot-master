@@ -13,6 +13,7 @@ exports.create = function (col, before) {
             before(ctx)
 
         const body = ctx.request.body;
+        delete body._id;
         //body.user_id = ctx.state.user._id; 由前端来补充
         const ret = await mongo.db.collection(col).insertOne(body);
         ctx.body = {data: ret.insertedId};
@@ -74,7 +75,8 @@ exports.detail = function (col, before) {
             before(ctx)
 
         const res = await mongo.db.collection(col).findOne({_id: ctx.params._id});
-        ctx.body = {data: res}
+        if (res) ctx.body = {data: res}
+        else ctx.body = {error: '找不到数据'}
     }
 }
 
