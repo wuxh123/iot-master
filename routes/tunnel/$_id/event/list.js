@@ -1,7 +1,6 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("device", {
+exports.post = curd.list("tunnel_event", {
     name: 'string',
-    type: 'string',
 }, ctx => {
     //强制修改为
     const body = ctx.request.body;
