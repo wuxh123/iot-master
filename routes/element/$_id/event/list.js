@@ -1,5 +1,5 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("element_event", {
+exports.post = curd.list("event", {
     name: 'string',
 }, ctx => {
     //强制修改为

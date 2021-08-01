@@ -21,7 +21,8 @@ exports.create = function (col, before) {
         //后续执行
         process.nextTick(async () => {
             //记录创建事件
-            await mongo.db.collection(col + '_event').insertOne({
+            await mongo.db.collection('event').insertOne({
+                target: col,
                 [col + '_id']: ctx.params._id,
                 event: '创建',
                 user_id: ctx.state.user && ctx.state.user._id,
@@ -59,7 +60,8 @@ exports.setting = function (col, before) {
             }
 
             //记录修改事件
-            await mongo.db.collection(col + '_event').insertOne({
+            await mongo.db.collection('event').insertOne({
+                target: col,
                 [col + '_id']: ctx.params._id,
                 event: '修改',
                 data: modify,
@@ -97,7 +99,8 @@ exports.delete = function (col, before) {
             //备份删除的数据
             await mongo.db.collection(col + '_deleted').insertOne(value);
             //记录删除事件
-            await mongo.db.collection(col + '_event').insertOne({
+            await mongo.db.collection('event').insertOne({
+                target: col,
                 [col + '_id']: ctx.params._id,
                 event: '删除',
                 user_id: ctx.state.user && ctx.state.user._id,
