@@ -110,79 +110,30 @@ exports.delete = function (col, before) {
 }
 
 
-exports.list = function (col, keywords, before) {
+exports.list = function (col, before) {
     return async ctx => {
         if (typeof before === 'function')
             before(ctx)
 
-        const body = ctx.request.body;
+        const body = ctx.request.body || {};
 
-        //条件
-        let $match = {};
-        if (body.keyword) {
-            const $or = [];
-            for (let k in keywords) {
-                if (!keywords.hasOwnProperty(k)) return;
-
-                let value = body.keyword;
-                if (keywords[k] === 'string') {
-                    value = {$regex: body.keyword}
-                }
-                if (keywords[k] === 'number') {
-                    value = parseInt(body.keyword)
-                }
-                $or.push({[k]: value});
-            }
-
-            if ($or.length > 1) {
-                $match.$or = $or;//[{name: {$regex: query.keyword}}, {address: query.keyword}, {port: query.keyword}]
-            } else if ($or.length === 1) {
-                //长度为1，则不需要or了
-                Object.assign($match, $or[0]);
-            }
-        }
-
-        if (body.filter) {
-            body.filter.forEach(f => {
-                if (Array.isArray(f.value)) {
-                    if (f.value.length > 0)
-                        $match[f.key] = f.value.length === 1 ? f.value[0] : {$in: f.value};
-                } else {
-                    $match[f.key] = f.value;
-                }
-            })
-        }
-
-        const pipeline = [{$match}];
         const stages = [
-            {$match},
+            {$match: body.filter || {}},
             {$count: 'total'},
             {
                 $lookup: {
                     from: col,
                     as: 'data',
-                    pipeline
+                    pipeline: [
+                        {$match: body.filter || {}},
+                        {$sort: body.sort || {_id: -1}},
+                        {$skip: body.skip || 0},
+                        {$limit: body.limit || 20},
+                        //TODO project
+                    ]
                 }
             }
         ]
-
-        //排序
-        if (body.sort) {
-            const sort = body.sort.filter(s => s.value);
-            if (sort.length) {
-                const $sort = {};
-                sort.forEach(s => {
-                    $sort[s.key] = s.value === 'ascend' ? 1 : -1;
-                });
-                pipeline.push({$sort});
-            }
-        }
-
-        //分页
-        if (body.pageIndex && body.pageSize) {
-            pipeline.push({$skip: (body.pageIndex - 1) * body.pageSize});
-            pipeline.push({$limit: body.pageSize});
-        }
 
         //查询
         const res = await mongo.db.collection(col).aggregate(stages).toArray();
