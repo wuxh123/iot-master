@@ -18,30 +18,23 @@ declare class Adapter {
     /**
      * 读取数据
      * @param {number} slave
-     * @param {string} address
+     * @param {number} code
+     * @param {number} address
      * @param {number} length
-     * @returns {Promise<Uint16Array|Uint8Array>}
+     * @returns {Promise<ArrayBuffer>}
      */
-    read(slave, address, length)
+    read(slave, code, address, length)
 
     /**
      * 写单个线圈或寄存器
      * @param {number} slave
-     * @param {string} address
-     * @param {boolean|number} value
+     * @param {number} code
+     * @param {number} address
+     * @param {boolean|number|[]} value
      * @returns {Promise<>}
      */
-    write(slave, address, value)
+    write(slave, code, address, value)
 
-
-    /**
-     * 写入多个线圈或寄存器
-     * @param {number} slave
-     * @param {string} address
-     * @param {boolean[]|number[]} data
-     * @returns {Promise<>}
-     */
-    writeMany(slave, address, data)
 
     /**
      * 处理数据

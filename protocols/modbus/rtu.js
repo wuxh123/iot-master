@@ -34,12 +34,12 @@ module.exports = class RTU {
     /**
      * 读取数据
      * @param {number} slave
-     * @param {string} address
+     * @param {number} code
+     * @param {number} address
      * @param {number} length
      * @returns {Promise<Buffer>}
      */
-    read(slave, address, length) {
-        let {code, address} = helper.parseReadAddress(address);
+    read(slave, code, address, length) {
         const buf = Buffer.allocUnsafe(8);
         buf.writeUInt8(slave, 0); //从站号
         buf.writeUInt8(code, 1); //功能码
@@ -51,34 +51,40 @@ module.exports = class RTU {
     }
 
     /**
-     * 写单个线圈或寄存器
+     * 写线圈或寄存器
      * @param {number} slave
-     * @param {string} address
+     * @param {number} code
+     * @param {number} address
      * @param {boolean|number|boolean[]|Uint8Array|Uint16Array|Buffer} value
      * @returns {Promise<>}
      */
-    write(slave, address, value) {
-        let {code, address} = helper.parseWriteAddress(address);
+    write(slave, code, address, value) {
         const type = typeof value;
 
         let buf;
         if (type === 'boolean' || type === 'number') {
+            code = helper.convertWriteCode(code);
             buf = Buffer.allocUnsafe(8);
             if (code === 5)
                 buf.writeUInt16BE(value ? 0xFF00 : 0x0000, 4); //写线圈，0xFF00代表合，0x0000代表开
             else
                 buf.writeUInt16BE(value, 4);
         } else {
-            code += 10; // 5=>15 6=>16
+            code = helper.convertWriteCode(code, true);
             let buffer;
-            if (code === 15)
+            if (code === 15) {
                 buffer = helper.booleanArrayToBuffer(value)
-            else if (code === 16)
+                buf = Buffer.allocUnsafe(8 + buffer.length);
+                buf.writeUInt16BE(value.length, 4);
+                buffer.copy(buf, 6); //内容
+            } else if (code === 16) {
                 buffer = helper.arrayToBuffer(value)
-
-            buf = Buffer.allocUnsafe(8 + buffer.length);
-            buf.writeUInt16BE(value.length, 4); //长度 TODO 此处有问题
-            buffer.copy(buf, 6); //内容
+                buf = Buffer.allocUnsafe(8 + buffer.length);
+                buf.writeUInt16BE((buffer.length - 1) / 2, 4);
+                buffer.copy(buf, 6); //内容
+            } else {
+                //暂时不会发生
+            }
         }
 
         //包头和尾

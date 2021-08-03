@@ -58,6 +58,23 @@ exports.parseWriteAddress = function (address) {
     }
 }
 
+exports.convertWriteCode = function (code, multi) {
+    let c = 0;
+    switch (code) {
+        case 1:
+            c = 5;
+            break;
+        case 3:
+            c = 6;
+            break;
+        default:
+            throw new Error("该功能码不支持写入");
+    }
+    if (multi)
+        c += 10;
+    return c;
+}
+
 /**
  * 布尔数组压缩成二进制
  * @param {boolean[]|Uint8Array} data
