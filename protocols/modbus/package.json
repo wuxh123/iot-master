@@ -24,13 +24,13 @@
   "protocols": [
     {
       "name": "modbus-rtu",
-      "description": "Modbus RTU",
+      "label": "Modbus RTU",
       "script": "rtu.js",
       "options": "json schema"
     },
     {
       "name": "modbus-tcp",
-      "description": "Modbus TCP",
+      "label": "Modbus TCP",
       "script": "tcp.js",
       "options": "json schema"
     }
