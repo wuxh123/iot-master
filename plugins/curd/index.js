@@ -110,12 +110,43 @@ exports.delete = function (col, before) {
 }
 
 
-exports.list = function (col, before) {
+exports.list = function (col, options) {
     return async ctx => {
-        if (typeof before === 'function')
-            before(ctx)
+        options = options || {};
+        if (typeof options.before === 'function')
+            options.before(ctx)
 
         const body = ctx.request.body || {};
+
+        let pipeline = [
+            {$match: body.filter || {}},
+            {$sort: body.sort || {_id: -1}},
+            {$skip: body.skip || 0},
+            {$limit: body.limit || 20},
+            //TODO project
+        ];
+
+        if (options.pipeline) {
+            pipeline = pipeline.concat(pipeline)
+        }
+
+        function addJoin(join) {
+            const $lookup = {
+                from: join.from,
+                as: join.as || join.from,
+                localField: join.local || join.from + '_id',
+                foreignField: join.foreign || '_id'
+            };
+            pipeline.push({$lookup});
+            pipeline.push({$unwind: {path: '$' + $lookup.as, preserveNullAndEmptyArrays: true}});
+        }
+
+        options.join && addJoin(options.join)
+        options.joins && joins.forEach(addJoin)
+
+        if (options.fields) {
+            pipeline.push({$project: options.fields})
+        }
 
         const stages = [
             {$match: body.filter || {}},
@@ -124,13 +155,7 @@ exports.list = function (col, before) {
                 $lookup: {
                     from: col,
                     as: 'data',
-                    pipeline: [
-                        {$match: body.filter || {}},
-                        {$sort: body.sort || {_id: -1}},
-                        {$skip: body.skip || 0},
-                        {$limit: body.limit || 20},
-                        //TODO project
-                    ]
+                    pipeline
                 }
             }
         ]

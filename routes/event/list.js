@@ -1,2 +1,7 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("event");
+exports.post = curd.list("event", {
+    join:{
+        from: 'user',
+        local: 'user_id'
+    }
+});
