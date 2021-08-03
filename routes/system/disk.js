@@ -9,7 +9,7 @@ exports.get = async ctx => {
                 size: disk.blocks,
                 used: disk.used,
                 free: disk.available,
-                usage: disk.capacity,
+                usage: parseFloat(disk.capacity),
                 mounted: disk.mounted,
             }
         })
