@@ -111,8 +111,9 @@ exports.delete = function (col, before) {
 
 
 exports.list = function (col, options) {
+    options = options || {};
+
     return async ctx => {
-        options = options || {};
         if (typeof options.before === 'function')
             options.before(ctx)
 
@@ -140,7 +141,7 @@ exports.list = function (col, options) {
             pipeline.push({$lookup});
             pipeline.push({$unwind: {path: '$' + $lookup.as, preserveNullAndEmptyArrays: true}});
             if (join.replace) {
-                pipeline.push({$addFields: {[col + '_id']: '$_id'}})
+                pipeline.push({$addFields: {[$lookup.as + '.'+ col + '_id']: '$_id'}})
                 pipeline.push({$replaceRoot: {newRoot: '$' + $lookup.as}});
             }
         }
