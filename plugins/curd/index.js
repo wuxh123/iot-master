@@ -139,6 +139,10 @@ exports.list = function (col, options) {
             };
             pipeline.push({$lookup});
             pipeline.push({$unwind: {path: '$' + $lookup.as, preserveNullAndEmptyArrays: true}});
+            if (join.replace) {
+                pipeline.push({$addFields: {[col + '_id']: '$_id'}})
+                pipeline.push({$replaceRoot: {newRoot: '$' + $lookup.as}});
+            }
         }
 
         options.join && addJoin(options.join)
