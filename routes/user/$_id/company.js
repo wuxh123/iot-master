@@ -5,7 +5,7 @@ exports.post = curd.list("member", {
         body.filter.user_id = ctx.params._id;
     },
     join:{
-        from: 'group',
+        from: 'company',
         replace: true
     }
 });

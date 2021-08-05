@@ -1,2 +1,2 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("group");
+exports.get = curd.detail("company");
