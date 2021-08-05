@@ -132,31 +132,47 @@ exports.list = function (col, options) {
         }
 
         function addJoin(join) {
+            const local = join.local || join.from + '_id';
+            const foreign = join.foreign || '_id';
             const $lookup = {
                 from: join.from,
                 as: join.as || join.from,
-                localField: join.local || join.from + '_id',
-                foreignField: join.foreign || '_id'
+                let: {id: '$'+local},
+                pipeline: [
+                    {$match: {$expr: {$eq: ["$"+foreign, "$$id"]}}},
+                ],
             };
+            if (join.fields && join.fields.length) {
+                const $project = {};
+                join.fields.forEach(f=>$project[f]=1);
+                $lookup.pipeline.push({$project});
+            }
+
             pipeline.push({$lookup});
             pipeline.push({$unwind: {path: '$' + $lookup.as, preserveNullAndEmptyArrays: true}});
+
             if (join.replace) {
-                pipeline.push({$addFields: {[$lookup.as + '.'+ col + '_id']: '$_id'}})
+                pipeline.push({$addFields: {[$lookup.as + '.' + col + '_id']: '$_id'}})
                 pipeline.push({$replaceRoot: {newRoot: '$' + $lookup.as}});
             }
         }
 
         options.join && addJoin(options.join)
-        options.joins && joins.forEach(addJoin)
+        options.joins && options.joins.forEach(addJoin)
 
-        if (options.fields) {
-            pipeline.push({$project: options.fields})
+        //支持参数中的fields
+        const fields = body.fields || options.fields;
+        if (fields && fields.length) {
+            const $project = {};
+            fields.forEach(f=>$project[f]=1);
+            pipeline.push({$project});
         }
 
         const stages = [
             {$match: body.filter || {}},
-            {$count: 'total'},
+            {$count: 'total'}, //计算总数
             {
+                //数据查询
                 $lookup: {
                     from: col,
                     as: 'data',
@@ -167,10 +183,6 @@ exports.list = function (col, options) {
 
         //查询
         const res = await mongo.db.collection(col).aggregate(stages).toArray();
-        if (res.length > 0) {
-            ctx.body = res[0];
-        } else {
-            ctx.body = {total: 0, data: []}
-        }
+        ctx.body = res.length ? res[0] : {total: 0, data: []}
     }
 }
