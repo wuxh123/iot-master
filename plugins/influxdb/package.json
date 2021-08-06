@@ -2,6 +2,6 @@
   "name": "plugin-influxdb",
   "version": "1.0.0",
   "dependencies": {
-    "influx": "^5.9.2"
+    "@influxdata/influxdb-client": "^1.15.0"
   }
 }
