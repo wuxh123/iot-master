@@ -4,13 +4,13 @@ const _ = require("lodash");
 /**
  * 创建接口
  * @param col
- * @param {function(*)|undefined} before
+ * @param {object|undefined} options
  * @returns {(function(*): Promise<void>)}
  */
-exports.create = function (col, before) {
+exports.create = function (col, options) {
     return async ctx => {
-        if (typeof before === 'function')
-            before(ctx)
+        if (options.before)
+            await options.before(ctx)
 
         const body = ctx.request.body;
         delete body._id;
@@ -31,10 +31,10 @@ exports.create = function (col, before) {
     }
 }
 
-exports.setting = function (col, before) {
+exports.setting = function (col, options) {
     return async ctx => {
-        if (typeof before === 'function')
-            before(ctx)
+        if (options.before)
+            await options.before(ctx)
 
         const body = ctx.request.body;
         delete body._id; //ID不能修改，MongoDB会报错
@@ -71,10 +71,10 @@ exports.setting = function (col, before) {
     }
 }
 
-exports.detail = function (col, before) {
+exports.detail = function (col, options) {
     return async ctx => {
-        if (typeof before === 'function')
-            before(ctx)
+        if (options.before)
+            await options.before(ctx)
 
         const res = await mongo.db.collection(col).findOne({_id: ctx.params._id});
         if (res) ctx.body = {data: res}
@@ -82,10 +82,10 @@ exports.detail = function (col, before) {
     }
 }
 
-exports.delete = function (col, before) {
+exports.delete = function (col, options) {
     return async ctx => {
-        if (typeof before === 'function')
-            before(ctx)
+        if (options.before)
+            await options.before(ctx)
 
         const res = await mongo.db.collection(col).findOneAndDelete({_id: ctx.params._id});
         ctx.body = {data: res}
@@ -114,8 +114,8 @@ exports.list = function (col, options) {
     options = options || {};
 
     return async ctx => {
-        if (typeof options.before === 'function')
-            options.before(ctx)
+        if (options.before)
+            await options.before(ctx)
 
         const body = ctx.request.body || {};
 
