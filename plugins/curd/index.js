@@ -8,6 +8,8 @@ const _ = require("lodash");
  * @returns {(function(*): Promise<void>)}
  */
 exports.create = function (col, options) {
+    options = options || {};
+
     return async ctx => {
         if (options.before)
             await options.before(ctx)
@@ -32,6 +34,8 @@ exports.create = function (col, options) {
 }
 
 exports.setting = function (col, options) {
+    options = options || {};
+
     return async ctx => {
         if (options.before)
             await options.before(ctx)
@@ -72,6 +76,8 @@ exports.setting = function (col, options) {
 }
 
 exports.detail = function (col, options) {
+    options = options || {};
+
     return async ctx => {
         if (options.before)
             await options.before(ctx)
@@ -83,6 +89,8 @@ exports.detail = function (col, options) {
 }
 
 exports.delete = function (col, options) {
+    options = options || {};
+
     return async ctx => {
         if (options.before)
             await options.before(ctx)
