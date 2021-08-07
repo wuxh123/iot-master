@@ -189,3 +189,155 @@ exports.lrc = function lrc(buf) {
 
     return ((lrc ^ 0xFF) + 1) & 0xFF;
 };
+
+exports.parseData = function (map, data, code, address, length) {
+    const values = {}
+    map.forEach(v => {
+        if (v.code !== code) return;
+        if (v.address > length) return;
+        let value;
+        switch (v.type) {
+            case 'boolean':
+                value = data.readUInt8(v.address - address)
+                break;
+            case 'word':
+                value = data.readUInt16BE((v.address - address) * 2);
+                break;
+            case 'dword':
+                value = data.readUInt32BE((v.address - address) * 2);
+                break;
+            case 'float':
+                value = data.readFloatBE((v.address - address) * 2);
+                break;
+            case 'double':
+                value = data.readDoubleBE((v.address - address) * 2);
+                break;
+            case 'int8':
+                value = data.readInt8((v.address - address) * 2);
+                break;
+            case 'int16':
+                value = data.readInt16BE((v.address - address) * 2);
+                break;
+            case 'int32':
+                value = data.readInt32BE((v.address - address) * 2);
+                break;
+            case 'int64':
+                value = data.readBigInt64BE((v.address - address) * 2);
+                break;
+            case 'uint8':
+                value = data.readUInt8((v.address - address) * 2);
+                break;
+            case 'uint16':
+                value = data.readUInt16BE((v.address - address) * 2);
+                break;
+            case 'uint32':
+                value = data.readUInt32BE((v.address - address) * 2);
+                break;
+            case 'uint64':
+                value = data.readBigUInt64BE((v.address - address) * 2);
+                break;
+            case 'le-float':
+                value = data.readFloatLE((v.address - address) * 2);
+                break;
+            case 'le-double':
+                value = data.readDoubleLE((v.address - address) * 2);
+                break;
+            case 'le-int16':
+                value = data.readInt16LE((v.address - address) * 2);
+                break;
+            case 'le-int32':
+                value = data.readInt32LE((v.address - address) * 2);
+                break;
+            case 'le-int64':
+                value = data.readBigInt64LE((v.address - address) * 2);
+                break;
+            case 'le-uint16':
+                value = data.readUInt16LE((v.address - address) * 2);
+                break;
+            case 'le-uint32':
+                value = data.readUInt32LE((v.address - address) * 2);
+                break;
+            case 'le-uint64':
+                value = data.readBigUInt64LE((v.address - address) * 2);
+                break;
+        }
+        //构建合集
+        values[v.name] = value;
+    });
+    return values;
+}
+
+exports.buildData = function (type, val) {
+    let value = val;
+    switch (type) {
+        case 'dword':
+            value = Buffer.allocUnsafe(4);
+            value.writeUInt32BE(val);
+            break;
+        case 'float':
+            value = Buffer.allocUnsafe(4);
+            value.writeFloatBE(val);
+            break;
+        case 'double':
+            value = Buffer.allocUnsafe(8);
+            value.writeDoubleBE(val);
+            break;
+        case 'uint32':
+            value = Buffer.allocUnsafe(4);
+            value.writeUInt32BE(val);
+            break;
+        case 'uint64':
+            value = Buffer.allocUnsafe(8);
+            value.writeBigUInt64BE(val);
+            break;
+        case 'int8':
+            value = Buffer.alloc(2);
+            value.writeInt8(val);
+            break;
+        case 'int16':
+            value = Buffer.allocUnsafe(2);
+            value.writeInt16BE(val);
+            break;
+        case 'int32':
+            value = Buffer.allocUnsafe(4);
+            value.writeInt32BE(val);
+            break;
+        case 'int64':
+            value = Buffer.allocUnsafe(8);
+            value.writeBigInt64BE(val);
+            break;
+        case 'le-float':
+            value = Buffer.allocUnsafe(4);
+            value.writeFloatLE(val);
+            break;
+        case 'le-double':
+            value = Buffer.allocUnsafe(8);
+            value.writeDoubleLE(val);
+            break;
+        case 'le-uint16':
+            value = Buffer.allocUnsafe(4);
+            value.writeUInt32LE(val);
+            break;
+        case 'le-uint32':
+            value = Buffer.allocUnsafe(4);
+            value.writeUInt32LE(val);
+            break;
+        case 'le-uint64':
+            value = Buffer.allocUnsafe(8);
+            value.writeBigUInt64LE(val);
+            break;
+        case 'le-int16':
+            value = Buffer.allocUnsafe(2);
+            value.writeInt16LE(val);
+            break;
+        case 'le-int32':
+            value = Buffer.allocUnsafe(4);
+            value.writeInt32LE(val);
+            break;
+        case 'le-int64':
+            value = Buffer.allocUnsafe(8);
+            value.writeBigInt64LE(val);
+            break;
+    }
+    return value;
+}

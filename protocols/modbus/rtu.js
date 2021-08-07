@@ -16,6 +16,11 @@ module.exports = class RTU {
 
     _doing = false;
 
+    //解析数据
+    parseData =  helper.parseData;
+    //构造数据
+    buildData = helper.buildData;
+
     constructor(tunnel, options) {
         this.tunnel = tunnel;
         Object.assign(this.options, options);

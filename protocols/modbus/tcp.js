@@ -24,6 +24,10 @@ module.exports = class TCP {
 
     _doing = 0;
 
+    //解析数据
+    parseData =  helper.parseData;
+    //构造数据
+    buildData = helper.buildData;
 
     constructor(tunnel, options) {
         this.tunnel = tunnel;
@@ -48,7 +52,7 @@ module.exports = class TCP {
      * @param {number} length
      * @returns {Promise<Buffer>}
      */
-    read(slave, address, length) {
+    read(slave, code, address, length) {
         const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
         buf.writeUInt16BE(0, 2); //协议版本
