@@ -18,10 +18,11 @@ class TcpServer extends EventEmitter {
 
         this.server = net.createServer((socket => {
             //设置超时
-            socket.setTimeout(this.options.timeout, function () {
-                console.log("连接超时了", socket.remoteAddress);
-                socket.destroy()
-            });
+            if (this.options.timeout)
+                socket.setTimeout(this.options.timeout * 1000, function () {
+                    console.log("连接超时了", socket.remoteAddress);
+                    socket.destroy()
+                });
 
             //告诉外部，有新连接
             const tunnel = new Tunnel(socket, this.options);

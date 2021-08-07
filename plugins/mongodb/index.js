@@ -40,16 +40,24 @@ exports.config = function (opts) {
     };
 
     //TODO 处理错误
-    (async function () {
-        await MongoClient.connect(mongoUrl, options, function (err, client) {
-            if (err) {
-                console.log(err);
-                return
-            }
-            exports.client = client;
-            exports.db = client.db(cfg.db);
-        });
-    })();
+    MongoClient.connect(mongoUrl, options, function (err, client) {
+        if (err) {
+            console.log(err);
+            return
+        }
+        exports.client = client;
+        exports.db = client.db(cfg.db);
+
+        //执行等待
+        callbacks.forEach(c => c());
+    });
+}
+
+const callbacks = [];
+
+exports.ready = function (callback) {
+    if (this.client) callback();
+    else callbacks.push(callback);
 }
 
 /**

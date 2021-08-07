@@ -1,4 +1,4 @@
-module.exports = class HeartBeat {
+class HeartBeat {
     tunnel;
     options = {};
 
@@ -27,4 +27,8 @@ module.exports = class HeartBeat {
 
         next(data)
     }
+}
+
+module.exports = function (tunnel, options) {
+    return new HeartBeat(tunnel, options);
 }

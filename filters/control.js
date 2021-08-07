@@ -1,4 +1,4 @@
-module.exports = class Control {
+class Control {
     tunnel;
     options = {
         prefix: 'user.cn#', //Luat模块支持远程配置命令 config,get,imei\r\n 有人模块支持网络AT，usr.cn#AT\r\n
@@ -24,4 +24,8 @@ module.exports = class Control {
 
         next(data)
     }
+}
+
+module.exports = function (tunnel, options) {
+    return new Control(tunnel, options);
 }

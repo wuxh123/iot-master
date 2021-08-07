@@ -155,7 +155,7 @@ module.exports = class RTU {
     }
 
     checkTimeout(now) {
-        if (this._stamp + this.options.timeout < now) {
+        if (this._doing && this._stamp + this.options.timeout < now) {
             this._doing = false;
             this.reject(new Error("超时了"));
         }

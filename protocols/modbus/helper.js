@@ -194,11 +194,11 @@ exports.parseData = function (map, data, code, address, length) {
     const values = {}
     map.forEach(v => {
         if (v.code !== code) return;
-        if (v.address > length) return;
+        if (v.address > address + length) return;
         let value;
         switch (v.type) {
             case 'boolean':
-                value = data.readUInt8(v.address - address)
+                value = data.readUInt8(v.address - address);
                 break;
             case 'word':
                 value = data.readUInt16BE((v.address - address) * 2);
@@ -261,6 +261,9 @@ exports.parseData = function (map, data, code, address, length) {
                 value = data.readBigUInt64LE((v.address - address) * 2);
                 break;
         }
+        //比率变化
+        if (v.ratio !== 0 && v.ratio !== 1 && v.type !== 'boolean')
+            value = value * v.ratio;
         //构建合集
         values[v.name] = value;
     });

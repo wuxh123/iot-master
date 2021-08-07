@@ -1,4 +1,4 @@
-module.exports = class Register {
+class Register {
     tunnel;
     options = {};
     sn;
@@ -24,4 +24,8 @@ module.exports = class Register {
         this.sn = sn;
         this.tunnel.emit('register', sn);
     }
+}
+
+module.exports = function (tunnel, options) {
+    return new Register(tunnel, options);
 }
