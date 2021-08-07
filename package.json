@@ -14,7 +14,8 @@
     "iot",
     "modbus",
     "tcp",
-    "dtu"
+    "dtu",
+    "plc"
   ],
   "author": "jason@zgwit.com",
   "license": "GPL2.0",
