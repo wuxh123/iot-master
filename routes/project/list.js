@@ -9,5 +9,8 @@ exports.post = curd.list("project", {
     },{
         from: 'group',
         fields: ['name']
+    },{
+        from: 'user',
+        fields: ['name']
     }]
 });

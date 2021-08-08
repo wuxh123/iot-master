@@ -2,6 +2,8 @@
   "name": "plugin-weixin",
   "version": "1.0.0",
   "dependencies": {
-    "got": "^11.8.2"
+    "crypto-random-string": "^3.3.0",
+    "got": "^11.8.2",
+    "xml-js": "^1.6.11"
   }
 }

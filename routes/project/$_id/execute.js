@@ -1,14 +1,14 @@
-const device = require("../../../lib/device");
+const project = require("../../../lib/project");
 
 const mongo = require_plugin("mongodb");
 exports.post = async ctx => {
     const body = ctx.request.body;
-    const d = device.get(ctx.params._id);
-    if (!d) throw new Error("设备未上线")
+    const d = project.get(ctx.params._id);
+    if (!d) throw new Error("项目未上线")
     d.execute(body.command, body.parameters)
     //记录日志
-    await mongo.db.collection("device_event").insertOne({
-        device_id: ctx.params._id,
+    await mongo.db.collection("project_event").insertOne({
+        project_id: ctx.params._id,
         event: '执行：' + body.command,
         user_id: ctx.state.user._id
     })
