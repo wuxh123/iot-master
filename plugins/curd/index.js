@@ -20,6 +20,9 @@ exports.create = function (col, options) {
         const ret = await mongo.db.collection(col).insertOne(body);
         ctx.body = {data: ret.insertedId};
 
+        if (options.after)
+            await options.after(ctx)
+
         //后续执行
         process.nextTick(async () => {
             //记录创建事件
@@ -42,8 +45,16 @@ exports.setting = function (col, options) {
 
         const body = ctx.request.body;
         delete body._id; //ID不能修改，MongoDB会报错
-        const ret = await mongo.db.collection(col).findOneAndUpdate({_id: ctx.params._id}, {$set: body});
-        ctx.body = {data: ret};
+        let update = body;
+        if (!update.$set && !update.$unset && !update.$push)
+            update = {$set: update};
+
+        const ret = await mongo.db.collection(col).findOneAndUpdate({_id: ctx.params._id}, update);
+        const obj = await mongo.db.collection(col).findOne({_id: ctx.params._id});
+        ctx.body = {data: obj};
+
+        if (options.after)
+            await options.after(ctx)
 
         //后续执行
         process.nextTick(async () => {
@@ -83,8 +94,12 @@ exports.detail = function (col, options) {
             await options.before(ctx)
 
         const res = await mongo.db.collection(col).findOne({_id: ctx.params._id});
-        if (res) ctx.body = {data: res}
-        else ctx.body = {error: '找不到数据'}
+        if (!res)
+            throw new Error("找不到数据")
+        ctx.body = {data: res}
+
+        if (options.after)
+            await options.after(ctx)
     }
 }
 
@@ -97,6 +112,9 @@ exports.delete = function (col, options) {
 
         const res = await mongo.db.collection(col).findOneAndDelete({_id: ctx.params._id});
         ctx.body = {data: res}
+
+        if (options.after)
+            await options.after(ctx)
 
         //后续执行
         process.nextTick(async () => {
@@ -118,6 +136,78 @@ exports.delete = function (col, options) {
 }
 
 
+exports.compose = function (col, options) {
+    options = options || {};
+
+    return async ctx => {
+        if (options.before)
+            await options.before(ctx)
+
+        const body = ctx.request.body || {};
+
+        /**
+         *
+         * @type {[]}
+         */
+        let pipeline = [
+            {$match: {_id: ctx.params._id}},
+        ];
+
+        function addJoin(join) {
+            const local = join.local || join.from + '_id';
+            const foreign = join.foreign || '_id';
+            const as = join.as || join.from;
+            if (join.fields && join.fields.length) {
+                const $lookup = {
+                    from: join.from,
+                    as: as,
+                    let: {id: '$' + local},
+                    pipeline: [
+                        {$match: join.filter || {$expr: {$eq: ["$" + foreign, "$$id"]}}},
+                    ],
+                };
+                const $project = {};
+                join.fields.forEach(f => $project[f] = 1);
+                $lookup.pipeline.push({$project});
+
+                pipeline.push({$lookup});
+            } else {
+                //简单$lookup 支持对象数组作为条件的查询
+                const $lookup = {
+                    from: join.from,
+                    as: as,
+                    localField: local,
+                    foreignField: foreign,
+                };
+                pipeline.push({$lookup});
+            }
+            if (!join.noUnwind)
+                pipeline.push({$unwind: {path: '$' + as, preserveNullAndEmptyArrays: true}});
+        }
+
+        options.join && addJoin(options.join)
+        options.joins && options.joins.forEach(addJoin)
+
+        //支持参数中的fields
+        const fields = body.fields || options.fields;
+        if (fields && fields.length) {
+            const $project = {};
+            fields.forEach(f => $project[f] = 1);
+            pipeline.push({$project});
+        }
+
+        //查询
+        const res = await mongo.db.collection(col).aggregate(pipeline).toArray();
+        if (!res.length)
+            throw new Error("找不到记录")
+        ctx.body = {data: res[0]}
+
+        if (options.after)
+            await options.after(ctx)
+    }
+}
+
+
 exports.list = function (col, options) {
     options = options || {};
 
@@ -128,11 +218,11 @@ exports.list = function (col, options) {
         const body = ctx.request.body || {};
 
         let pipeline = [
+            ...(ctx.state.stages || []),
             {$match: body.filter || {}},
             {$sort: body.sort || {_id: -1}},
             {$skip: body.skip || 0},
             {$limit: body.limit || 20},
-            //TODO project
         ];
 
         if (options.pipeline) {
@@ -142,23 +232,33 @@ exports.list = function (col, options) {
         function addJoin(join) {
             const local = join.local || join.from + '_id';
             const foreign = join.foreign || '_id';
-            const $lookup = {
-                from: join.from,
-                as: join.as || join.from,
-                let: {id: '$'+local},
-                pipeline: [
-                    {$match: {$expr: {$eq: ["$"+foreign, "$$id"]}}},
-                ],
-            };
+            const as = join.as || join.from;
             if (join.fields && join.fields.length) {
+                const $lookup = {
+                    from: join.from,
+                    as: as,
+                    let: {id: '$' + local},
+                    pipeline: [
+                        {$match: join.filter || {$expr: {$eq: ["$" + foreign, "$$id"]}}},
+                    ],
+                };
                 const $project = {};
-                join.fields.forEach(f=>$project[f]=1);
+                join.fields.forEach(f => $project[f] = 1);
                 $lookup.pipeline.push({$project});
+
+                pipeline.push({$lookup});
+            } else {
+                //简单$lookup 支持对象数组作为条件的查询
+                const $lookup = {
+                    from: join.from,
+                    as: as,
+                    localField: local,
+                    foreignField: foreign,
+                };
+                pipeline.push({$lookup});
             }
-
-            pipeline.push({$lookup});
-            pipeline.push({$unwind: {path: '$' + $lookup.as, preserveNullAndEmptyArrays: true}});
-
+            if (!join.noUnwind)
+                pipeline.push({$unwind: {path: '$' + as, preserveNullAndEmptyArrays: true}});
             if (join.replace) {
                 pipeline.push({$addFields: {[$lookup.as + '.' + col + '_id']: '$_id'}})
                 pipeline.push({$replaceRoot: {newRoot: '$' + $lookup.as}});
@@ -172,11 +272,12 @@ exports.list = function (col, options) {
         const fields = body.fields || options.fields;
         if (fields && fields.length) {
             const $project = {};
-            fields.forEach(f=>$project[f]=1);
+            fields.forEach(f => $project[f] = 1);
             pipeline.push({$project});
         }
 
         const stages = [
+            ...(ctx.state.stages || []),
             {$match: body.filter || {}},
             {$count: 'total'}, //计算总数
             {
@@ -192,5 +293,8 @@ exports.list = function (col, options) {
         //查询
         const res = await mongo.db.collection(col).aggregate(stages).toArray();
         ctx.body = res.length ? res[0] : {total: 0, data: []}
+
+        if (options.after)
+            await options.after(ctx)
     }
 }

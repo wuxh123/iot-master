@@ -111,6 +111,6 @@ module.exports = function(options = {}) {
         await next();
 
         //类型降级，接下来交给joi-router检验output
-        demote(ctx.body);
+        //demote(ctx.body);
     };
 };

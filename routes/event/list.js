@@ -3,6 +3,6 @@ exports.post = curd.list("event", {
     join: {
         from: 'user',
         local: 'user_id',
-        fields: ['name']
+        fields: ['name', 'avatar']
     }
 });

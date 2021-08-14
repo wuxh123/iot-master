@@ -4,6 +4,7 @@ exports.get = (async ctx => {
     const ret = await mongo.db.collection("company").aggregate([
         //自己的
         {$match: {user_id: user_id}},
+
         //成员的
         {
             $unionWith: {
@@ -25,6 +26,7 @@ exports.get = (async ctx => {
                 ]
             }
         },
+
     ]).toArray();
 
     ctx.body = {data: ret};

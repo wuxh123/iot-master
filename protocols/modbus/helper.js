@@ -194,6 +194,7 @@ exports.parseData = function (map, data, code, address, length) {
     const values = {}
     map.forEach(v => {
         if (v.code !== code) return;
+        if (v.address < address) return;
         if (v.address > address + length) return;
         let value;
         switch (v.type) {

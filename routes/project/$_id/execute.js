@@ -7,7 +7,7 @@ exports.post = async ctx => {
     if (!d) throw new Error("项目未上线")
     d.execute(body.command, body.parameters)
     //记录日志
-    await mongo.db.collection("project_event").insertOne({
+    await mongo.db.collection("event").insertOne({
         project_id: ctx.params._id,
         event: '执行：' + body.command,
         user_id: ctx.state.user._id

@@ -3,49 +3,67 @@ const net = require('net');
 const Tunnel = require('../lib/tunnel');
 
 class TcpServer extends EventEmitter {
-    options = {
+    model = {
         timeout: 30000,
         port: 0,
     }
 
     server;
     clients = {};
+    closed = true;
+    error = '';
 
-    constructor(options) {
+    constructor(model) {
         super()
+        this.open(model)
+    }
 
-        Object.assign(this.options, options)
+    open(model) {
+        if (model)
+            this.model = model;
+        if (!this.closed)
+            this.close();
+        //this.closed = false;
 
         this.server = net.createServer((socket => {
             //设置超时
-            if (this.options.timeout)
-                socket.setTimeout(this.options.timeout * 1000, function () {
+            if (this.model.timeout)
+                socket.setTimeout(this.model.timeout * 1000, function () {
                     console.log("连接超时了", socket.remoteAddress);
                     socket.destroy()
                 });
 
             //告诉外部，有新连接
-            const tunnel = new Tunnel(socket, this.options);
+            const tunnel = new Tunnel(socket, this.model);
             this.emit('connect', tunnel)
         }));
 
         this.server.on("error", err => {
-            //console.error(err)
-            this.emit("error", err)
+            //console.error('server', err)
+            this.error = err.message;
+            this.emit("error", err);
         })
 
         this.server.on("close", () => {
             this.emit("close")
         })
 
-        this.server.listen(this.options.port);
+        this.server.listen(this.model.port, () => {
+            this.closed =  false;
+        });
     }
 
     close() {
-        this.server.close();
+        if (!this.closed) {
+            if (this.server) {
+                this.server.close();
+                this.server = null;
+            }
+        }
+        this.closed = true;
     }
 }
 
-module.exports = function (options) {
-    return new TcpServer(options);
+module.exports = function (model) {
+    return new TcpServer(model);
 }

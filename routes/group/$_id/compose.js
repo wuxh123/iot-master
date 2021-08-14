@@ -1,5 +1,5 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("group", {
+exports.get = curd.compose("group", {
     joins: [{
         from: 'user',
         fields: ['name']

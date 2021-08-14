@@ -10,6 +10,8 @@ class HeartBeat {
         //支持转义字符，比如：换行 回车 十六进制
         if (options.text)
             this.options.text = eval("`" + options.text + "`");
+        if (options.regex)
+            this.options.regex = new RegExp(options.regex);
     }
 
     handle(data, next) {

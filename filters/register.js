@@ -6,6 +6,8 @@ class Register {
     constructor(tunnel, options) {
         this.tunnel = tunnel;
         Object.assign(this.options, options);
+        if (options.regex)
+            this.options.regex = new RegExp(options.regex);
     }
 
     handle(data, next) {
