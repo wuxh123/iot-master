@@ -50,7 +50,7 @@ class UsrCn {
             results = results[0].split(':');
             switch (results[0]) {
                 case '+VER': //+VER:V1.1.01.000000.0000
-                    this.tunnel.emit('imei', results[1]);
+                    this.tunnel.emit('firmware', results[1]);
                     break;
                 case '+IMEI': //+IMEI:864333040712457
                     this.tunnel.emit('imei', results[1]);
