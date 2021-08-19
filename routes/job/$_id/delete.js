@@ -5,7 +5,7 @@ const device = require("../../../lib/device")
 
 exports.delete = exports.get = curd.delete("job", {
     after: ctx => {
-        mongo.db.collection("job").findOne({_id: ctx.params._id}).then(model => {
+        mongo.db.collection("job_deleted").findOne({job_id: ctx.params._id}).then(model => {
             if (model.project_id) {
                 const prj = project.get(model.project_id);
                 if (prj) {

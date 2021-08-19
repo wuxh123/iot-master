@@ -17,7 +17,7 @@ module.exports = class RTU {
     _doing = false;
 
     //解析数据
-    parseData =  helper.parseData;
+    parseData = helper.parseData;
     //构造数据
     buildData = helper.buildData;
 
@@ -198,10 +198,13 @@ module.exports = class RTU {
                 for (let i = 0; i < count; i++) {
                     let reg = data[i + 3];
                     for (let j = 0; j < 8; j++) {
-                        results.push((reg & 1) === 1); // ? 1 : 0);
+                        results.push((reg & 1) === 1 ? 1 : 0);
                         reg = reg >> 1;
                     }
                 }
+                //转成字节码，方便解析
+                results = Buffer.from(new Uint8Array(results))
+
                 this.resolve(results)
                 break;
             }

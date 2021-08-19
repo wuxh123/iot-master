@@ -199,7 +199,7 @@ exports.parseData = function (map, data, code, address, length) {
         let value;
         switch (v.type) {
             case 'boolean':
-                value = data.readUInt8(v.address - address);
+                value = !!data.readUInt8(v.address - address);
                 break;
             case 'word':
                 value = data.readUInt16BE((v.address - address) * 2);

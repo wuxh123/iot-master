@@ -12,7 +12,7 @@ exports.get = curd.compose("device", {
     }, {
         from: 'project',
         local: '_id',
-        foreign: 'devices.device_id',
+        foreign: 'devices.device_id', //$elemMatch没办法使用，也就没办法加fields
         noUnwind: true,
     }],
     after: async ctx => {

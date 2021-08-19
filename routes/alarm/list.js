@@ -1,8 +1,16 @@
 const curd = require_plugin("curd");
-exports.post = curd.list("device", {
-    join:{
+exports.post = curd.list("alarm", {
+    joins: [{
         from: 'device',
-        local: 'device_id',
         fields: ['name']
-    }
+    }, {
+        from: 'project',
+        fields: ['name'],
+    }, {
+        from: 'group',
+        fields: ['name'],
+    }, {
+        from: 'company',
+        fields: ['name'],
+    }]
 });

@@ -1,7 +1,16 @@
 const curd = require_plugin("curd");
 exports.post = curd.list("subscribe", {
-    join: {
+    joins: [{
         from: 'user',
-        fields: ['name']
-    }
+        fields: ['name', 'avatar']
+    }, {
+        from: 'project',
+        fields: ['name'],
+    }, {
+        from: 'group',
+        fields: ['name'],
+    }, {
+        from: 'company',
+        fields: ['name'],
+    }]
 });

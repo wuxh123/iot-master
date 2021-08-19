@@ -61,7 +61,8 @@ exports.query = function (table, tags, field, window, start, stop) {
             from(bucket: "${exports.options.bucket}")
               |> range(start: ${start}, stop: ${stop})
             `
-            + tags.map(t => `|> filter(fn: (r) => r["${t.name}"] == "${t.value}")`).join('\n') +
+            + Object.keys(tags).map(t=>`|> filter(fn: (r) => r["${t}"] == "${tags[t]}")`).join('\n') +
+            //+ tags.map(t => `|> filter(fn: (r) => r["${t.name}"] == "${t.value}")`).join('\n') +
             ` |> filter(fn: (r) => r["_field"] == "${field}")
               |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
               |> yield(name: "mean")
