@@ -1,14 +1,12 @@
-const acceptor = require("../../lib/acceptor");
+const tunnel = require("../../lib/tunnel");
 
 const curd = require_plugin("curd");
 exports.post = curd.list("tunnel", {
     after: async ctx => {
         ctx.body.data.forEach(p => {
-            const prj = acceptor.getTunnel(p._id);
-            if (prj) {
-                p.online = true;
-                //p.closed = prj.closed;
-                //p.error = prj.error;
+            const tnl = tunnel.get(p._id);
+            if (tnl) {
+                p.online = tnl.online;
             }
         })
     },
