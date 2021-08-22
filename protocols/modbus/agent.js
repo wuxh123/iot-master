@@ -62,7 +62,7 @@ module.exports = class Agent {
                     if (pt.code !== code) return;
                     if (pt.address < address) return;
                     if (pt.address > address + size) return;
-                    values[pt.name] = this._parse(pt, data, (pt.address - point.address) * 2)
+                    values[pt.name] = this._parse(pt, data, (pt.address - address) * 2)
                 });
                 resolve(values);
             }).catch(reject);
