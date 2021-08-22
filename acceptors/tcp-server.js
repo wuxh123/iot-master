@@ -1,6 +1,5 @@
 const EventEmitter = require('events');
 const net = require('net');
-const Tunnel = require('../lib/tunnel');
 
 class TcpServer extends EventEmitter {
     model = {
@@ -33,9 +32,21 @@ class TcpServer extends EventEmitter {
                     socket.destroy()
                 });
 
-            //告诉外部，有新连接
-            const tunnel = new Tunnel(socket, this.model);
-            this.emit('connect', tunnel)
+            //接收注册包
+            socket.once('data', data => {
+                const sn = data.toString();
+                if (this.model.register.regex) {
+                    if (!this.model.register.regex.test(sn)) {
+                        socket.end("invalid sn")
+                        return;
+                    }
+                }
+
+                //告诉外部，有新连接
+                //const tunnel = new Tunnel(socket, this.model);
+                this.emit('connect', sn, socket);
+            })
+
         }));
 
         this.server.on("error", err => {
@@ -49,7 +60,7 @@ class TcpServer extends EventEmitter {
         })
 
         this.server.listen(this.model.port, () => {
-            this.closed =  false;
+            this.closed = false;
         });
     }
 

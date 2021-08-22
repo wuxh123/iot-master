@@ -202,10 +202,13 @@ module.exports = class RTU {
                         reg = reg >> 1;
                     }
                 }
-                //转成字节码，方便解析
-                results = Buffer.from(new Uint8Array(results))
 
-                this.resolve(results)
+                //转成双字节码，方便解析
+                //results = Buffer.from(new Uint16Array(results))
+                const buf = Buffer.allocUnsafe(count * 8 * 2);
+                results.forEach((r, i) => buf.writeUInt16BE(r, i * 2));
+
+                this.resolve(buf)
                 break;
             }
             case 3://ReadHoldingRegisters,
