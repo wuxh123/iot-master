@@ -38,8 +38,8 @@ module.exports = class Agent {
         if (!point) throw new Error("未知数据点：" + key);
         const data = this._build(point, value)
         return new Promise(((resolve, reject) => {
-            this.adapter.write(point.code, point.address, data).then(data => {
-                resolve();
+            this.adapter.write(this.slave, point.code, point.address, data).then(data => {
+                resolve(data);
             }).catch(reject);
         }))
     }
@@ -48,8 +48,23 @@ module.exports = class Agent {
         const point = this.indexedMap[key]
         if (!point) throw new Error("未知数据点：" + key);
         return new Promise(((resolve, reject) => {
-            this.adapter.read(point.code, point.address, point.size).then(data => {
+            this.adapter.read(this.slave, point.code, point.address, point.size).then(data => {
                 resolve(this._parse(point, data, 0));
+            }).catch(reject);
+        }))
+    }
+
+    read(code, address, size) {
+        return new Promise(((resolve, reject) => {
+            this.adapter.read(this.slave, code, address, size).then(data => {
+                const values = {}
+                this.map.forEach(pt => {
+                    if (pt.code !== code) return;
+                    if (pt.address < address) return;
+                    if (pt.address > address + size) return;
+                    values[pt.name] = this._parse(pt, data, (pt.address - point.address) * 2)
+                });
+                resolve(values);
             }).catch(reject);
         }))
     }
@@ -57,18 +72,7 @@ module.exports = class Agent {
     getMany(key, size) {
         const point = this.indexedMap[key]
         if (!point) throw new Error("未知数据点：" + key);
-        return new Promise(((resolve, reject) => {
-            this.adapter.read(point.code, point.address, size).then(data => {
-                const values = {}
-                this.map.forEach(pt => {
-                    if (pt.code !== point.code) return;
-                    if (pt.address < point.address) return;
-                    if (pt.address > point.address + size) return;
-                    values[pt.name] = this._parse(pt, data, (pt.address - point.address) * 2)
-                });
-                resolve(values);
-            }).catch(reject);
-        }))
+        return this.read(point.code, point.address, size);
     }
 
     _build(point, val) {

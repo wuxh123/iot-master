@@ -1,5 +1,6 @@
 const timeout = require('./interval');
 const helper = require('./helper');
+const Agent = require("./agent");
 
 module.exports = class TCP {
 
@@ -24,11 +25,6 @@ module.exports = class TCP {
 
     _doing = 0;
 
-    //解析数据
-    parseData =  helper.parseData;
-    //构造数据
-    buildData = helper.buildData;
-
     constructor(tunnel, options) {
         this.tunnel = tunnel;
         Object.assign(this.options, options);
@@ -42,6 +38,16 @@ module.exports = class TCP {
         tunnel.on('close', () => {
             cancelable.cancel()
         })
+    }
+
+    /**
+     * 创建Agent
+     * @param {number} slave
+     * @param {Object[]} map
+     * @returns {Agent}
+     */
+    createAgent(slave, map) {
+        return new Agent(this, slave, map);
     }
 
     /**
@@ -243,7 +249,13 @@ module.exports = class TCP {
                         reg = reg >> 1;
                     }
                 }
-                this.resolve(results)
+
+                //转成双字节码，方便解析
+                //results = Buffer.from(new Uint16Array(results))
+                const buf = Buffer.allocUnsafe(count * 8 * 2);
+                results.forEach((r, i) => buf.writeUInt16BE(r, i * 2));
+
+                this.resolve(buf)
                 break;
             }
             case 3://ReadHoldingRegisters,

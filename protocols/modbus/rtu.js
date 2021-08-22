@@ -1,7 +1,9 @@
 const timeout = require('./interval');
 const helper = require('./helper');
+const Agent = require("./agent");
 
 module.exports = class RTU {
+
     tunnel; //socket serial
     options = {
         timeout: 2000,
@@ -16,24 +18,42 @@ module.exports = class RTU {
 
     _doing = false;
 
-    //解析数据
-    parseData = helper.parseData;
-    //构造数据
-    buildData = helper.buildData;
+
+    _checker;
+
+    onTunnelData= data=>{
+        this._handle(data)
+    }
+    onTunnelClose= ()=>{
+        this._checker.cancel();
+        this._checker = undefined;
+    }
 
     constructor(tunnel, options) {
         this.tunnel = tunnel;
         Object.assign(this.options, options);
+        this.open(tunnel)
+    }
 
-        const cancelable = timeout.check(1000, now => this.checkTimeout(now));
+    open(tunnel) {
+        if (this.tunnel) {
+            this.tunnel.off('data', this.onTunnelData);
+            this.tunnel.off('close', this.onTunnelClose);
+        }
+        if (!this._checker)
+            this._checker = timeout.check(1000, now => this.checkTimeout(now));
+        tunnel.on('data', this.onTunnelData);
+        tunnel.on('close', this.onTunnelClose);
+    }
 
-        tunnel.on('data', data => {
-            this._handle(data)
-        })
-
-        tunnel.on('close', () => {
-            cancelable.cancel()
-        })
+    /**
+     * 创建Agent
+     * @param {number} slave
+     * @param {Object[]} map
+     * @returns {Agent}
+     */
+    createAgent(slave, map) {
+        return new Agent(this, slave, map);
     }
 
     /**
