@@ -7,6 +7,8 @@ class TcpServer extends EventEmitter {
         port: 0,
     }
 
+    register = { regex: /^\w+$/ };
+
     server;
     clients = {};
     closed = true;
@@ -24,6 +26,9 @@ class TcpServer extends EventEmitter {
             this.close();
         //this.closed = false;
 
+        if (this.model.register.regex)
+            this.register.regex = new RegExp(this.model.register.regex);
+
         this.server = net.createServer((socket => {
             //设置超时
             if (this.model.timeout)
@@ -35,8 +40,8 @@ class TcpServer extends EventEmitter {
             //接收注册包
             socket.once('data', data => {
                 const sn = data.toString();
-                if (this.model.register.regex) {
-                    if (!this.model.register.regex.test(sn)) {
+                if (this.register.regex) {
+                    if (!this.register.regex.test(sn)) {
                         socket.end("invalid sn")
                         return;
                     }

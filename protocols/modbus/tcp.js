@@ -28,10 +28,10 @@ module.exports = class TCP {
 
     _checker;
 
-    onTunnelData= data=>{
+    onTunnelData = data => {
         this._handle(data)
     }
-    onTunnelClose= ()=>{
+    onTunnelClose = () => {
         this._checker.cancel();
         this._checker = undefined;
     }
@@ -124,7 +124,7 @@ module.exports = class TCP {
         //包头和尾
         //buf.writeUInt16BE(this.transactionId);
         buf.writeUInt16BE(0, 2); //协议版本
-        buf.writeUInt16BE(6, 4); //剩余长度
+        buf.writeUInt16BE(buf.length - 6, 4); //剩余长度
         buf.writeUInt8(slave, 6); //从站号
         buf.writeUInt8(code, 7); //功能码
         buf.writeUInt16BE(address, 8); //地址

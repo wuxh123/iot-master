@@ -81,8 +81,11 @@ module.exports = class Agent {
         let value = val;
         switch (point.type) {
             case 'word':
-                value = Buffer.allocUnsafe(2);
-                point.le ? value.writeUInt16LE(val) : value.writeUInt16BE(val);
+                if (point.le) {
+                    const buf = Buffer.allocUnsafe(2);
+                    buf.writeUInt16LE(val);
+                    value = buf.readUInt16BE();
+                }
                 break;
             case 'dword':
                 value = Buffer.allocUnsafe(4);
@@ -97,12 +100,15 @@ module.exports = class Agent {
                 point.le ? value.writeDoubleLE(val) : value.writeDoubleBE(val);
                 break;
             case 'uint8':
-                value = Buffer.alloc(2);
-                value.writeUInt8(val, 1);
+                if (point.le)
+                    value *= 256;
                 break;
             case 'uint16':
-                value = Buffer.allocUnsafe(2);
-                point.le ? value.writeUInt16LE(val) : value.writeUInt16BE(val);
+                if (point.le) {
+                    const buf = Buffer.allocUnsafe(2);
+                    buf.writeUInt16LE(val);
+                    value = buf.readUInt16BE();
+                }
                 break;
             case 'uint32':
                 value = Buffer.allocUnsafe(4);
@@ -113,12 +119,15 @@ module.exports = class Agent {
                 point.le ? value.writeInt8(val) : value.writeInt8(val);
                 break;
             case 'int8':
-                value = Buffer.alloc(2);
-                value.writeInt8(val, 1);
+                if (point.le)
+                    value *= 256;
                 break;
             case 'int16':
-                value = Buffer.allocUnsafe(2);
-                point.le ? value.writeInt16LE(val) : value.writeInt16BE(val);
+                if (point.le) {
+                    const buf = Buffer.allocUnsafe(2);
+                    buf.writeInt16LE(val);
+                    value = buf.readInt16BE();
+                }
                 break;
             case 'int32':
                 value = Buffer.allocUnsafe(4);
@@ -176,6 +185,30 @@ module.exports = class Agent {
                 break;
             default:
                 throw new Error("未知的数据类型" + point.type);
+        }
+
+        //精度计算
+        if (point.type !== 'boolean' && point.precision > 0) {
+            switch (point.precision) {
+                case 1:
+                    value *= 0.1;
+                    break;
+                case 2:
+                    value *= 0.01;
+                    break;
+                case 3:
+                    value *= 0.001;
+                    break;
+                case 4:
+                    value *= 0.0001;
+                    break;
+                case 5:
+                    value *= 0.00001;
+                    break;
+                case 6:
+                    value *= 0.000001;
+                    break;
+            }
         }
         return value;
     }

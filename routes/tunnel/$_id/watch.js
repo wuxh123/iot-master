@@ -1,9 +1,9 @@
-const acceptor = require("../../../lib/acceptor");
+const tunnel = require("../../../lib/tunnel");
 
 
 exports.get = async ctx =>{
-    const tunnel = acceptor.getTunnel(ctx.params._id)
-    if (!tunnel) {
+    const tnl = tunnel.get(ctx.params._id)
+    if (!tnl) {
         ctx.body = {data: "通道未上线"}
         return
     }
@@ -36,16 +36,16 @@ exports.get = async ctx =>{
             }))
         }
 
-        tunnel.on('read', onRead)
+        tnl.on('read', onRead)
 
-        tunnel.on('write', onWrite)
+        tnl.on('write', onWrite)
 
-        tunnel.on('error', onError)
+        tnl.on('error', onError)
 
         ws.on('close', ()=>{
-            tunnel.off('read', onRead);
-            tunnel.off('write', onWrite);
-            tunnel.off('error', onError);
+            tnl.off('read', onRead);
+            tnl.off('write', onWrite);
+            tnl.off('error', onError);
         })
 
         ws.on('message', function(message) {
@@ -54,7 +54,7 @@ exports.get = async ctx =>{
             switch (obj.type) {
                 case 'write':
                     const d = Buffer.from(obj.data, obj.isHex ? 'hex' : 'utf8');
-                    tunnel.write(d)
+                    tnl.write(d)
                     break;
             }
             //tunnel.write()
