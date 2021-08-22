@@ -37,8 +37,10 @@ module.exports = class Agent {
         const point = this.indexedMap[key]
         if (!point) throw new Error("未知数据点：" + key);
         const data = this._build(point, value)
+        //console.log('Agent set', key, value, new Date());
         return new Promise(((resolve, reject) => {
             this.adapter.write(this.slave, point.code, point.address, data).then(data => {
+                //console.log('Agent set', key, value, 'ok',new Date());
                 resolve(data);
             }).catch(reject);
         }))
@@ -130,11 +132,11 @@ module.exports = class Agent {
         return value;
     }
 
-    _parse(point, data, offset= 0) {
+    _parse(point, data, offset = 0) {
         let value;
         switch (point.type) {
             case 'boolean':
-                value = !!data.readUInt8(offset);
+                value = !!data.readUInt8(offset + 1);
                 break;
             case 'word':
                 value = point.le ? data.readFloatLE(offset) : data.readUInt16BE(offset);
@@ -149,7 +151,7 @@ module.exports = class Agent {
                 value = point.le ? data.readDoubleLE(offset) : data.readDoubleBE(offset);
                 break;
             case 'int8':
-                value = data.readInt8(offset+1);
+                value = data.readInt8(offset + 1);
                 break;
             case 'int16':
                 value = point.le ? data.readInt16LE(offset) : data.readInt16BE(offset);
@@ -161,7 +163,7 @@ module.exports = class Agent {
                 value = point.le ? data.readBigInt64LE(offset) : data.readBigInt64BE(offset);
                 break;
             case 'uint8':
-                value = data.readUInt8(offset+1);
+                value = data.readUInt8(offset + 1);
                 break;
             case 'uint16':
                 value = point.le ? data.readUInt16LE(offset) : data.readUInt16BE(offset);
