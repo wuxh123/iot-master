@@ -22,7 +22,7 @@ class Config {
             case 'iccid':
                 command = "iccid";
                 break;
-            case 'lbs':
+            case 'gps':
                 command = "lbsloc";
                 break;
             case 'rssi':
@@ -39,28 +39,28 @@ class Config {
         const text = data.toString();
         if (text.startsWith(this.options.prefix) && text.endsWith(this.options.suffix)) {
             //this.tunnel.emit('config', text.substring(this.options.prefix.length, -this.options.suffix.length));
-            const result =  text.substring(this.options.prefix.length, -this.options.suffix.length);
+            const result = text.substring(this.options.prefix.length, -this.options.suffix.length);
             const results = result.split(',')
             switch (results[0]) {
                 case 'imei':
                     if (results[1] === 'ok')
-                        this.tunnel.emit('imei', results[2]);
+                        this.tunnel.emit('control', {'imei': results[2]});
                     break;
                 case 'iccid':
                     if (results[1] === 'ok')
-                        this.tunnel.emit('iccid', results[2]);
+                        this.tunnel.emit('control', {'iccid': results[2]});
                     break;
                 case 'lbsloc':
                     if (results[1] === 'ok')
-                        this.tunnel.emit('gps', {longitude: Number(results[2]), latitude: Number(results[3])});
+                        this.tunnel.emit('control', {'gps': [Number(results[2]), Number(results[3])]});
                     break;
                 case 'firmwarever':
                     if (results[1] === 'ok')
-                        this.tunnel.emit('firmware', results[2]);
+                        this.tunnel.emit('control', {'firmware': results[2]});
                     break;
                 case 'csq':
                     if (results[1] === 'ok')
-                        this.tunnel.emit('rssi', Number(results[2]));
+                        this.tunnel.emit('control', {'rssi': Number(results[2])});
                     break;
                 default:
                     //DO nothing

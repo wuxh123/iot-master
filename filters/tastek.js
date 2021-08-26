@@ -1,4 +1,4 @@
-class UsrCn {
+class Tastek {
     tunnel;
     options = {
         prefix: '@DTU:0000:', //有人模块支持网络AT，usr.cn#AT\r\n
@@ -46,24 +46,24 @@ class UsrCn {
             results = results[0].split(':');
             switch (results[0]) {
                 case '+CGMR':
-                    this.tunnel.emit('firmware', results[1]);
+                    this.tunnel.emit('control', {'firmware': results[1]});
                     break;
                 case '+DEVICEID':
-                    this.tunnel.emit('sn', results[1]);
+                    this.tunnel.emit('control', {'sn': results[1]});
                     break;
                 case '+GSN':
-                    this.tunnel.emit('imei', results[1]);
+                    this.tunnel.emit('control', {'imei': results[1]});
                     break;
                 case '+ICCID':
-                    this.tunnel.emit('iccid', results[1]);
+                    this.tunnel.emit('control', {'iccid': results[1]});
                     break;
                 case '+GPSINFO'://
                     let longitude, latitude;
                     const strs = results[1].split(',')
-                    this.tunnel.emit('gps', {longitude: Number(strs[0]), latitude: Number(strs[1])});
+                    this.tunnel.emit('control', {'gps': [Number(strs[0]), Number(strs[1])]});
                     break;
                 case '+CSQ':
-                    this.tunnel.emit('rssi', parseInt(results[1]));
+                    this.tunnel.emit('control', {'rssi': parseInt(results[1])});
                     break;
                 default:
                     //DO nothing
@@ -78,5 +78,5 @@ class UsrCn {
 }
 
 module.exports = function (tunnel, options) {
-    return new UsrCn(tunnel, options);
+    return new Tastek(tunnel, options);
 }

@@ -25,7 +25,7 @@ class UsrCn {
             case 'iccid':
                 command = "AT+ICCID";
                 break;
-            case 'lbs':
+            case 'gps':
                 command = "AT+LBS=1";
                 break;
             case 'rssi':
@@ -50,13 +50,13 @@ class UsrCn {
             results = results[0].split(':');
             switch (results[0]) {
                 case '+VER': //+VER:V1.1.01.000000.0000
-                    this.tunnel.emit('firmware', results[1]);
+                    this.tunnel.emit('control', {'firmware': results[1]});
                     break;
                 case '+IMEI': //+IMEI:864333040712457
-                    this.tunnel.emit('imei', results[1]);
+                    this.tunnel.emit('control', {'imei': results[1]});
                     break;
                 case '+ICCID'://+ICCID:8986003615195A571314
-                    this.tunnel.emit('iccid', results[1]);
+                    this.tunnel.emit('control', {'iccid': results[1]});
                     break;
                 case '+LBS'://
                     let longitude, latitude;
@@ -68,19 +68,19 @@ class UsrCn {
                             latitude = Number(strs[1]);
                     })
                     if (longitude && latitude)
-                        this.tunnel.emit('gps', {longitude, latitude});
+                        this.tunnel.emit('control', {'gps': [longitude, latitude]});
                     break;
                 case '+SN'://+SN: 00402420011300024522
-                    this.tunnel.emit('sn', results[1]);
+                    this.tunnel.emit('control', {'sn': results[1]});
                     break;
                 case '+CSQ'://+CSQ: 27,99
-                    this.tunnel.emit('rssi', parseInt(results[1]));
+                    this.tunnel.emit('control', {'rssi': parseInt(results[1])});
                     break;
                 case '+SYSINFO'://+SYSINFO:4,LTE
-                    this.tunnel.emit('net', results[1]);
+                    this.tunnel.emit('control', {'net': results[1]});
                     break;
                 case '+APN'://+APN:CMNET,,,0
-                    this.tunnel.emit('apn', results[1]);
+                    this.tunnel.emit('control', {'apn': results[1]});
                     break;
                 default:
                     //DO nothing
