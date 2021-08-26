@@ -15,9 +15,6 @@ class Tastek {
             case 'firmware':
                 command = "+CGMR";
                 break;
-            case 'sn':
-                command = "+DEVICEID";
-                break;
             case 'imei':
                 command = "+GSN";
                 break;
@@ -40,16 +37,13 @@ class Tastek {
     handle(data, next) {
         const text = data.toString();
         if (text.startsWith(this.options.prefix)) {
-            //this.tunnel.emit('at', text.substring(this.options.prefix.length, -this.options.suffix.length));
             const result = text.substring(this.options.prefix.length);
             let results = result.split('\r\n');
-            results = results[0].split(':');
+            if (results.length < 2) return;
+            results = results[1].split(':');
             switch (results[0]) {
                 case '+CGMR':
                     this.tunnel.emit('control', {'firmware': results[1]});
-                    break;
-                case '+DEVICEID':
-                    this.tunnel.emit('control', {'sn': results[1]});
                     break;
                 case '+GSN':
                     this.tunnel.emit('control', {'imei': results[1]});

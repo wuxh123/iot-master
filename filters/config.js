@@ -38,9 +38,8 @@ class Config {
     handle(data, next) {
         const text = data.toString();
         if (text.startsWith(this.options.prefix) && text.endsWith(this.options.suffix)) {
-            //this.tunnel.emit('config', text.substring(this.options.prefix.length, -this.options.suffix.length));
-            const result = text.substring(this.options.prefix.length, -this.options.suffix.length);
-            const results = result.split(',')
+            const result = text.substring(this.options.prefix.length, text.length-this.options.suffix.length);
+            const results = result.split(',');
             switch (results[0]) {
                 case 'imei':
                     if (results[1] === 'ok')

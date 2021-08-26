@@ -1,7 +1,7 @@
 class UsrCn {
     tunnel;
     options = {
-        prefix: 'user.cn#', //有人模块支持网络AT，usr.cn#AT\r\n
+        prefix: 'usr.cn#', //有人模块支持网络AT，usr.cn#AT\r\n
         suffix: '\r\n',
     };
 
@@ -15,9 +15,6 @@ class UsrCn {
         switch (cmd) {
             case 'firmware':
                 command = "AT+VER";
-                break;
-            case 'sn':
-                command = "AT+SN";
                 break;
             case 'imei':
                 command = "AT+IMEI";
@@ -44,10 +41,10 @@ class UsrCn {
     handle(data, next) {
         const text = data.toString();
         if (text.startsWith(this.options.prefix) && text.endsWith(this.options.suffix)) {
-            //this.tunnel.emit('at', text.substring(this.options.prefix.length, -this.options.suffix.length));
-            const result = text.substring(this.options.prefix.length, -this.options.suffix.length);
+            const result = text.substring(this.options.prefix.length, text.length-this.options.suffix.length);
             let results = result.split('\r\n');
-            results = results[0].split(':');
+            if (results.length < 2) return;
+            results = results[1].split(':');
             switch (results[0]) {
                 case '+VER': //+VER:V1.1.01.000000.0000
                     this.tunnel.emit('control', {'firmware': results[1]});
@@ -69,9 +66,6 @@ class UsrCn {
                     })
                     if (longitude && latitude)
                         this.tunnel.emit('control', {'gps': [longitude, latitude]});
-                    break;
-                case '+SN'://+SN: 00402420011300024522
-                    this.tunnel.emit('control', {'sn': results[1]});
                     break;
                 case '+CSQ'://+CSQ: 27,99
                     this.tunnel.emit('control', {'rssi': parseInt(results[1])});
