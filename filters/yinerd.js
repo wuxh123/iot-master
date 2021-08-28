@@ -1,7 +1,7 @@
-class Config {
+class Yinerd {
     tunnel;
     options = {
-        prefix: 'config,', //Luat模块支持远程配置命令 config,get,imei\r\n
+        prefix: 'config,', //银尔达DTU支持的远程配置命令 config,get,imei\r\n
         suffix: '\r\n',
     };
 
@@ -74,5 +74,5 @@ class Config {
 }
 
 module.exports = function (tunnel, options) {
-    return new Config(tunnel, options);
+    return new Yinerd(tunnel, options);
 }
