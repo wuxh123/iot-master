@@ -215,14 +215,8 @@ module.exports = class TCP {
         if (this._doing > 0)
             this._doing--;
 
-        if (data.length < 12) {
-            // if (data.length >= 2) {
-            //     let id = data.readUInt16BE(0);
-            //     if (id < 512) {
-            //         this.reject(id, new Error("长度不能少于12字节"));
-            //     }
-            // }
-            console.log("长度不能少于12字节")
+        if (data.length < 10) {
+            //console.log("长度不能少于10字节")
             return;
         }
 

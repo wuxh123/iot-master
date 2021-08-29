@@ -36,16 +36,30 @@ exports.get = async ctx =>{
             }))
         }
 
+        function onOnline() {
+            ws.send(JSON.stringify({
+                type: 'online',
+            }))
+        }
+
+        function onOffline() {
+            ws.send(JSON.stringify({
+                type: 'offline',
+            }))
+        }
+
         tnl.on('read', onRead)
-
         tnl.on('write', onWrite)
-
         tnl.on('error', onError)
+        tnl.on('online', onOnline)
+        tnl.on('offline', onOffline)
 
         ws.on('close', ()=>{
             tnl.off('read', onRead);
             tnl.off('write', onWrite);
             tnl.off('error', onError);
+            tnl.off('online', onOnline);
+            tnl.off('offline', onOffline);
         })
 
         ws.on('message', function(message) {
@@ -61,9 +75,9 @@ exports.get = async ctx =>{
         });
 
         // now you have a ws instance, you can use it as you see fit
-        return ws.send('hello')
+        return ws.send(JSON.stringify({"hello":"world"}))
     }
 
     // we're back to regular old http here
-    ctx.body = '请使用新浏览器'
+    ctx.body = '请使用Chrome浏览器'
 }

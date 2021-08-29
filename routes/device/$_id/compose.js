@@ -8,7 +8,7 @@ exports.get = curd.compose("device", {
         //fields: ['name']
     }, {
         from: 'tunnel',
-        fields: ['name', 'sn', 'last']
+        //fields: ['name', 'sn', 'last']
     }, {
         from: 'project',
         local: '_id',
