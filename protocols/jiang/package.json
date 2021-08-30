@@ -1,0 +1,24 @@
+{
+  "name": "jiang",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "codes": [
+    {
+      "name": "寄存器",
+      "code": 3
+    },
+    {
+      "name": "快速读取",
+      "code": 4
+    }
+  ],
+  "protocols": [
+    {
+      "name": "jiang",
+      "label": "Jiang",
+      "script": "jiang.js",
+      "options": "json schema"
+    }
+  ]
+}

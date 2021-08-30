@@ -148,7 +148,7 @@ module.exports = class Agent {
                 value = !!data.readUInt8(offset + 1);
                 break;
             case 'word':
-                value = point.le ? data.readFloatLE(offset) : data.readUInt16BE(offset);
+                value = point.le ? data.readUInt16LE(offset) : data.readUInt16BE(offset);
                 break;
             case 'dword':
                 value = point.le ? data.readUInt32LE(offset) : data.readUInt32BE(offset);
