@@ -32,7 +32,7 @@ module.exports = class Agent {
         const point = this.indexedMap[key]
         if (!point) throw new Error("未知数据点：" + key);
         return new Promise(((resolve, reject) => {
-            this.adapter.read(this.slave, point.code, point.address, point.size).then(data => {
+            this.adapter.read(this.slave, point.code, point.address, 1).then(data => {
                 resolve(this._parse(point, data, 0));
             }).catch(reject);
         }))

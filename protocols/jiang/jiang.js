@@ -15,7 +15,7 @@ module.exports = class Jiang {
     options = {
         concurrency: {
             enable: true,
-            max: 10
+            max: 50
         },
         timeout: 5000,
         transaction: {
@@ -159,7 +159,7 @@ module.exports = class Jiang {
         this._doing++;
         this.tunnel.write(cmd);
 
-        const id = cmd.readUInt8();
+        const id = cmd.readUInt8(1);
         this._handlers[id].stamp = Date.now();
 
         //console.log("next", cmd)
