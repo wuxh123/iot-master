@@ -124,7 +124,7 @@ module.exports = class Jiang {
         command.writeUInt8(this.transactionId, 1);
         //和检验
         let sum = calcSum(command, command.length - 1);
-        command.writeUInt8(sum, command.length - 1);
+        command.writeUInt8(sum % 256, command.length - 1);
 
         //异步返回
         const promise = new Promise((resolve, reject) => {
