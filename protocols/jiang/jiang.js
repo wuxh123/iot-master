@@ -211,6 +211,10 @@ module.exports = class Jiang {
                 data = data.slice(1);
                 continue;
             }
+            //过短，也丢弃
+            if (len < 4) {
+                return;
+            }
 
             //数据还不够 (考虑历史数据，可能会导致有效数据无法及时处理)
             // if (len >= data.length) {
@@ -234,7 +238,7 @@ module.exports = class Jiang {
             break;
         }
 
-        //如果已经检查完
+        //如果找不到有效数据，就退出
         if (!data.length)
             return;
 
