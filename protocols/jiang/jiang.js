@@ -204,7 +204,7 @@ module.exports = class Jiang {
 
         let len = 0;
         //定位正确的包
-        while (true) {
+        while (data.length) {
             len = data[0];
             //过长，丢弃
             if (len > 50) {
@@ -233,6 +233,10 @@ module.exports = class Jiang {
 
             break;
         }
+
+        //如果已经检查完
+        if (!data.length)
+            return;
 
         let id = data.readUInt8(1);
         let fc = data.readUInt8(2);
