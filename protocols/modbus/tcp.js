@@ -1,6 +1,5 @@
 const timeout = require('./interval');
 const helper = require('./helper');
-const Agent = require("./agent");
 
 module.exports = class TCP {
 
@@ -51,16 +50,6 @@ module.exports = class TCP {
             this._checker = timeout.check(1000, now => this.checkTimeout(now));
         tunnel.on('data', this.onTunnelData);
         tunnel.on('close', this.onTunnelClose);
-    }
-
-    /**
-     * 创建Agent
-     * @param {number} slave
-     * @param {Object[]} map
-     * @returns {Agent}
-     */
-    createAgent(slave, map) {
-        return new Agent(this, slave, map);
     }
 
     /**

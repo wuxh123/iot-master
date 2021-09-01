@@ -1,5 +1,4 @@
 const timeout = require('../../lib/interval');
-const Agent = require("./agent");
 
 function calcSum(buf, len) {
     let sum = 0;
@@ -58,16 +57,6 @@ module.exports = class Jiang {
             this._checker = timeout.check(1000, now => this.checkTimeout(now));
         tunnel.on('data', this.onTunnelData);
         tunnel.on('close', this.onTunnelClose);
-    }
-
-    /**
-     * 创建Agent
-     * @param {number} slave
-     * @param {Object[]} map
-     * @returns {Agent}
-     */
-    createAgent(slave, map) {
-        return new Agent(this, slave, map);
     }
 
     /**
@@ -208,24 +197,30 @@ module.exports = class Jiang {
         }
 
         //历史数据
-        if (this.remain) {
-            data = Buffer.concat([this.remain, data]);
-            this.remain = undefined;
-        }
+        // if (this.remain) {
+        //     data = Buffer.concat([this.remain, data]);
+        //     this.remain = undefined;
+        // }
 
+        let len = 0;
         //定位正确的包
         while (true) {
-            let len = data[0];
+            len = data[0];
             //过长，丢弃
             if (len > 50) {
                 data = data.slice(1);
                 continue;
             }
 
-            //数据还不够
+            //数据还不够 (考虑历史数据，可能会导致有效数据无法及时处理)
+            // if (len >= data.length) {
+            //     this.remain = data;
+            //     return;
+            // }
+
             if (len >= data.length) {
-                this.remain = data;
-                return;
+                data = data.slice(1);
+                continue;
             }
 
             //校验
@@ -244,33 +239,42 @@ module.exports = class Jiang {
         if ((fc & 0xF0) > 0) {
             let status = (fc & 0xF0) >> 4;
             this.reject(id, new Error("执行错误 FC:" + fc + ' STATUS:' + status));
-            return;
+        } else {
+            switch (fc) {
+                case 1:  //心跳
+                    break;
+                case 3: //数据采集
+                case 4: //读取
+                {
+                    let relay = data.readUInt8(3);
+                    let pool = data.readUInt8(4);
+                    let device = data.readUInt8(5);
+                    let address = data.readUInt8(6);
+                    this.resolve(id, data.slice(7, len - 1));
+                    break;
+                }
+                case 5: //写指令
+                {
+                    let relay = data.readUInt8(3);
+                    let pool = data.readUInt8(4);
+                    let device = data.readUInt8(5);
+                    let address = data.readUInt8(6);
+                    this.resolve(id, {relay, pool, device, address});
+                    break;
+                }
+                default:
+                    if (id > 0)
+                        this.reject(id, new Error("不支持的FC:" + fc));
+                    break;
+            }
         }
 
-        switch (fc) {
-            case 1:  //心跳
-                break;
-            case 3: //数据采集
-            case 4: //读取
-            {
-                let relay = data.readUInt8(3);
-                let pool = data.readUInt8(4);
-                let device = data.readUInt8(5);
-                let address = data.readUInt8(6);
-                this.resolve(id, data.slice(7, data.length - 1));
-                break;
-            }
-            case 5: //写指令
-            {
-                let relay = data.readUInt8(3);
-                let pool = data.readUInt8(4);
-                let device = data.readUInt8(5);
-                let address = data.readUInt8(6);
-                this.resolve(id, {relay, pool, device, address});
-                break;
-            }
-            default:
-                break;
+        //粘包的情况
+        if (data.length > len + 1) {
+            data = data.slice(len + 1);
+            //继续解析
+            this._handle(data);
         }
+
     }
 }
