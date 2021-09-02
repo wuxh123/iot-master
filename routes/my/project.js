@@ -177,7 +177,7 @@ exports.get = (async ctx => {
                 p.online = true;
                 p.closed = prj.closed;
                 p.error = prj.error;
-                p.values = prj.variables;
+                p.values = prj.context;
             }
 
             //设备状态
@@ -187,7 +187,7 @@ exports.get = (async ctx => {
                     d.online = true;
                     d.closed = dvc.closed;
                     d.error = dvc.error;
-                    d.values = dvc.variables;
+                    d.values = dvc.context;
                 }
             })
         })

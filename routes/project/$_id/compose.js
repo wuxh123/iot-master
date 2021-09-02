@@ -33,7 +33,7 @@ exports.get = curd.compose("project", {
             p.online = true;
             p.closed = prj.closed;
             p.error = prj.error;
-            p.values = _.cloneDeep(prj.variables);
+            p.values = _.cloneDeep(prj.context);
         }
         p.device.forEach(d=>{
             //放进来会让返回包体积太大
@@ -45,7 +45,7 @@ exports.get = curd.compose("project", {
                 d.online = true;
                 d.closed = dvc.closed;
                 d.error = dvc.error;
-                d.values = _.cloneDeep(dvc.variables);
+                d.values = _.cloneDeep(dvc.context);
             }
         })
         //delete p.device;

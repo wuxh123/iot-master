@@ -19,7 +19,7 @@ exports.post = curd.list("device", {
             d.project = d.project.map(p=>p.name);
             const dvc = device.get(d._id);
             if (dvc) {
-                d.online = dvc.variables.$online;
+                d.online = dvc.context.$online;
                 d.closed = dvc.closed;
                 d.error = dvc.error;
             }
