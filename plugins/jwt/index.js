@@ -3,7 +3,10 @@ const koaJwt = require('koa-jwt');
 
 const defaultOptions = {
     secret: 'jwt-secret',
-    expiresIn: 24 * 60 * 60 //s 一天
+    expiresIn: 24 * 60 * 60, //s 一天
+    getToken(ctx, opts) {
+        return ctx.query[opts.queryToken || 'token'];
+    }
 };
 
 let options = Object.assign({}, defaultOptions);
