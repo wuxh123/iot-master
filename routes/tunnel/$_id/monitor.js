@@ -75,7 +75,7 @@ exports.get = async ctx =>{
         });
 
         // now you have a ws instance, you can use it as you see fit
-        return ws.send(JSON.stringify({"hello":"world"}))
+        return ws.send(JSON.stringify({type:"connected", data: ctx.params._id}))
     }
 
     // we're back to regular old http here
