@@ -145,6 +145,8 @@ module.exports = class Jiang {
 
         //异步返回
         const promise = new Promise((resolve, reject) => {
+            if (this._handlers[this.transactionId])
+                this.reject(this.transactionId, new Error("ID被重用"));
             this._handlers[this.transactionId] = {id: this.transactionId, command, resolve, reject};
         });
 
@@ -187,7 +189,9 @@ module.exports = class Jiang {
         delete this._handlers[id];
         if (handler)
             handler.resolve(data);
-        this._next();
+        if (this._doing > 0)
+            this._doing--;
+        process.nextTick(() => this._next());
     }
 
     reject(id, err) {
@@ -195,7 +199,9 @@ module.exports = class Jiang {
         delete this._handlers[id];
         if (handler)
             handler.reject(err);
-        this._next();
+        if (this._doing > 0)
+            this._doing--;
+        process.nextTick(() => this._next());
     }
 
     checkTimeout(now) {
@@ -203,8 +209,6 @@ module.exports = class Jiang {
             if (this._handlers.hasOwnProperty(i)) {
                 const h = this._handlers[i];
                 if (h.stamp && (h.stamp + this.options.timeout < now)) {
-                    if (this._doing > 0)
-                        this._doing--;
                     this.reject(h.id, new Error("超时了 " + h.command.toString("hex")));
                 }
             }
@@ -212,9 +216,6 @@ module.exports = class Jiang {
     }
 
     _handle(data) {
-        if (this._doing > 0)
-            this._doing--;
-
         if (data.length < 4) {
             //console.log("长度不能少于10字节")
             return;
