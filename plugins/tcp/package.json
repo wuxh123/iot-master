@@ -1,0 +1,18 @@
+{
+  "name": "tcp",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "acceptors": [
+    {
+      "name": "tcp-server",
+      "label": "TCP服务器",
+      "script": "server.js"
+    },
+    {
+      "name": "tcp-client",
+      "label": "TCP客户端",
+      "script": "client.js"
+    }
+  ]
+}

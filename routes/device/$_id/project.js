@@ -1,4 +1,4 @@
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.list("project", {
     before: ctx => {
         const body = ctx.request.body;

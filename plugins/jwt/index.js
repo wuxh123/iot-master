@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const koaJwt = require('koa-jwt');
+const _ = require("lodash");
 
 const defaultOptions = {
     secret: 'jwt-secret',
@@ -9,13 +10,8 @@ const defaultOptions = {
     }
 };
 
-let options = Object.assign({}, defaultOptions);
-
-//const jwtConfig = require('../../../../jwt.config');
-
-exports.config = function (opts) {
-    options = Object.assign({}, defaultOptions, opts);
-}
+const cfg = load_config("jwt")
+const options = _.defaultsDeep({}, cfg, defaultOptions)
 
 exports.jwtMiddlewareConfig = function () {
     return options;

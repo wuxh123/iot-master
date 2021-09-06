@@ -1,6 +1,6 @@
 const device = require("../../lib/device");
 
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.list("device", {
     joins: [{
         from: 'element',

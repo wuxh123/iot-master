@@ -1,7 +1,7 @@
 const acc = require("../../lib/acceptor")
 const mongo = require_plugin("mongodb");
 
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.create("acceptor", {
     after: ctx=>{
         mongo.db.collection("acceptor").findOne({_id: ctx.body.data}).then(model=>{

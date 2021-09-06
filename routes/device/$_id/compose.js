@@ -1,7 +1,7 @@
 const device = require("../../../lib/device");
 const _ = require("lodash");
 
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.get = curd.compose("device", {
     joins: [{
         from: 'element',

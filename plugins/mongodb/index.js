@@ -1,4 +1,5 @@
 const mongodb = require('mongodb');
+const _ = require("lodash");
 const MongoClient = mongodb.MongoClient;
 
 const defaultOptions = {
@@ -10,6 +11,10 @@ const defaultOptions = {
     min: 1,
     maxIdleTimeMS: 60000
 };
+
+let cfg = load_config("mongodb");
+_.defaultsDeep(cfg, defaultOptions);
+
 
 /**
  *
@@ -23,8 +28,7 @@ exports.client = null
  */
 exports.db = null;
 
-exports.config = function (opts) {
-    const cfg = Object.assign({}, defaultOptions, opts);
+
     let mongoUrl;
     if (cfg.username && cfg.password) {
         mongoUrl = `mongodb://${cfg.username}:${cfg.password}@${cfg.host}:${cfg.port}/${cfg.db}?authSource=${cfg.authSource}`
@@ -51,7 +55,6 @@ exports.config = function (opts) {
         //执行等待
         callbacks.forEach(c => c());
     });
-}
 
 const callbacks = [];
 

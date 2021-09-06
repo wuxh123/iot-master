@@ -1,5 +1,5 @@
 const acc = require("../../../lib/acceptor");
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.setting("acceptor", {
     after: ctx=>{
         //直接重启了。。。

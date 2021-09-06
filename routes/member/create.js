@@ -1,5 +1,5 @@
 const mongo = require_plugin("mongodb");
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.create("member", {
     before: async ctx => {
         const body = ctx.request.body;

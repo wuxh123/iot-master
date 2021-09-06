@@ -1,7 +1,7 @@
 const EventEmitter = require('events');
 const net = require('net');
 
-class TcpServer extends EventEmitter {
+module.exports = class Server extends EventEmitter {
     model = {
         timeout: 30000,
         port: 0,
@@ -78,8 +78,4 @@ class TcpServer extends EventEmitter {
         }
         this.closed = true;
     }
-}
-
-module.exports = function (model) {
-    return new TcpServer(model);
 }

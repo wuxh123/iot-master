@@ -1,4 +1,4 @@
-const mongo = require_plugin("mongodb");
+const mongo = require("./index");
 const _ = require("lodash");
 
 /**

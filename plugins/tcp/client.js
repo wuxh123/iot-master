@@ -1,8 +1,8 @@
 const EventEmitter = require('events');
 const net = require('net');
-const Tunnel = require('../lib/tunnel');
+const Tunnel = require('../../lib/tunnel');
 
-class TcpClient extends EventEmitter {
+module.exports = class Client extends EventEmitter {
     options = {
         timeout: 30000,
         host: '',
@@ -43,8 +43,4 @@ class TcpClient extends EventEmitter {
     close() {
         this.server.close();
     }
-}
-
-module.exports = function (options) {
-    return new TcpClient(options);
 }

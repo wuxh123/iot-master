@@ -1,6 +1,6 @@
 const acceptor = require("../../../lib/acceptor");
 
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.get = curd.compose("acceptor", {
     after: async ctx => {
         const a = ctx.body.data;

@@ -1,0 +1,29 @@
+{
+  "name": "dtu",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+
+  "filters": [
+    {
+      "name": "heartbeat",
+      "label": "心跳包",
+      "script": "heartbeat.js"
+    },
+    {
+      "name": "usr.cn",
+      "label": "有人DTU",
+      "script": "usr.cn.js"
+    },
+    {
+      "name": "yinerd",
+      "label": "银尔达DTU",
+      "script": "yinerd.js"
+    },
+    {
+      "name": "tastek",
+      "label": "塔石DTU",
+      "script": "tastek.js"
+    }
+  ]
+}

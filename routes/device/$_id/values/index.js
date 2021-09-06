@@ -1,6 +1,6 @@
 const device = require("../../../../lib/device");
 
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.get = async ctx => {
     const dvc = device.get(ctx.params._id);
     if (!dvc) throw new Error("未上线");

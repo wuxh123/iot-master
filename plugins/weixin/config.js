@@ -1,4 +1,5 @@
-let config = {
+const _ = require("lodash");
+let defaultConfig = {
     miniprogram: {
         appid: "",
         secret: "",
@@ -18,8 +19,11 @@ let config = {
     spbill_create_ip: ""
 };
 
-module.exports = function (c) {
-    if (c)
-        Object.assign(config, c);
+const cfg = load_config("weixin");
+
+let config = _.defaultsDeep({}, cfg, defaultConfig);
+
+
+module.exports = function () {
     return config;
 }

@@ -1,6 +1,6 @@
 const device = require("../../../lib/device");
 const _ = require("lodash");
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.list("tunnel", {
     before: ctx => {
         ctx.state.stages = [

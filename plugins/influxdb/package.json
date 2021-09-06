@@ -3,5 +3,10 @@
   "version": "1.0.0",
   "dependencies": {
     "@influxdata/influxdb-client": "^1.15.0"
-  }
+  },
+  "historyDatabases": [{
+    "name": "influxdb",
+    "label": "influxDB",
+    "script": "index.js"
+  }]
 }

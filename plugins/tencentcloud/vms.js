@@ -1,14 +1,18 @@
 const tencentcloud = require("tencentcloud-sdk-nodejs");
+const _ = require("lodash");
+
 // 导入 VMS 模块的 client models
 const vmsClient = tencentcloud.vms.v20200902.Client;
 /* 实例化要请求 VMS 的 client 对象 */
-let client;// = new vmsClient();
-let options = {};
 
-exports.config = function (opts) {
-    options = opts;
-    client = new vmsClient(opts);
+const defaultOptions = {
+    times: 3
 }
+
+const cfg = load_config("tencentcloud/vms")
+const options = _.defaultsDeep({}, cfg, defaultOptions)
+const client = new vmsClient(options);
+
 
 exports.send = function (set, cellphone, times, sess) {
     console.log('打电话', set, cellphone)

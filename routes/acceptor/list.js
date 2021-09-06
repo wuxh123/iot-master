@@ -1,6 +1,6 @@
 const acceptor = require("../../lib/acceptor");
 
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 exports.post = curd.list("acceptor", {
     after: async ctx => {
         ctx.body.data.forEach(a => {

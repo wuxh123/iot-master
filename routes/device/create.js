@@ -1,4 +1,4 @@
-const curd = require_plugin("curd");
+const curd = require_plugin("mongodb/curd");
 const mongo = require_plugin("mongodb");
 const dvc = require("../../lib/device")
 const tnl = require("../../lib/tunnel")

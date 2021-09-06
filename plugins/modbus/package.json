@@ -1,0 +1,56 @@
+{
+  "name": "modbus",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "protocols": [
+    {
+      "name": "modbus-rtu",
+      "label": "Modbus RTU",
+      "script": "rtu.js",
+      "options": "json schema",
+      "codes": [
+        {
+          "name": "线圈",
+          "code": 1
+        },
+        {
+          "name": "触点",
+          "code": 2
+        },
+        {
+          "name": "保持寄存器",
+          "code": 3
+        },
+        {
+          "name": "输入寄存器",
+          "code": 4
+        }
+      ]
+    },
+    {
+      "name": "modbus-tcp",
+      "label": "Modbus TCP",
+      "script": "tcp.js",
+      "options": "json schema",
+      "codes": [
+        {
+          "name": "线圈",
+          "code": 1
+        },
+        {
+          "name": "触点",
+          "code": 2
+        },
+        {
+          "name": "保持寄存器",
+          "code": 3
+        },
+        {
+          "name": "输入寄存器",
+          "code": 4
+        }
+      ]
+    }
+  ]
+}
