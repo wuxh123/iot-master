@@ -24,19 +24,39 @@ module.exports = class TCP {
 
     _doing = 0;
 
-
     _checker;
 
     onTunnelData = data => {
         this._handle(data)
     }
+
     onTunnelClose = () => {
         this._checker.cancel();
         this._checker = undefined;
+        this.reset();
+    }
+
+    onTunnelOnline = () => {
+        this.reset();
+    }
+
+    onTunnelOffline = () => {
+        this.reset();
+    }
+
+    //清空所有请求，进行状态重置
+    reset() {
+        this._queue = [];
+        for (let i in this._handlers) {
+            if (this._handlers.hasOwnProperty(i)) {
+                const h = this._handlers[i];
+                this.reject(h.id, new Error("通道离线"));
+            }
+        }
+        this._doing = 0;
     }
 
     constructor(tunnel, options) {
-        this.tunnel = tunnel;
         Object.assign(this.options, options);
         this.open(tunnel)
     }
@@ -44,12 +64,18 @@ module.exports = class TCP {
     open(tunnel) {
         if (this.tunnel) {
             this.tunnel.off('data', this.onTunnelData);
+            this.tunnel.off('online', this.onTunnelOnline);
+            this.tunnel.off('offline', this.onTunnelOffline);
             this.tunnel.off('close', this.onTunnelClose);
         }
         if (!this._checker)
             this._checker = timeout.check(1000, now => this.checkTimeout(now));
         tunnel.on('data', this.onTunnelData);
+        tunnel.on('online', this.onTunnelOnline);
+        tunnel.on('offline', this.onTunnelOffline);
         tunnel.on('close', this.onTunnelClose);
+
+        this.tunnel = tunnel;
     }
 
     /**
@@ -61,6 +87,7 @@ module.exports = class TCP {
      * @returns {Promise<Buffer>}
      */
     read(slave, code, address, length) {
+        if (!this.tunnel.online) throw new Error("通道离线");
         const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
         buf.writeUInt16BE(0, 2); //协议版本
@@ -82,6 +109,8 @@ module.exports = class TCP {
      * @returns {Promise<>}
      */
     write(slave, code, address, value) {
+        if (!this.tunnel.online) throw new Error("通道离线");
+
         const type = typeof value;
 
         let buf;
@@ -168,22 +197,18 @@ module.exports = class TCP {
     }
 
     resolve(id, data) {
-        const handler = this._handlers[id]
-        if (handler) {
+        const handler = this._handlers[id];
+        delete this._handlers[id];
+        if (handler)
             handler.resolve(data);
-            delete this._handlers[id]
-        }
-
         this._next();
     }
 
     reject(id, err) {
-        const handler = this._handlers[id]
-        if (handler) {
+        const handler = this._handlers[id];
+        delete this._handlers[id];
+        if (handler)
             handler.reject(err);
-            delete this._handlers[id]
-        }
-
         this._next();
     }
 
