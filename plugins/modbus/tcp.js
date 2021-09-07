@@ -236,6 +236,11 @@ module.exports = class TCP {
         }
 
         let id = data.readUInt16BE(0);
+        if (this.transactionId > this.options.transaction.max || this.transactionId < this.options.transaction.min) {
+            //ID不对
+            return;
+        }
+
         let protocol = data.readUInt16BE(2);
         let length = data.readUInt16BE(4);
         if (data.length < length + 6) {
