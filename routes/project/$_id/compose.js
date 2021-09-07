@@ -30,10 +30,10 @@ exports.get = curd.compose("project", {
         const p = ctx.body.data;
         const prj = project.get(p._id);
         if (prj) {
-            p.online = true;
+            //p.online = true;
             p.closed = prj.closed;
             p.error = prj.error;
-            p.values = _.cloneDeep(prj.context);
+            //p.values = _.cloneDeep(prj.context);
         }
         p.device.forEach(d=>{
             //放进来会让返回包体积太大
@@ -42,10 +42,10 @@ exports.get = curd.compose("project", {
 
             const dvc = device.get(d._id)
             if (dvc) {
-                d.online = true;
+                //d.online = true;
                 d.closed = dvc.closed;
                 d.error = dvc.error;
-                d.values = _.cloneDeep(dvc.context);
+                d.values = dvc.context.values();
             }
         })
         //delete p.device;

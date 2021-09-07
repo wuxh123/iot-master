@@ -21,10 +21,10 @@ exports.get = curd.compose("device", {
 
         const dvc = device.get(d._id);
         if (dvc) {
-            d.online = dvc.context.$online;
+            //d.online = dvc.context.$online;
             d.closed = dvc.closed;
             d.error = dvc.error;
-            d.values = dvc.context;
+            d.values = dvc.context.values();
         }
     },
 });

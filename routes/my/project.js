@@ -171,23 +171,14 @@ exports.get = (async ctx => {
     //填充状态
     results.forEach(c => {
         c.projects.forEach(p => {
-            //项目状态
-            const prj = project.get(p._id)
-            if (prj) {
-                p.online = true;
-                p.closed = prj.closed;
-                p.error = prj.error;
-                p.values = prj.context;
-            }
-
             //设备状态
             p.device.forEach(d => {
                 const dvc = device.get(d._id);
                 if (dvc) {
-                    d.online = true;
+                    //d.online = true;
                     d.closed = dvc.closed;
                     d.error = dvc.error;
-                    d.values = dvc.context;
+                    d.values = dvc.context.values();
                 }
             })
         })
