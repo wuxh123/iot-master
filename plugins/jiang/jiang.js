@@ -87,7 +87,7 @@ module.exports = class Jiang {
 
     /**
      * 读取数据
-     * @param {number} slave
+     * @param {object} slave
      * @param {number} code
      * @param {number} address
      * @param {number} length
@@ -99,9 +99,9 @@ module.exports = class Jiang {
         buf.writeUInt8(8)
         //buf.writeUInt8(this.transactionId);
         buf.writeUInt8(code, 2); //功能码
-        buf.writeUInt8((slave >> 16) & 0xFF, 3); //中继
-        buf.writeUInt8((slave >> 8) & 0xFF, 4); //塘号
-        buf.writeUInt8(slave & 0xFF, 5); //设备
+        buf.writeUInt8(slave.relay, 3); //中继
+        buf.writeUInt8(slave.pool, 4); //塘号
+        buf.writeUInt8(slave.device, 5); //设备
         buf.writeUInt8(address, 6); //地址
         buf.writeUInt8(length, 7); //长度
         //buf.writeUInt8(sum, 8);
@@ -111,7 +111,7 @@ module.exports = class Jiang {
 
     /**
      * 写寄存器
-     * @param {number} slave
+     * @param {object} slave
      * @param {number} code
      * @param {number} address
      * @param {number} value
@@ -123,9 +123,9 @@ module.exports = class Jiang {
         buf.writeUInt8(9)
         //buf.writeUInt8(this.transactionId);
         buf.writeUInt8(5, 2); //功能码
-        buf.writeUInt8((slave >> 16) & 0xFF, 3); //中继
-        buf.writeUInt8((slave >> 8) & 0xFF, 4); //塘号
-        buf.writeUInt8(slave & 0xFF, 5); //设备
+        buf.writeUInt8(slave.relay, 3); //中继
+        buf.writeUInt8(slave.pool, 4); //塘号
+        buf.writeUInt8(slave.device, 5); //设备
         buf.writeUInt8(address, 6); //地址
         buf.writeUInt16BE(value, 7); //数据
         //buf.writeUInt8(sum, 9);
