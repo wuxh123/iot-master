@@ -91,10 +91,12 @@ module.exports = class Jiang {
      * @param {number} code
      * @param {number} address
      * @param {number} length
+     * @param {boolean} quick
      * @returns {Promise<Buffer>}
      */
-    read(slave, code, address, length) {
+    read(slave, code, address, length, quick) {
         if (!this.tunnel.online) throw new Error("通道离线");
+        if (quick) code = 4;
         const buf = Buffer.allocUnsafe(9);
         buf.writeUInt8(8)
         //buf.writeUInt8(this.transactionId);
@@ -106,7 +108,7 @@ module.exports = class Jiang {
         buf.writeUInt8(length, 7); //长度
         //buf.writeUInt8(sum, 8);
 
-        return this._execute(buf, false);
+        return this._execute(buf, quick);
     }
 
     /**
@@ -141,7 +143,7 @@ module.exports = class Jiang {
         command.writeUInt8(this.transactionId, 1);
         //和检验
         let sum = calcSum(command, command.length - 1);
-        command.writeUInt8(sum % 256, command.length - 1);
+        command.writeUInt8(sum & 0xFF, command.length - 1);
 
         //异步返回
         const promise = new Promise((resolve, reject) => {
@@ -232,7 +234,7 @@ module.exports = class Jiang {
         while (data.length) {
             len = data[0];
             //过长，丢弃
-            if (len > 50) {
+            if (len > 100) {
                 data = data.slice(1);
                 continue;
             }
@@ -253,7 +255,7 @@ module.exports = class Jiang {
             }
 
             //校验
-            let sum = calcSum(data, len);
+            let sum = calcSum(data, len) & 0xFF;
             let sum2 = data.readUInt8(len);
             if (sum !== sum2) {
                 data = data.slice(1);
@@ -271,7 +273,43 @@ module.exports = class Jiang {
         let fc = data.readUInt8(2);
         if ((fc & 0xF0) > 0) {
             let status = (fc & 0xF0) >> 4;
-            this.reject(id, new Error("执行错误 FC:" + fc + ' STATUS:' + status));
+            let err;
+            switch (status) {
+                case 1:
+                    err = "找不到中继";
+                    break;
+                case 2:
+                    err = "找不到塘";
+                    break;
+                case 3:
+                    err = "找不到设备";
+                    break;
+                case 4:
+                    err = "地址错误";
+                    break;
+                case 5:
+                    err = "长度错误";
+                    break;
+                case 6:
+                    err = "校验错误";
+                    break;
+                case 7:
+                    err = "功能码错误";
+                    break;
+                case 13:
+                    err = "忙";
+                    break;
+                case 14:
+                    err = "不忙";
+                    break;
+                case 15:
+                    err = "解析错误";
+                    break;
+                default:
+                    err = "未知错误";
+                    break;
+            }
+            this.reject(id, new Error(err));
         } else {
             switch (fc) {
                 case 1:  //心跳
@@ -283,7 +321,7 @@ module.exports = class Jiang {
                     let pool = data.readUInt8(4);
                     let device = data.readUInt8(5);
                     let address = data.readUInt8(6);
-                    this.resolve(id, data.slice(7, len - 1));
+                    this.resolve(id, data.slice(7, len));
                     break;
                 }
                 case 5: //写指令

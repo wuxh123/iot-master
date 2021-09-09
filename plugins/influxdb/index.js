@@ -51,7 +51,7 @@ exports.write = function (table, tags, values) {
 exports.query = function (table, tags, field, window, start, stop) {
     return new Promise((resolve, reject) => {
         const query = `
-            from(bucket: "${exports.options.bucket}")
+            from(bucket: "${options.bucket}")
               |> range(start: ${start}, stop: ${stop})
             `
             + Object.keys(tags).map(t=>`|> filter(fn: (r) => r["${t}"] == "${tags[t]}")`).join('\n') +

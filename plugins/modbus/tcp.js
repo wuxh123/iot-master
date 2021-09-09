@@ -84,9 +84,10 @@ module.exports = class TCP {
      * @param {number} code
      * @param {number} address
      * @param {number} length
+     * @param {boolean} quick
      * @returns {Promise<Buffer>}
      */
-    read(slave, code, address, length) {
+    read(slave, code, address, length, quick) {
         if (!this.tunnel.online) throw new Error("通道离线");
         const buf = Buffer.allocUnsafe(12);
         //buf.writeUInt16BE(this.transactionId);
@@ -97,7 +98,7 @@ module.exports = class TCP {
         buf.writeUInt16BE(address, 8); //地址
         buf.writeUInt16BE(length, 10); //长度
 
-        return this._execute(buf, false);
+        return this._execute(buf, quick);
     }
 
     /**
