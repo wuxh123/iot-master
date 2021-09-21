@@ -21,7 +21,7 @@ exports.get = (async ctx => {
                         }
                     },
                     {$unwind: {path: "$company"}},
-                    {$addFields: {"company.member_id": "$_id"}}, //company.manager: $manager
+                    {$addFields: {"company.member_id": "$_id", "company.admin": "$admin"}},
                     {$replaceRoot: {newRoot: "$company"}},
                 ]
             }

@@ -1,6 +1,6 @@
 const mongo = require_plugin("mongodb");
 exports.get = (async ctx => {
-    const user_id = ctx.state.user._id;
+    const user_id = ctx.params._id;
     const ret = await mongo.db.collection("company").aggregate([
         //自己的
         {$match: {user_id: user_id}},
@@ -20,7 +20,7 @@ exports.get = (async ctx => {
                         }
                     },
                     {$unwind: {path: "$company"}},
-                    {$addFields: {"company.member_id": "$_id"}}, //company.manager: $manager
+                    {$addFields: {"company.member_id": "$_id", "company.admin": "$admin"}},
                     {$replaceRoot: {newRoot: "$company"}},
                 ]
             }
