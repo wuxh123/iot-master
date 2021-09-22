@@ -13,4 +13,5 @@ exports.post = async ctx => {
     if (!user) throw new Error("找不到用户，或密码错误");
 
     ctx.body = {data: jwt.sign({_id: user._id, admin: user.admin})};
+    ctx.body.data.user = user;
 }
