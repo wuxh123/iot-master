@@ -14,4 +14,9 @@ exports.post = curd.list("device", {
         foreign: 'devices.device_id',
         noUnwind: true,
     }],
+    after: async ctx => {
+        ctx.body.data.forEach(d => {
+            d.project = d.project.map(p=>p.name);
+        })
+    },
 });

@@ -17,4 +17,9 @@ exports.get = async ctx => {
     }).on('exit', () => {
         ws.close();
     });
+
+    ws.on('error', err=>{
+        console.error('ws err', err)
+    })
+
 }
