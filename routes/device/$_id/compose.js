@@ -17,7 +17,8 @@ exports.get = curd.compose("device", {
     }],
     after: async ctx => {
         const d = ctx.body.data;
-        d.project = d.project.map(p=>p.name);
+        if (d.project)
+            d.project = d.project.map(p=>p.name);
 
         const dvc = device.get(d._id);
         if (dvc) {

@@ -8,7 +8,7 @@ exports.post = curd.list("device", {
     }, {
         from: 'tunnel',
         fields: ['name', 'sn', 'last']
-    },{
+    }, {
         from: 'project',
         local: '_id',
         foreign: 'devices.device_id',
@@ -16,7 +16,8 @@ exports.post = curd.list("device", {
     }],
     after: async ctx => {
         ctx.body.data.forEach(d => {
-            d.project = d.project.map(p=>p.name);
+            if (d.project)
+                d.project = d.project.map(p => p.name);
         })
     },
 });
