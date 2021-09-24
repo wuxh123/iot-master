@@ -10,12 +10,12 @@ exports.post = (async ctx => {
     const body = ctx.request.body;
 
     const user = await mongo.db.collection("user").findOne({_id: ctx.state.user._id});
-    if (user.password !== md5(md5(body.old)))
+    if (user.password !== md5(body.old))
         throw new Error("原密码错误");
 
     const ret = await mongo.db.collection("user").updateOne({_id: ctx.state.user._id}, {
         $set: {
-            password: md5(md5(body.new))
+            password: md5(body.new)
         }
     });
     ctx.body = {data: ret}
